@@ -1,0 +1,9 @@
+[submodule "third_party/CLIP4Cir"]
+	path = third_party/CLIP4Cir
+	url = https://github.com/ABaldrati/CLIP4Cir.git
+[submodule "third_party/SEARLE"]
+	path = third_party/SEARLE
+	url = https://github.com/miccunifi/SEARLE.git
+[submodule "third_party/composed_image_retrieval"]
+	path = third_party/composed_image_retrieval
+	url = https://github.com/google-research/composed_image_retrieval.git
