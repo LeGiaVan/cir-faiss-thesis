@@ -1,0 +1,64 @@
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Optimizing Vector Indexing for Zero-Shot Composed Image Retrieval Using FAISS}
+
+\author{
+    \IEEEauthorblockN{Your Name}\\
+    \IEEEauthorblockA{University Name\\
+    Email: your.email@domain.com}
+}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+Composed Image Retrieval (CIR) is a challenging task where a user queries a system with a reference image and a text modifier. Recent state-of-the-art models like CLIP4Cir, SEARLE, and Pic2Word have significantly improved retrieval accuracy. However, when deployed on large-scale datasets, the computational cost of exhaustive exact search (brute-force) becomes a bottleneck. In this thesis, we evaluate the trade-off between retrieval accuracy and query latency by applying Approximate Nearest Neighbor (ANN) indexing algorithms provided by the FAISS library. We demonstrate that using IVFPQ and HNSW indexes can speed up queries by orders of magnitude while preserving over 98\% of the original Recall@K performance across multiple benchmarks, including FashionIQ, CIRR, and the large-scale CIRCO dataset.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Composed Image Retrieval, Zero-Shot Learning, FAISS, Approximate Nearest Neighbor Search, CLIP
+\end{IEEEkeywords}}
+
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+% TODO: Giới thiệu bài toán CIR, khó khăn về scale khi dùng brute force, và mục tiêu của đồ án (đưa FAISS vào để tăng tốc).
+% Nêu bật đóng góp (Contributions).
+
+\section{Related Work}
+% TODO: 
+% 1. Các mô hình CIR (CLIP4Cir, SEARLE, Pic2Word, CompoDiff).
+% 2. Các thuật toán Approximate Nearest Neighbor Search (FAISS, HNSW, IVF, PQ).
+
+\section{Methodology}
+% TODO:
+% 1. Kiến trúc tổng thể (Extract Embedding -> Build Index -> Query).
+% 2. Cấu hình các loại Index được thử nghiệm (FlatIP, IVFFlat, HNSWFlat, IVFPQ).
+% 3. Khung đánh giá Generic Eval Harness.
+
+\section{Experiments and Results}
+% TODO:
+% 1. Dataset (FashionIQ, CIRR, CIRCO).
+% 2. Baseline (Kết quả từ paper gốc sử dụng brute-force).
+% 3. Kết quả thử nghiệm HNSW (Đo Recall retention và QPS).
+% 4. Kết quả thử nghiệm IVF-PQ (Đo Memory footprint và Recall).
+
+\section{Discussion}
+% TODO:
+% So sánh trade-off giữa các thuật toán. 
+% Tại sao IVFPQ mất recall nhiều hơn HNSW. Tại sao HNSW tốn RAM hơn.
+
+\section{Conclusion}
+% TODO: Tóm tắt lại "điểm ngọt" (sweet spot) khi triển khai thực tế.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
