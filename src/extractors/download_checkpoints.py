@@ -2,6 +2,9 @@ import os
 import subprocess
 import sys
 
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+
 def install_gdown():
     try:
         import gdown
@@ -17,15 +20,16 @@ def download_checkpoints():
     os.makedirs(base_dir, exist_ok=True)
     
     print("=== Tải Checkpoints cho Pic2Word ===")
-    pic2word_id = "1IxRi2Cj81RxMu0ViT4q4nkfyjbSHm1dF"
     pic2word_out = os.path.join(base_dir, "pic2word_vit_l_14.pt")
     if not os.path.exists(pic2word_out):
+        print("Đang tải Pic2Word weights từ HuggingFace (do link Google Drive gốc đã chết)...")
+        hf_url = "https://huggingface.co/flashingtt/pic2word/resolve/main/pic2word_model.pt"
         try:
-            gdown.download(id=pic2word_id, output=pic2word_out, quiet=False)
+            import urllib.request
+            urllib.request.urlretrieve(hf_url, pic2word_out)
+            print("[+] Tải Pic2Word checkpoint thành công!")
         except Exception as e:
-            print("\n[LỖI] Google Drive từ chối tải tự động (thường do quá tải hoặc giới hạn quyền).")
-            print("Vui lòng tải thủ công theo link sau và đặt vào thư mục 'checkpoints':")
-            print(f"👉 https://drive.google.com/file/d/{pic2word_id}/view")
+            print(f"\n[LỖI] Không thể tải Pic2Word: {e}")
     else:
         print("Pic2Word checkpoint đã tồn tại.")
 
