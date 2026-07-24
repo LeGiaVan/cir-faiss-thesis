@@ -62,8 +62,8 @@ class Pic2WordAdapter(BaseAdapter):
         self.clip_model.load_state_dict(sd)
         self.img2text.load_state_dict(sd_img2text)
         
-        self.clip_model.to(self.device).eval().requires_grad_(False)
-        self.img2text.to(self.device).eval().requires_grad_(False)
+        self.clip_model = self.clip_model.float().to(self.device).eval().requires_grad_(False)
+        self.img2text = self.img2text.float().to(self.device).eval().requires_grad_(False)
         
         print("[OK] Pic2Word Adapter loaded successfully!")
 
@@ -121,10 +121,14 @@ class Pic2WordAdapter(BaseAdapter):
             query_img_feature = self.img2text(img_feature)
             
             # 3. Kết hợp pseudo-word vào câu text
-            query_features = self.clip_model.encode_text_img_vis(
-                text_tokens, 
-                query_img_feature, 
-                split_ind=id_split
+            # Dùng encode_text_img_retrieval (repeat=False) - đúng theo eval_utils.py gốc cho
+            # trường hợp N ảnh tham chiếu + N câu độc lập trong cùng batch. encode_text_img_vis
+            # chỉ đúng khi batch_size=1 (không index theo batch), dùng nhầm sẽ crash/sai với batch>1.
+            query_features = self.clip_model.encode_text_img_retrieval(
+                text_tokens,
+                query_img_feature,
+                split_ind=id_split,
+                repeat=False
             )
             
             # 4. Chuẩn hóa L2

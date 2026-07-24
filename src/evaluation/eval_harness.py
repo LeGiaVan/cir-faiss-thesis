@@ -120,8 +120,15 @@ def compute_cirr_subset_recall(predicted_indices: np.ndarray, index_names: List[
     # Mask out the images that are not in the subset
     group_mask = (sorted_index_names[:, :, None] == group_members_arr[:, None, :]).sum(-1).astype(bool)
     
-    # Extract only the labels corresponding to the subset members
-    group_labels = labels[group_mask].reshape(labels.shape[0], -1)
+    # Extract only the labels corresponding to the subset members, padding if some members are not in top-K
+    group_labels_list = []
+    for i in range(len(labels)):
+        row_labels = labels[i][group_mask[i]]
+        # Pad with False if not all group members were in the retrieved top-K
+        padded = np.pad(row_labels, (0, max(0, group_members_arr.shape[1] - len(row_labels))), constant_values=False)
+        group_labels_list.append(padded[:group_members_arr.shape[1]])
+        
+    group_labels = np.array(group_labels_list)
     
     metrics = {}
     for k in k_list:
