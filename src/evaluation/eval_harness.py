@@ -91,6 +91,37 @@ class FaissEvaluator:
         
         return np.vstack(all_distances), np.vstack(all_indices), latency_ms, qps
 
+    def get_memory_bytes(self) -> int:
+        """
+        Dung lượng bộ nhớ thực tế của index (bytes), đo bằng cách serialize toàn bộ
+        cấu trúc index (bao gồm đồ thị HNSW, inverted list IVF, mã PQ...) - chính xác
+        hơn nhiều so với ước lượng thủ công dimension*4*N vì bắt được cả overhead cấu trúc.
+        """
+        return len(faiss.serialize_index(self.index))
+
+
+def compute_recall_retention(ann_indices: np.ndarray, flatip_indices: np.ndarray, k_list=[1, 5, 10, 50]):
+    """
+    Recall Retention chuẩn ANN-benchmark: so trực tiếp OVERLAP giữa tập top-K trả về bởi
+    index xấp xỉ (IVFFlat/HNSWFlat/IVFPQ) và tập top-K trả về bởi FlatIP (brute-force) -
+    KHÔNG qua ground truth. Đo đúng "độ trung thành" của thuật toán xấp xỉ so với tìm kiếm
+    chính xác, tách biệt hoàn toàn khỏi chất lượng vốn có của model (xem SANITY_CHECK_REPORT.md).
+    Lưu ý: đây là nghĩa "Recall" trong cộng đồng ANN-benchmarks, khác với "Recall@K" kiểu
+    Information Retrieval (so với ground truth) dùng ở các hàm compute_*_recall/map khác.
+    """
+    metrics = {}
+    n = ann_indices.shape[0]
+    for k in k_list:
+        k_eff = min(k, ann_indices.shape[1], flatip_indices.shape[1])
+        overlaps = np.empty(n, dtype=np.float64)
+        for i in range(n):
+            ann_set = set(ann_indices[i, :k_eff].tolist())
+            flat_set = set(flatip_indices[i, :k_eff].tolist())
+            overlaps[i] = len(ann_set & flat_set) / k_eff
+        metrics[f"retention_at{k}"] = float(np.mean(overlaps)) * 100
+
+    return metrics
+
 
 def compute_fashioniq_cirr_recall(predicted_indices: np.ndarray, index_names: List[str], target_names: List[str], k_list=[1, 5, 10, 50]):
     """
