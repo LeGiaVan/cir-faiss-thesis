@@ -21,6 +21,28 @@ from evaluation.eval_harness import (
 FASHIONIQ_CATEGORIES = ["dress", "shirt", "toptee"]
 RETENTION_K_LIST = [1, 5, 10, 50]
 
+# Đo lặp lại để đảm bảo tính khách quan (xem eval_harness.py docstring FaissEvaluator để biết
+# lý do 2 con số dưới đây khác nhau giữa index deterministic và HNSWFlat):
+N_SEARCH_TRIALS = 7   # số lần search lặp lại trên CÙNG 1 index đã build - đo ổn định Latency/QPS
+N_HNSW_BUILDS = 5      # riêng HNSWFlat: số lần BUILD LẠI độc lập - đo ổn định Recall/Retention
+N_HNSW_TRIALS_PER_BUILD = 3  # số lần search lặp lại trong MỖI lần build HNSW (đủ pool 15 mẫu latency)
+
+
+def compute_all_metrics(dataset, indices, gallery_names, target_ids, target_names_flat, group_members, flatip_indices):
+    """Gộp toàn bộ phép tính Recall/mAP/Retention cho 1 kết quả search - dùng lại cho cả
+    đường build-1-lần (FlatIP/IVFFlat/IVFPQ) lẫn đường build-lặp-lại (HNSWFlat)."""
+    metrics = {}
+    if dataset == "fashioniq":
+        metrics = compute_fashioniq_cirr_recall(indices, gallery_names, target_names_flat)
+    elif dataset == "circo":
+        metrics = compute_circo_map(indices, gallery_names, target_ids)
+    elif dataset == "cirr":
+        metrics = compute_fashioniq_cirr_recall(indices, gallery_names, target_names_flat)
+        metrics.update(compute_cirr_subset_recall(indices, gallery_names, target_names_flat, group_members))
+    if flatip_indices is not None:
+        metrics.update(compute_recall_retention(indices, flatip_indices, RETENTION_K_LIST))
+    return metrics
+
 
 def build_index_configs(gallery_size: int):
     """
@@ -105,38 +127,71 @@ def run_one(model: str, dataset: str, category: str, limit: int):
     dimension = gallery_features.shape[1]
     indexes = build_index_configs(len(gallery_features))
 
+    target_names_flat = [t[0] if len(t) > 0 else "" for t in target_ids] if dataset in ("fashioniq", "cirr") else None
+
     rows = []
-    flatip_indices = None  # baseline để tính Recall Retention
+    flatip_indices = None  # baseline để tính Recall Retention (luôn build từ config FlatIP đầu tiên)
 
     for idx_config in indexes:
         label = f"{idx_config['type']}[{idx_config['tag']}]"
         print(f"\n--- Benchmarking {label} ---")
         try:
-            evaluator = FaissEvaluator(idx_config['type'], dimension, **idx_config['params'])
-            evaluator.add_gallery(gallery_features)
+            if idx_config['type'] == 'HNSWFlat':
+                # HNSWFlat: build lại N_HNSW_BUILDS lần ĐỘC LẬP (khác lần build ra graph khác
+                # nhau do random level assignment - xem eval_harness.py docstring) -> báo cáo
+                # Recall/Retention dạng mean +/- std qua các lần build, không phải 1 con số đơn.
+                all_latencies, all_qpss = [], []
+                metric_samples = []  # list các dict metric, 1 dict / lần build
+                memory_bytes_list = []
+                last_indices = None
+                for build_i in range(N_HNSW_BUILDS):
+                    evaluator = FaissEvaluator(idx_config['type'], dimension, **idx_config['params'])
+                    evaluator.add_gallery(gallery_features)
+                    distances, indices, tstats = evaluator.search_repeated(
+                        query_features, top_k=50, batch_size=256, n_trials=N_HNSW_TRIALS_PER_BUILD)
+                    all_latencies.append(tstats["latency_ms_mean"])
+                    all_qpss.append(tstats["qps_mean"])
+                    memory_bytes_list.append(evaluator.get_memory_bytes())
+                    m = compute_all_metrics(dataset, indices, gallery_names, target_ids,
+                                             target_names_flat, group_members, flatip_indices)
+                    metric_samples.append(m)
+                    last_indices = indices
+                    print(f"  [build {build_i+1}/{N_HNSW_BUILDS}] latency={tstats['latency_ms_mean']:.3f}ms "
+                          f"qps={tstats['qps_mean']:.1f}")
 
-            print("Running Batch Search (batch_size=256)...")
-            distances, indices, latency_ms, qps = evaluator.search(query_features, top_k=50, batch_size=256)
+                latency_mean, latency_std = float(np.mean(all_latencies)), float(np.std(all_latencies))
+                qps_mean, qps_std = float(np.mean(all_qpss)), float(np.std(all_qpss))
+                memory_bytes = float(np.mean(memory_bytes_list))
 
-            if idx_config['type'] == 'FlatIP':
-                flatip_indices = indices
+                metrics_mean, metrics_std = {}, {}
+                for key in metric_samples[0]:
+                    vals = [m[key] for m in metric_samples]
+                    metrics_mean[key] = float(np.mean(vals))
+                    metrics_std[key] = float(np.std(vals))
 
-            metrics = {}
-            if dataset == "fashioniq":
-                target_names_flat = [t[0] if len(t) > 0 else "" for t in target_ids]
-                metrics = compute_fashioniq_cirr_recall(indices, gallery_names, target_names_flat)
-            elif dataset == "circo":
-                metrics = compute_circo_map(indices, gallery_names, target_ids)
-            elif dataset == "cirr":
-                target_names_flat = [t[0] if len(t) > 0 else "" for t in target_ids]
-                metrics = compute_fashioniq_cirr_recall(indices, gallery_names, target_names_flat)
-                subset_metrics = compute_cirr_subset_recall(indices, gallery_names, target_names_flat, group_members)
-                metrics.update(subset_metrics)
+                if idx_config['type'] == 'FlatIP':  # never true here, kept for symmetry/documentation
+                    flatip_indices = last_indices
 
-            # Recall Retention: so trực tiếp với FlatIP (baseline luôn chạy trước tiên trong danh sách)
-            retention = compute_recall_retention(indices, flatip_indices, RETENTION_K_LIST)
+            else:
+                # FlatIP/IVFFlat/IVFPQ: build 1 lần (verify thực nghiệm là deterministic - build
+                # lại không đổi kết quả), chỉ lặp lại SEARCH để đo Latency/QPS ổn định.
+                evaluator = FaissEvaluator(idx_config['type'], dimension, **idx_config['params'])
+                evaluator.add_gallery(gallery_features)
 
-            memory_bytes = evaluator.get_memory_bytes()
+                print(f"Running Batch Search x{N_SEARCH_TRIALS} trials (batch_size=256)...")
+                distances, indices, tstats = evaluator.search_repeated(
+                    query_features, top_k=50, batch_size=256, n_trials=N_SEARCH_TRIALS)
+
+                if idx_config['type'] == 'FlatIP':
+                    flatip_indices = indices
+
+                latency_mean, latency_std = tstats["latency_ms_mean"], tstats["latency_ms_std"]
+                qps_mean, qps_std = tstats["qps_mean"], tstats["qps_std"]
+                memory_bytes = evaluator.get_memory_bytes()
+
+                metrics_mean = compute_all_metrics(dataset, indices, gallery_names, target_ids,
+                                                    target_names_flat, group_members, flatip_indices)
+                metrics_std = {k: 0.0 for k in metrics_mean}  # deterministic -> std = 0 theo định nghĩa
 
             res_row = {
                 "Model": model,
@@ -146,19 +201,21 @@ def run_one(model: str, dataset: str, category: str, limit: int):
                 "Index": idx_config['type'],
                 "Params": idx_config['tag'],
                 "Role": idx_config['role'],
-                "Latency (ms)": round(latency_ms, 3),
-                "QPS": round(qps, 2),
+                "N_runs": N_HNSW_BUILDS if idx_config['type'] == 'HNSWFlat' else 1,
+                "Latency (ms)": round(latency_mean, 3),
+                "Latency_std": round(latency_std, 4),
+                "QPS": round(qps_mean, 2),
+                "QPS_std": round(qps_std, 2),
                 "Memory (MB)": round(memory_bytes / (1024 * 1024), 3),
             }
-            res_row.update({k: round(v, 2) for k, v in retention.items()})
-            res_row.update({k: round(v, 2) for k, v in metrics.items()})
+            res_row.update({k: round(v, 2) for k, v in metrics_mean.items()})
+            res_row.update({f"{k}_std": round(v, 3) for k, v in metrics_std.items()})
             rows.append(res_row)
 
-            print(f"Latency: {latency_ms:.3f} ms/query | QPS: {qps:.2f} | Memory: {memory_bytes/1024/1024:.2f} MB")
-            for k, v in retention.items():
-                print(f"{k}: {v:.2f}")
-            for k, v in metrics.items():
-                print(f"{k}: {v:.2f}")
+            print(f"Latency: {latency_mean:.3f}+/-{latency_std:.4f} ms/query | "
+                  f"QPS: {qps_mean:.2f}+/-{qps_std:.2f} | Memory: {memory_bytes/1024/1024:.2f} MB")
+            for k, v in metrics_mean.items():
+                print(f"{k}: {v:.2f} (+/- {metrics_std[k]:.3f})")
 
         except Exception as e:
             print(f"[LỖI] Benchmark {label} thất bại: {e}")

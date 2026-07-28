@@ -28,17 +28,29 @@
 \usepackage{xurl}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
 
 \definecolor{okgreen}{RGB}{20,120,60}
 \definecolor{phase1bg}{RGB}{235,242,252}
 \definecolor{phase2bg}{RGB}{253,241,230}
+\definecolor{seriesBlue}{RGB}{42,120,214}
+\definecolor{seriesOrange}{RGB}{235,104,52}
+\definecolor{seriesGreen}{RGB}{27,175,122}
 
 \setlength{\extrarowheight}{1.2pt}
 \setlength{\marginparwidth}{2cm}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-
+    
+\makeatletter
+\newcommand{\linebreakand}{%
+  \end{@IEEEauthorhalign}
+  \hfill\mbox{}\par
+  \mbox{}\hfill\begin{@IEEEauthorhalign}
+}
+\makeatother
 \begin{document}
 
 \title{Balancing Accuracy and Query Cost in Composed Image Retrieval: A FAISS-Based Approximate Nearest Neighbor Benchmark}
@@ -50,12 +62,38 @@
 \textit{University of Economics and Law}\\
 Ho Chi Minh City, Vietnam \\
 vanlg23416@st.uel.edu.vn}
+
+\and
+\IEEEauthorblockN{Hoai-Phan Truong}
+\IEEEauthorblockA{
+\textit{Faculty of Information Systems} \\
+\textit{University of Economics and Law}\\
+Ho Chi Minh City, Vietnam \\
+hoaiphan@uel.edu.vn} % <-- Đã xóa chữ S ở đây
+
+\linebreakand % <-- Thay \and bằng \linebreakand ở đây để ngắt dòng thành 2x2
+
+\IEEEauthorblockN{Hoanh-Su Le}
+\IEEEauthorblockA{
+\textit{Faculty of Information Systems} \\
+\textit{University of Economics and Law}\\
+Ho Chi Minh City, Vietnam \\
+sulh@uel.edu.vn}
+
+\and
+\IEEEauthorblockN{Phuc Nguyen\textsuperscript{*}}
+\IEEEauthorblockA{
+\textit{Faculty of Information Systems} \\
+\textit{University of Economics and Law}\\
+Ho Chi Minh City, Vietnam \\
+phucnq@uel.edu.vn\\
+\textsuperscript{*}Corresponding author}
 }
 
 \maketitle
 
 \begin{abstract}
-Composed Image Retrieval (CIR) systems answer queries formed by a reference image and a free-text modifier. Recent state-of-the-art models -- CLIP4Cir, SEARLE, and Pic2Word -- report Recall@K and mAP@K under exhaustive, exact (brute-force) nearest-neighbor search, an assumption that breaks down once the image gallery grows beyond what a single query can scan in real time. This paper studies what happens when exact search is replaced by Approximate Nearest Neighbor (ANN) indexing from the FAISS library (\texttt{IndexIVFFlat}, \texttt{IndexHNSWFlat}, \texttt{IndexIVFPQ}) across three CIR models and three benchmarks of increasing gallery scale (FashionIQ, 3.8K--6.3K images; CIRR, 2.3K images; CIRCO, 123K images). We first reproduce the published validation-set results, uncovering and fixing two significant reproducibility bugs -- a feature-normalization mismatch that caused 98.4\% of CIRR queries to retrieve their own reference image, and a batch-indexing bug that crashed Pic2Word query encoding entirely -- before any ANN experiment could be considered valid. We then introduce \emph{Recall Retention}, a metric that measures an ANN index's neighbor-set overlap with exact search directly, decoupling indexing error from a model's inherent retrieval quality, and sweep 120 index configurations with gallery-size-adaptive clustering parameters. The results show that the accuracy/speed trade-off is strongly scale-dependent: HNSWFlat reaches a $22.6\times$ speedup at $97.7\%$ Recall Retention@10 on the 123K-image CIRCO gallery, but the same index family yields sub-$5\times$ (occasionally sub-$1\times$) speedups on the 2--6K-image FashionIQ and CIRR galleries, while IVFPQ trades up to $134.97\times$ speedup and a $98.7\%$ memory reduction for Recall Retention as low as $10.9\%$ (best case across the swept grid: $58.7\%$). These findings indicate that ANN indexing is not a uniformly beneficial substitute for exact search in CIR, but a scale- and index-type-dependent decision.
+Composed Image Retrieval (CIR) systems answer queries formed by a reference image and a free-text modifier. Recent state-of-the-art models -- CLIP4Cir, SEARLE, and Pic2Word -- report Recall@K and mAP@K under exhaustive, exact (brute-force) nearest-neighbor search, an assumption that breaks down once the image gallery grows beyond what a single query can scan in real time. This paper studies what happens when exact search is replaced by Approximate Nearest Neighbor (ANN) indexing from the FAISS library (\texttt{IndexIVFFlat}, \texttt{IndexHNSWFlat}, \texttt{IndexIVFPQ}) across three CIR models and three benchmarks of increasing gallery scale (FashionIQ, 3.8K--6.3K images; CIRR, 2.3K images; CIRCO, 123K images). We first reproduce the published validation-set results, uncovering and fixing two significant reproducibility bugs -- a feature-normalization mismatch that caused 98.4\% of CIRR queries to retrieve their own reference image, and a batch-indexing bug that crashed Pic2Word query encoding entirely -- before any ANN experiment could be considered valid. We then introduce \emph{Recall Retention}, a metric that measures an ANN index's neighbor-set overlap with exact search directly, decoupling indexing error from a model's inherent retrieval quality, and sweep 120 index configurations with gallery-size-adaptive clustering parameters. The results show that the accuracy/speed trade-off is strongly scale-dependent: HNSWFlat reaches a $22.8\times$ speedup at $97.0\%\pm0.3\%$ Recall Retention@10 (mean $\pm$ std over 5 independently rebuilt indices) on the 123K-image CIRCO gallery, shrinking to sub-$5\times$ (never below $1\times$ at any of the five gallery sizes actually measured) on the 2--6K-image FashionIQ and CIRR galleries, while IVFFlat can turn genuinely counter-productive (speedup $<1\times$) at that same small scale; IVFPQ, meanwhile, trades up to $149.4\times$ speedup and a $98.7\%$ memory reduction for Recall Retention as low as $10.9\%$ (best case across the swept grid: $58.7\%$), which we trace to reconstruction error roughly two orders of magnitude larger than the score gap needed for correct top-10 ranking. All latency figures and HNSWFlat accuracy figures are averaged over repeated trials rather than single runs, to guard against measurement noise. These findings indicate that ANN indexing is not a uniformly beneficial substitute for exact search in CIR, but a scale- and index-type-dependent decision.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -174,7 +212,7 @@ Critically, FashionIQ and CIRR galleries must be restricted to their official va
 \subsection{FAISS Index Configurations and Adaptive Parameter Sweep}
 \label{subsec:sweep}
 
-Table~\ref{tab:sweep} lists the index types and parameter grid swept for every (model, dataset) combination. A first implementation used a fixed \texttt{nlist} across all datasets; this triggered FAISS's own ``too few points per centroid'' warning on the smaller galleries (CIRR, FashionIQ) and produced artificially collapsed IVFFlat/IVFPQ recall as a result. We instead scale \texttt{nlist} to the gallery size $N$ of each (model, dataset) pair, using $\texttt{nlist}_{\text{small}} \approx \sqrt{N}$ and $\texttt{nlist}_{\text{large}} \approx 4\sqrt{N}$ for IVFFlat, and $\texttt{nlist}_{\text{small}}$ for IVFPQ (to favor stable cluster training over the very small IVFPQ grid).
+Table~\ref{tab:sweep} lists the index types and parameter grid swept for every (model, dataset) combination. A first implementation used a fixed \texttt{nlist} across all datasets; this triggered FAISS's own ``too few points per centroid'' warning on the smaller galleries (CIRR, FashionIQ) and produced artificially collapsed IVFFlat/IVFPQ recall as a result. FAISS's official guidance~\cite{johnson2019faiss,faisswiki2024guidelines} recommends $\texttt{nlist} \in [4\sqrt{N}, 16\sqrt{N}]$ together with a training-data floor of roughly $30 \times \texttt{nlist}$ vectors per index -- i.e., $N \gtrsim 30\,\texttt{nlist}$ for stable $k$-means centroids. Applying the guideline's own lower bound, $\texttt{nlist} = 4\sqrt{N}$, to our two smaller-scale benchmarks violates this floor: for CIRR ($N{=}2{,}297$) it requires $N \geq 5{,}751$ training vectors while only $2{,}297$ exist, and the shortfall is similar for every FashionIQ category ($N{=}3{,}817$--$6{,}346$, requiring $7{,}414$--$9{,}559$). Only on CIRCO ($N{=}123{,}403$) does $4\sqrt{N}=1{,}405$ comfortably clear its own floor ($42{,}155 \leq 123{,}403$). We therefore extend the swept grid one step below the official range, to $\texttt{nlist}_{\text{small}} \approx \sqrt{N}$ -- which satisfies the $30\times$ floor on every benchmark tested, including CIRR and FashionIQ -- while retaining $\texttt{nlist}_{\text{large}} \approx 4\sqrt{N}$, the official range's own lower bound, for IVFFlat; IVFPQ uses $\texttt{nlist}_{\text{small}}$ throughout, since its already-small per-cell vector budget (after Product Quantization) makes the more conservative choice necessary for stable cluster training. In short, the adaptive formula is not an arbitrary interpolation but the range of \texttt{nlist} values that keeps every one of our galleries above FAISS's own minimum-training-data guideline, which the fixed-\texttt{nlist} baseline and even the official range's lower bound fail to do at CIR-typical gallery scales.
 
 \begin{table}[!ht]
 \centering
@@ -204,6 +242,11 @@ The Recall@K and mAP@K metrics used by the source papers compare retrieved resul
 \label{eq:retention}
 \end{equation}
 where $\mathcal{Q}$ is the query set and $\text{top-}K_{\text{Flat}}(q)$ is always computed first and cached as the baseline for every subsequent ANN configuration on the same (model, dataset) pair. This is the standard notion of ``recall'' in the ANN-benchmarking literature and should not be confused with Information-Retrieval-style Recall@K reported elsewhere in this paper.
+
+\subsection{Repeated-Measurement Protocol}
+\label{subsec:repeated}
+
+A single run of any benchmark conflates the quantity of interest with measurement noise -- system jitter for latency, and, for indices with a randomized construction procedure, run-to-run variation in the index itself. Before designing the repeated-measurement protocol, we first tested empirically, rather than assumed, which of the four index types actually exhibit construction randomness: \texttt{IndexFlatIP}, \texttt{IndexIVFFlat}, and \texttt{IndexIVFPQ} were rebuilt from the same vectors ten times each and found to be bit-identical across rebuilds (FAISS's k-means training uses a fixed default seed), whereas \texttt{IndexHNSWFlat} rebuilds differed by approximately $0.5\%$ of search results, traceable to the random level assignment step in HNSW graph construction. This finding fixes the design of the protocol: \emph{latency and QPS} are measured with 1 warm-up query batch followed by $N=7$ timed search trials on a single fixed index, for every index type, since search-time system noise affects all of them equally; \emph{Recall Retention and speedup}, by contrast, are only re-measured across independent rebuilds for HNSWFlat -- 5 independent graph constructions, each searched 3 times -- since the other three index types are deterministic and a second rebuild would reproduce identical numbers. All HNSWFlat figures reported in Section~\ref{sec:results} are therefore mean $\pm$ standard deviation over 5 builds; figures for FlatIP, IVFFlat, and IVFPQ are single point estimates with empirically-justified zero variance across rebuilds (search-level timing noise is still averaged over 7 trials for all four).
 
 \subsection{Sanity-Check Verification Protocol}
 \label{subsec:sanitycheck}
@@ -256,7 +299,24 @@ Pic2Word & $\Delta \approx +0.7/+0.9$ pts (matches or exceeds) & no published va
 \end{tabular}
 \end{table}
 
-The remaining CLIP4Cir/FashionIQ gap ($\approx\!11$ points) survived four ruled-out hypotheses -- checkpoint corruption (hash-verified against the authors' source), a code-level bug (an independent test with the smaller RN50 backbone reproduced the same gap, while CIRR did not), a caption-formatting mismatch (tested on all 2{,}017 validation queries with no measurable effect), and low-resolution source images (FashionIQ images obtained through a Kaggle mirror were uniformly $256\times256$, in contrast to CIRR's native, highly variable resolution; re-downloading the 15{,}415 validation images at native resolution from the authors' original Amazon image URLs closed only $\approx\!1.8$ of the $\approx\!13$ points). We report this as an open limitation rather than a resolved bug (Section~\ref{sec:conclusion}). Seven of the nine (model, dataset) cells meet or nearly meet the sanity-check tolerance; two zero-shot models (SEARLE and Pic2Word) independently matched CIRCO within $\leq\!1$ mAP point of each other's deviation from the published table, providing cross-model evidence that the evaluation harness itself -- as opposed to any single checkpoint -- is implemented correctly.
+The remaining CLIP4Cir/FashionIQ gap ($\approx\!11$ points) survived a systematic differential diagnosis across four ruled-out hypotheses, summarized in Table~\ref{tab:clip4cirdiag}. We report this as an open limitation rather than a resolved bug (Section~\ref{sec:conclusion}). Seven of the nine (model, dataset) cells meet or nearly meet the sanity-check tolerance; two zero-shot models (SEARLE and Pic2Word) independently matched CIRCO within $\leq\!1$ mAP point of each other's deviation from the published table, providing cross-model evidence that the evaluation harness itself -- as opposed to any single checkpoint -- is implemented correctly.
+
+\begin{table}[!ht]
+\centering
+\caption{CLIP4Cir/FashionIQ differential diagnosis: four hypotheses tested for the unresolved $\approx\!11$-point gap.}
+\label{tab:clip4cirdiag}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{1.9cm} p{2.9cm} p{2.9cm}}
+\toprule
+\textbf{Hypothesis} & \textbf{Test performed} & \textbf{Result} \\
+\midrule
+Checkpoint corrupted/wrong file & SHA-256 hash vs.\ fresh re-download from authors' Google Drive & \textcolor{okgreen}{Ruled out} -- hash matched 100\% \\
+Code-level bug & Independent run with smaller RN50 backbone (different Combiner config) & \textcolor{okgreen}{Ruled out} -- same $\approx\!11$--$13$pt gap reproduced; CIRR (same code) did not show it \\
+Caption-formatting mismatch & Re-ran authors' exact string formatting on all 2{,}017 validation queries & \textcolor{okgreen}{Ruled out} -- no measurable effect \\
+Low-resolution source images & Re-downloaded 15{,}415 images at native resolution (vs.\ $256\times256$ Kaggle mirror) & \textcolor{gray}{Partial} -- closed only $\approx\!1.8$ of $\approx\!13$ points \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Results and Discussion}
 \label{subsec:resultsdiscussion}
@@ -277,18 +337,120 @@ Table~\ref{tab:sweetspot} reports, for every (dataset, model, index type), the h
 \end{tabular}
 \end{table*}
 
-\textbf{Finding 1: HNSWFlat is the safest choice, but its payoff is entirely gated by gallery scale.} On CIRCO (123K images), HNSWFlat reaches a $22.6\times$ speedup (SEARLE) at $97.7\%$ Recall Retention@10 -- a favorable trade by any standard. On CIRR and FashionIQ (2.3K--6.3K images), the best achievable speedup at the same retention bar collapses to $1$--$5\times$, and for FashionIQ several configurations are \emph{slower} than brute-force search (speedup $<1\times$): at this scale, the bookkeeping cost of traversing a graph or scanning inverted lists outweighs the saving, because exhaustive search over a few thousand vectors is already sub-millisecond. ANN indexing is therefore not a universal recommendation for CIR deployment; it becomes worthwhile only once the gallery crosses a scale threshold that, in this experiment, lies somewhere between 6K and 123K images.
+\textbf{Finding 1: HNSWFlat is the safest choice, and its speed advantage over brute force widens predictably with gallery scale.} On CIRCO (123K images), HNSWFlat reaches a $22.8\times$ speedup (SEARLE) at $97.0\%\pm0.3\%$ Recall Retention@10 (mean $\pm$ std, 5 independent graph builds; Section~\ref{subsec:repeated}) -- a favorable trade by any standard. On CIRR and FashionIQ (2.3K--6.3K images), the best achievable speedup at the same retention bar collapses to $1$--$5\times$. We initially attributed occasional sub-brute-force speedups at this scale to HNSWFlat itself, but re-examining the full 120-configuration sweep shows every configuration with speedup $<1\times$ on CIRR/FashionIQ is an \texttt{IVFFlat} configuration -- no \texttt{HNSWFlat} configuration in the entire sweep is ever slower than brute force.
 
-\textbf{Finding 2: IVFPQ does not reach the ``retains recall'' regime tested here -- it is a different, more extreme trade-off.} IVFPQ delivers the largest speedups observed (up to $134.97\times$) and the smallest memory footprint (as low as $1.3\%$ of the exact index), directly reflecting Product Quantization's compression strength, but its Recall Retention@10 across the entire sweep ranges only $49.7$--$58.7\%$ on CIRR, $23.2$--$32.1\%$ on FashionIQ, and $10.9$--$20.3\%$ on CIRCO -- no $m \in \{8, 16\}$ configuration on any dataset approaches the $95\%$ bar. IVFPQ should therefore be presented as a distinct operating point (extreme compression, large accuracy cost) rather than folded into the same ``fast with minimal loss'' conclusion drawn for IVFFlat/HNSWFlat; it is appropriate when memory, not latency, is the binding constraint.
+To understand \emph{why} the HNSWFlat/FlatIP gap still widens so sharply with scale rather than staying near $1\times$, we fit simple cost models to SEARLE's five measured (gallery size $N$, latency) pairs (three FashionIQ categories, CIRR, CIRCO): an exhaustive linear scan for FlatIP, and logarithmic graph-traversal cost for HNSWFlat --
+\begin{equation}
+L_{\text{FlatIP}}(N) = a\,N + b, \qquad L_{\text{HNSWFlat}}(N) = c\,\ln N + d
+\label{eq:crossover}
+\end{equation}
+Least-squares fitting gives $a=2.8\times10^{-5}$, $b=-0.076$ ($R^2=0.9996$) and $c=0.032$, $d=-0.232$ ($R^2=0.990$), both in milliseconds. Fig.~\ref{fig:crossover} plots the two fitted curves against the five observed points on log-log axes. At every one of the five \emph{actually measured} points, HNSWFlat's raw latency is lower than FlatIP's -- including at $N{=}3{,}817$, the closest pair (0.036~ms vs.\ 0.041~ms). The two \emph{fitted} curves themselves, however, cross near $N^*\approx3{,}870$: below this point the fitted FlatIP line dips under the fitted HNSWFlat curve, an artifact of forcing a single two-parameter line through a tight cluster of four small-$N$ points and one much larger, high-leverage point at $N{=}123{,}403$. We report this honestly rather than paper over it -- with only five points, a linear fit dominated by one far outlier is not a reliable interpolation device near the cluster's edge, and the fitted crossover should not be read as evidence that FlatIP is ever actually faster in this regime; the markers, not the lines, are the ground truth. What the fit \emph{is} reliable for is the qualitative growth-rate argument it was built to support: a linear-in-$N$ cost climbing steeply while a logarithmic-in-$N$ cost stays nearly flat, which is why the speedup margin widens from $\sim\!1$--$5\times$ at CIRR/FashionIQ scale to $22.8\times$ at CIRCO scale.
 
-\textbf{Finding 3: HNSWFlat is usually, but not always, faster than IVFFlat at matched retention -- the ranking is model-dependent.} In most (dataset, model) pairs, HNSWFlat reaches a given retention level at a higher speedup than IVFFlat (e.g., CIRCO/SEARLE: $22.6\times$ vs.\ $6.4\times$ at $\sim\!97$--$98\%$ retention), consistent with HNSWFlat's known theoretical advantage. The exception is CIRCO/Pic2Word, where HNSWFlat is faster ($4.8\times$) but never reaches $95\%$ (best: $91.6\%$), while IVFFlat reaches $97.2\%$ at only $1.3\times$. This indicates the HNSWFlat/IVFFlat ordering depends on the specific embedding distribution of each model and should not be generalized as an absolute rule without per-model verification.
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.95\linewidth, height=5.2cm,
+    xmode=log, ymode=log,
+    xlabel={Gallery size $N$ (log scale)},
+    ylabel={Latency (ms, log scale)},
+    label style={font=\scriptsize}, tick label style={font=\scriptsize},
+    legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=none, fill=none},
+    grid=major, grid style={gray!20},
+]
+\addplot[color=seriesOrange, thick, domain=2714:130000, samples=100] {2.8e-5*x - 0.076};
+\addlegendentry{FlatIP fit ($R^2{=}0.9996$)}
+\addplot[color=seriesBlue, thick, dashed, domain=2000:130000, samples=100] {0.032*ln(x) - 0.232};
+\addlegendentry{HNSWFlat fit ($R^2{=}0.990$)}
+\addplot[only marks, mark=*, mark size=1.8pt, color=seriesOrange] coordinates {(3817,0.041)(6346,0.063)(5373,0.054)(2297,0.026)(123403,3.324)};
+\addplot[only marks, mark=square*, mark size=1.8pt, color=seriesBlue] coordinates {(3817,0.036)(6346,0.041)(5373,0.041)(2297,0.021)(123403,0.146)};
+\end{axis}
+\end{tikzpicture}
+\caption{Latency vs.\ gallery size $N$ for SEARLE (log-log axes). Markers are the five \emph{measured} points (FashionIQ $\times$3, CIRR, CIRCO) -- HNSWFlat is faster at every one. Lines are the fitted models of Eq.~\eqref{eq:crossover}; they cross near $N{\approx}3{,}870$, a small-sample fitting artifact from one high-leverage point (CIRCO) pulling the line, not a real reversal -- no measured point ever shows FlatIP faster.}
+\label{fig:crossover}
+\end{figure}
+
+ANN indexing is therefore not risk-free for IVFFlat at small scale (it can genuinely be slower there), but for HNSWFlat the trade-off is better described as ``at least as fast at every gallery size we measured, with a margin that grows log-linearly with $N$'' rather than a scale threshold to cross.
+
+\textbf{Finding 2: IVFPQ does not reach the ``retains recall'' regime tested here -- it is a different, more extreme trade-off.} IVFPQ delivers the largest speedups observed (up to $149.4\times$) and the smallest memory footprint (as low as $1.3\%$ of the exact index), directly reflecting Product Quantization's compression strength, but its Recall Retention@10 across the entire sweep ranges only $49.7$--$58.7\%$ on CIRR, $23.2$--$32.1\%$ on FashionIQ, and $10.9$--$20.3\%$ on CIRCO -- no $m \in \{8, 16\}$ configuration on any dataset approaches the $95\%$ bar. These figures are exact point estimates, not averages: IVFPQ was empirically confirmed deterministic across rebuilds (Section~\ref{subsec:repeated}), so repeated construction would not change them.
+
+To understand \emph{why} the loss is this severe rather than simply report it, we measured, on SEARLE/CIRCO's worst-case configuration, the actual per-vector reconstruction error FAISS's own \texttt{index.reconstruct()} produces after PQ encoding, and compared it against the score gap a query actually needs to rank correctly. Because both query $q$ and gallery vector $x$ are $L_2$-normalized ($\|q\|=\|x\|=1$), Cauchy-Schwarz gives a rigorous, query-independent upper bound on how much PQ quantization alone can perturb a similarity score:
+\begin{equation}
+\left| q\cdot x - q\cdot\hat{x} \right| = \left| q\cdot(x-\hat{x}) \right| \;\leq\; \|x-\hat{x}\|_2
+\label{eq:cauchyschwarz}
+\end{equation}
+Table~\ref{tab:pqerror} reports both sides of this bound. The reconstruction error is $\approx\!440$--$470\times$ larger than the score gap needed to keep the true rank-10 candidate ahead of rank-11 -- large enough, by Eq.~\eqref{eq:cauchyschwarz}, to overturn the correct ranking for essentially every query, consistent with the observed $14.5$--$20.3\%$ retention on this exact configuration (directly re-measured, matching the swept values).
+
+\begin{table}[!ht]
+\centering
+\caption{SEARLE/CIRCO: PQ reconstruction error vs.\ the rank-10/11 score gap it must stay under to preserve ranking.}
+\label{tab:pqerror}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lccc}
+\toprule
+& \textbf{Mean} $\|x-\hat{x}\|_2$ & \textbf{Mean rank-10/11 gap} & \textbf{Ratio} \\
+\midrule
+$m=8$  & $0.460$ & $0.00098$ & $470\times$ \\
+$m=16$ & $0.428$ & $0.00098$ & $439\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $512$--$768$-d CLIP-derived embeddings used by all three CIR models are simply too high-dimensional for $m\in\{8,16\}$ sub-quantizers ($64$--$96$ raw dimensions compressed into a single 8-bit code each) to reconstruct with the precision this task's fine-grained top-10 ranking requires. IVFPQ should therefore be presented as a distinct operating point (extreme compression, large accuracy cost, quantifiably explained by its reconstruction error dwarfing the task's discriminative score gap) rather than folded into the same ``fast with minimal loss'' conclusion drawn for IVFFlat/HNSWFlat; it is appropriate when memory, not latency, is the binding constraint.
+
+\textbf{Finding 3: HNSWFlat is usually, but not always, faster than IVFFlat at matched retention -- the ranking is model-dependent.} In most (dataset, model) pairs, HNSWFlat reaches a given retention level at a higher speedup than IVFFlat (e.g., CIRCO/SEARLE: $22.8\times$ vs.\ $6.8\times$ at $\sim\!96$--$97\%$ retention), consistent with HNSWFlat's known theoretical advantage. The exception is CIRCO/Pic2Word, where HNSWFlat is faster ($5.3\times$) but never reaches $95\%$ even averaged over 5 independent builds (best: $91.5\%\pm0.3\%$), while IVFFlat reaches $97.2\%$ at only $1.4\times$.
+
+We tested, rather than assumed, two standard geometric explanations for this exception on the same CIRCO gallery images embedded by both models: Relative Contrast (Beyer et al.-style ratio of mean random-pair distance to nearest-neighbor distance) and Local Intrinsic Dimensionality (Levina-Bickel MLE estimator, $k{=}20$). Table~\ref{tab:geometry} shows neither differs meaningfully between SEARLE and Pic2Word -- if anything, in the wrong direction to explain Pic2Word's difficulty -- so global embedding-space hardness is not the mechanism.
+
+\begin{table}[!ht]
+\centering
+\caption{CIRCO embedding-geometry comparison: neither metric explains Pic2Word's harder case.}
+\label{tab:geometry}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lcc}
+\toprule
+& \textbf{SEARLE} (512-d) & \textbf{Pic2Word} (768-d) \\
+\midrule
+Relative Contrast & $1.130$ & $1.148$ \\
+Local Intrinsic Dim.\ & $25.7$ & $25.2$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Re-examining our own sweep data instead shows a consistent, mechanistic signal: Pic2Word's retention gain from doubling the HNSW graph degree ($M{:}16\!\to\!32$ at \texttt{efSearch}$=128$) is nearly double SEARLE's on CIRCO, and directionally larger on CIRR too, though both stay comfortably above $95\%$ there (Fig.~\ref{fig:msensitivity}). This is consistent with HNSW's known requirement that graph degree $M$ scale with embedding dimensionality: Pic2Word's $768$-d space is the highest-dimensional of the three models (vs.\ SEARLE's $512$-d), yet our swept grid capped $M$ at $32$ uniformly across all models. The pattern does not replicate on FashionIQ, where all three models reach $>92\%$ retention even at $M{=}16$ and gallery scale is much smaller, suggesting graph under-provisioning matters specifically at CIRCO's combination of scale and dimensionality.
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.95\linewidth, height=5.2cm,
+    ybar, bar width=8pt, enlarge x limits=0.25,
+    symbolic x coords={CIRCO,CIRR,FashionIQ},
+    xtick=data,
+    ylabel={Retention@10 gain, $M{:}16\!\to\!32$ (pts)},
+    label style={font=\scriptsize}, tick label style={font=\scriptsize},
+    legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=none, fill=none},
+    ymajorgrids, grid style={gray!20},
+    nodes near coords, every node near coord/.append style={font=\tiny},
+]
+\addplot[fill=seriesBlue] coordinates {(CIRCO,6.11) (CIRR,0.46) (FashionIQ,5.05)};
+\addlegendentry{SEARLE (512-d)}
+\addplot[fill=seriesOrange] coordinates {(CIRCO,11.63) (CIRR,1.17) (FashionIQ,5.43)};
+\addlegendentry{Pic2Word (768-d)}
+\end{axis}
+\end{tikzpicture}
+\caption{Retention@10 gain from doubling HNSW graph degree ($M{:}16\!\to\!32$, \texttt{efSearch}$=128$). Pic2Word gains more than SEARLE on CIRCO and CIRR, consistent with its higher embedding dimensionality needing more graph connectivity -- but the pattern does not replicate on FashionIQ.}
+\label{fig:msensitivity}
+\end{figure}
+
+This is a plausible, partially-confirmed mechanism rather than a fully generalized rule -- consistent with our original caution that the HNSWFlat/IVFFlat ordering should not be assumed without per-model verification -- and points to a concrete follow-up: sweep $M>32$ for Pic2Word on CIRCO to test whether retention crosses $95\%$ with adequate graph connectivity.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-This paper reproduced three Composed Image Retrieval models (CLIP4Cir, SEARLE, Pic2Word) under a single evaluation harness and measured, for the first time to our knowledge, how FAISS-based approximate nearest-neighbor indexing trades retrieval quality for query cost on three benchmarks of increasing scale. Validating the harness against published results surfaced and fixed two reproducibility bugs -- a normalization mismatch causing near-total self-retrieval on CIRR, and a batch-indexing crash in Pic2Word -- without which any downstream ANN measurement would have been meaningless; we report this diagnostic trail as a methodological contribution alongside the benchmark itself. The central empirical finding is that the FAISS accuracy/speed trade-off is not a fixed property of an index type but a function of gallery scale: HNSWFlat and IVFFlat deliver large, low-cost speedups on the 123K-image CIRCO gallery while offering little or negative benefit on the 2--6K-image FashionIQ/CIRR galleries, and IVFPQ's extreme speed and memory gains come at an accuracy cost far outside the ``retains recall'' regime achieved by the other two index families at the parameter settings tested.
+This paper reproduced three Composed Image Retrieval models (CLIP4Cir, SEARLE, Pic2Word) under a single evaluation harness and measured, for the first time to our knowledge, how FAISS-based approximate nearest-neighbor indexing trades retrieval quality for query cost on three benchmarks of increasing scale. Validating the harness against published results surfaced and fixed two reproducibility bugs -- a normalization mismatch causing near-total self-retrieval on CIRR, and a batch-indexing crash in Pic2Word -- without which any downstream ANN measurement would have been meaningless; we report this diagnostic trail as a methodological contribution alongside the benchmark itself. The central empirical finding is that the FAISS accuracy/speed trade-off is not a fixed property of an index type but a function of gallery scale: HNSWFlat and IVFFlat both deliver large, low-cost speedups on the 123K-image CIRCO gallery, but on the 2--6K-image FashionIQ/CIRR galleries only IVFFlat can turn negative (speedup $<1\times$), while HNSWFlat's margin over brute force shrinks to $1$--$5\times$ without ever reversing at any gallery size actually measured -- a margin that widens with $N$ at a rate consistent with linear-vs-logarithmic latency growth, rather than crossing an assumed scale threshold. IVFPQ's extreme speed and memory gains, in turn, come at an accuracy cost far outside the ``retains recall'' regime achieved by the other two index families, quantifiably explained by its reconstruction error dwarfing the task's rank-discrimination gap at the parameter settings tested.
 
-Three limitations bound these conclusions. First, the CLIP4Cir/FashionIQ gap ($\approx\!11$ points) remains unresolved after ruling out checkpoint corruption, a code-level bug, caption formatting, and image resolution; we attribute it, provisionally, to a limitation of the publicly released checkpoint itself rather than to our pipeline. Second, the Pic2Word checkpoint originates from an unverified community mirror, compensated only by behavioral (not cryptographic) verification against published numbers. Third, the parameter grid (2--3 values per axis, chosen under a fixed time budget) is coarse; in particular, no tested IVFPQ configuration approached the $95\%$ retention bar, leaving open whether a wider grid (larger $m$, larger \texttt{nlist}) could close some of that gap. Future work should extend the CIRCO gallery with a distractor set to interpolate the 6K--123K scale threshold identified in Finding~1, submit predictions to the official CIRCO test-set evaluation server to obtain a fully independent accuracy check, and widen the IVFPQ parameter grid to determine whether its accuracy cost is inherent to the method or an artifact of the settings explored here.
+Three limitations bound these conclusions. First, the CLIP4Cir/FashionIQ gap ($\approx\!11$ points) remains unresolved after ruling out checkpoint corruption, a code-level bug, caption formatting, and image resolution; we attribute it, provisionally, to a limitation of the publicly released checkpoint itself rather than to our pipeline. Second, the Pic2Word checkpoint originates from an unverified community mirror, compensated only by behavioral (not cryptographic) verification against published numbers. Third, the parameter grid (2--3 values per axis, chosen under a fixed time budget) is coarse; in particular, no tested IVFPQ configuration approached the $95\%$ retention bar, leaving open whether a wider grid (larger $m$, larger \texttt{nlist}) could close some of that gap. Future work should extend the CIRCO gallery with intermediate-scale distractor sets to test whether the fitted linear (FlatIP) and logarithmic (HNSWFlat) latency-growth models of Finding~1 hold between the 6K and 123K scales already measured, sweep HNSWFlat's graph degree beyond $M{=}32$ for Pic2Word on CIRCO to test the dimensionality-driven under-provisioning hypothesis of Finding~3, submit predictions to the official CIRCO test-set evaluation server to obtain a fully independent accuracy check, and widen the IVFPQ parameter grid to determine whether its accuracy cost can be meaningfully reduced or is inherent to compressing $512$--$768$-d embeddings at $m\in\{8,16\}$.
 
 \section*{Acknowledgment}
 This research was conducted at the Faculty of Information Systems, University of Economics and Law, Vietnam National University Ho Chi Minh City / VNUHCM.

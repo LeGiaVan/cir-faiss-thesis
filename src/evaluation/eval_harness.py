@@ -6,6 +6,14 @@ import faiss
 from typing import List, Dict, Union
 
 class FaissEvaluator:
+    """
+    Lưu ý về tính deterministic khi build index (verify bằng thực nghiệm - build lại 2 lần,
+    so kết quả search): FlatIP, IVFFlat, IVFPQ dùng seed k-means mặc định CỐ ĐỊNH của FAISS
+    -> build lại bao nhiêu lần cũng ra đúng 1 kết quả (Recall/Retention không cần đo lặp lại).
+    HNSWFlat gán "level" ngẫu nhiên khi xây đồ thị -> 2 lần build cho kết quả search khác nhau
+    (~0.5% khác biệt đo được) -> CHỈ HNSWFlat cần build lại nhiều lần độc lập để báo cáo
+    Recall/Retention dạng mean +/- std thay vì 1 con số đơn (xem run_eval_benchmark.py).
+    """
     def __init__(self, index_type: str, dimension: int, **kwargs):
         """
         Khởi tạo hệ thống FAISS Benchmark.
@@ -62,34 +70,69 @@ class FaissEvaluator:
         print(f"Adding {gallery_features.shape[0]} vectors to {self.index_type}...")
         self.index.add(gallery_features)
         
-    def search(self, query_features: np.ndarray, top_k: int = 50, batch_size: int = 256):
-        assert query_features.dtype == np.float32
-        
-        # Tách riêng CPU thread limit để tránh đa luồng ngầm gây nhiễu QPS
-        # faiss.omp_set_num_threads(1) có thể dùng nếu đo single-thread latency
-        
-        # 1. Warm-up phase
+    def _warmup(self, query_features: np.ndarray, top_k: int):
         warmup_queries = query_features[:min(100, len(query_features))]
         _ = self.index.search(warmup_queries, top_k)
-        
+
+    def _search_once(self, query_features: np.ndarray, top_k: int, batch_size: int):
+        """Một lần search đã bấm giờ (KHÔNG warm-up). Dùng nội bộ bởi search() và search_repeated()."""
         all_distances = []
         all_indices = []
-        
-        # 2. Benchmark phase (Isolated timer)
+
         start_time = time.perf_counter()
-        
         for i in range(0, len(query_features), batch_size):
             batch_q = query_features[i : i + batch_size]
             distances, indices = self.index.search(batch_q, top_k)
             all_distances.append(distances)
             all_indices.append(indices)
-            
         end_time = time.perf_counter()
-        
+
         latency_ms = (end_time - start_time) / len(query_features) * 1000
         qps = len(query_features) / (end_time - start_time)
-        
+
         return np.vstack(all_distances), np.vstack(all_indices), latency_ms, qps
+
+    def search(self, query_features: np.ndarray, top_k: int = 50, batch_size: int = 256):
+        """Search 1 lần (có warm-up trước). Giữ lại để tương thích ngược - các script mới nên
+        dùng search_repeated() để có thống kê latency/QPS đáng tin cậy hơn (xem docstring đó)."""
+        assert query_features.dtype == np.float32
+        self._warmup(query_features, top_k)
+        return self._search_once(query_features, top_k, batch_size)
+
+    def search_repeated(self, query_features: np.ndarray, top_k: int = 50, batch_size: int = 256,
+                         n_trials: int = 7):
+        """
+        Chạy search N_TRIALS lần trên CÙNG 1 index đã build, để đo Latency/QPS ổn định thay vì
+        tin vào 1 lần đo (nhiễu hệ thống: OS scheduling, cache, tiến trình nền...).
+
+        Vì search() trên 1 index CỐ ĐỊNH là deterministic (không có random trong lúc tìm kiếm,
+        chỉ có thể có random lúc XÂY index - xem docstring class), distances/indices trả về giống
+        hệt nhau ở mọi trial; hàm này chỉ lấy indices của trial cuối cùng để tính metric, và tổng
+        hợp thống kê (mean/median/std) cho latency_ms và qps qua toàn bộ N_TRIALS lần.
+        """
+        assert query_features.dtype == np.float32
+        self._warmup(query_features, top_k)
+
+        latencies = []
+        qpss = []
+        distances = indices = None
+        for _ in range(n_trials):
+            distances, indices, latency_ms, qps = self._search_once(query_features, top_k, batch_size)
+            latencies.append(latency_ms)
+            qpss.append(qps)
+
+        latencies = np.array(latencies)
+        qpss = np.array(qpss)
+        timing_stats = {
+            "latency_ms_mean": float(np.mean(latencies)),
+            "latency_ms_std": float(np.std(latencies)),
+            "latency_ms_median": float(np.median(latencies)),
+            "qps_mean": float(np.mean(qpss)),
+            "qps_std": float(np.std(qpss)),
+            "qps_median": float(np.median(qpss)),
+            "n_trials": n_trials,
+        }
+        return distances, indices, timing_stats
 
     def get_memory_bytes(self) -> int:
         """

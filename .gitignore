@@ -1,6 +1,42 @@
-data/
-checkpoints/
+# Python
 __pycache__/
-.env
+*.pyc
+*.pyo
 .venv/
 venv/
+*.egg-info/
+.env
+
+# Model checkpoints (large, third-party licensed - see README for download links)
+checkpoints/
+
+# Extracted embeddings / query features / raw datasets / official annotations
+# (large and/or redistributed from dataset owners - see README for download instructions)
+data/embeddings/
+data/queries/
+data/raw/
+data/annotations/
+
+# Screenshots of tables from third-party papers (copyrighted, cited by reference instead)
+data/third_party_results/
+
+# NOTE: data/results/ is intentionally NOT ignored - it holds our own generated
+# benchmark CSVs/JSON/artifact, which back the paper's claims and are small.
+
+# NOTE: third_party/{CLIP4Cir,SEARLE,composed_image_retrieval} are git submodules
+# (see .gitmodules) - already tracked as submodule references, not ignored here.
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# LaTeX build artifacts
+thesis_report/*.aux
+thesis_report/*.bbl
+thesis_report/*.blg
+thesis_report/*.log
+thesis_report/*.out
+thesis_report/*.synctex.gz
+thesis_report/*.pdf
