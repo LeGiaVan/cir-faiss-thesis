@@ -1,3 +1,7 @@
+# CIR + FAISS: Balancing Accuracy and Query Cost in Composed Image Retrieval
+
+Khóa luận tốt nghiệp — tái hiện 3 mô hình Composed Image Retrieval (CLIP4Cir, SEARLE, Pic2Word) dưới một evaluation harness thống nhất, và đo đánh đổi độ chính xác/tốc độ khi thay brute-force search bằng FAISS ANN index (IVFFlat, HNSWFlat, IVFPQ) trên 3 benchmark (FashionIQ, CIRR, CIRCO).
+
 ---
 
 ## 🚀 1. Tổng quan Kiến trúc
