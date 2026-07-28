@@ -1,9 +1,3 @@
-# Khóa luận Tốt nghiệp: Hệ thống Đánh giá Benchmark Truy xuất Ảnh Đa phương thức (CIR) sử dụng FAISS
-
-Đây là mã nguồn chính thức cho đề tài nghiên cứu về **Composed Image Retrieval (CIR)** kết hợp với hệ thống Tìm kiếm Vector tỉ lệ lớn **FAISS**.
-
-Mục tiêu cốt lõi của repository này là xây dựng một **Hệ thống đo lường (Benchmarking Pipeline)** tự động, khép kín và an toàn, nhằm đánh giá hiệu năng (Recall/mAP) và tốc độ (Latency/QPS) của 3 mô hình SOTA trên 3 bộ dữ liệu CIR phổ biến nhất hiện nay.
-
 ---
 
 ## 🚀 1. Tổng quan Kiến trúc
