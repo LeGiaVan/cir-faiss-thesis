@@ -231,7 +231,7 @@ IndexIVFPQ & $\texttt{nlist} = \sqrt{N}$ (fixed), $m \in \{8, 16\}$ sub-quantize
 \end{tabular}
 \end{table}
 
-This grid yields 120 configurations across 14 valid (model, dataset) combinations (CLIP4Cir is excluded from CIRCO; see Section~\ref{subsec:datasets}). Memory footprint is measured with \texttt{faiss.serialize\_index()}, which captures the true on-disk size of the full index structure -- including the HNSW graph and IVF inverted lists -- rather than a naive $4dN$-byte estimate.
+This grid yields 120 configurations across 14 valid (model, dataset) combinations (CLIP4Cir is excluded from CIRCO; see Section~\ref{subsec:datasets}). Memory footprint is measured with \texttt{faiss.serialize\_index()}, which captures the true on-disk size of the full index structure -- including the HNSW graph and IVF inverted lists -- rather than a naive $4dN$-byte estimate. Table~\ref{tab:sweetspot} (Section~\ref{subsec:resultsdiscussion}) reports only the best configuration per (dataset, model, index); the full 120-row raw results, an interactive trade-off visualization, and all source code are available at \url{https://github.com/LeGiaVan/cir-faiss-thesis}.\footnote{Model checkpoints and raw dataset images are not redistributed in the repository for size and licensing reasons; download instructions and original sources are documented in the repository's README.}
 
 \subsection{Recall Retention Metric}
 \label{subsec:retention}
