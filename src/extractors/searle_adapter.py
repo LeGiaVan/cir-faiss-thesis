@@ -22,23 +22,27 @@ from encode_with_pseudo_tokens import encode_with_pseudo_tokens
 
 class SearleAdapter(BaseAdapter):
     def __init__(self, device: str = "cuda" if torch.cuda.is_available() else "cpu"):
-        super().__init__(model_name="searle_rn50x4", device=device)
+        super().__init__(model_name="searle_vitb32", device=device)
         self.phi = None
         self.clip_model = None
 
     def load_model(self):
         """
-        Tải mô hình SEARLE và CLIP (RN50x4) thông qua torch.hub
+        Tải mô hình SEARLE và CLIP (ViT-B/32) thông qua torch.hub
         """
-        print(f"Loading SEARLE model and CLIP RN50x4 from torch.hub on {self.device}...")
+        print(f"Loading SEARLE model and CLIP ViT-B/32 on {self.device}...")
         
-        # Phi is the textual inversion network, clip_model is the pre-trained CLIP RN50x4
-        self.phi, self.clip_model = torch.hub.load(
+        # Phi is the textual inversion network
+        self.phi, _ = torch.hub.load(
             repo_or_dir='miccunifi/SEARLE', 
             model='searle', 
+            backbone='ViT-B/32',
             source='github',
             force_reload=False
         )
+        
+        # Tải mô hình CLIP tiêu chuẩn
+        self.clip_model, self.preprocess = clip.load("ViT-B/32", device=self.device)
         
         self.phi = self.phi.to(self.device)
         self.phi.eval()
@@ -46,11 +50,7 @@ class SearleAdapter(BaseAdapter):
         
         self.clip_model = self.clip_model.float().eval().requires_grad_(False)
         self.clip_model = self.clip_model.to(self.device)
-        
-        # SEARLE uses RN50x4 which requires TargetPad preprocess or standard CLIP preprocess.
-        # We will use the standard CLIP preprocess returned by clip.load
-        _, self.preprocess = clip.load("RN50x4", device=self.device, jit=False)
-        
+
         print("[OK] SEARLE Adapter loaded successfully!")
 
     def extract_image_features(self, image_list: List[Image.Image]) -> np.ndarray:

@@ -1,93 +1,133 @@
+# CIR + FAISS: Balancing Accuracy and Query Cost in Composed Image Retrieval
+
+Undergraduate thesis project — reproducing three Composed Image Retrieval models (CLIP4Cir, SEARLE, Pic2Word) under a single evaluation harness, and measuring the accuracy/speed trade-off when exact brute-force search is replaced by FAISS ANN indexes (IVFFlat, HNSWFlat, IVFPQ) on three benchmarks (FashionIQ, CIRR, CIRCO).
+
 ---
 
-## 🚀 1. Tổng quan Kiến trúc
+## 🚀 1. Architecture Overview
 
-Hệ thống được thiết kế theo chuẩn MLOps/Data Engineering, tách biệt hoàn toàn giữa quá trình Trích xuất (Feature Extraction) và quá trình Đánh giá (Search Evaluation).
+The system follows an MLOps/data-engineering style pipeline, fully separating the Feature Extraction stage from the Search Evaluation stage.
 
-### A. Các Mô hình Đánh giá (Model Adapters)
-Chúng tôi sử dụng chung một Base Interface (`BaseAdapter`) để đồng bộ hóa đầu ra của 3 kiến trúc CIR khác biệt:
-1. **CLIP4Cir**: Sử dụng mạng kết hợp (Combiner Network) trên nền CLIP RN50x4 (640-dim).
-2. **SEARLE**: Sử dụng kỹ thuật Textual Inversion với mạng $\Phi$, chèn pseudo-token `$` vào truy vấn văn bản (512-dim).
-3. **Pic2Word**: Sử dụng mô hình ViT-L/14 kết hợp MLP `IM2TEXT`, chèn token `*` vào truy vấn (768-dim).
+### A. Evaluated Models (Model Adapters)
+A common `BaseAdapter` interface is used to unify the output of three different CIR architectures:
+1. **CLIP4Cir**: a Combiner Network on top of CLIP RN50x4 (640-dim).
+2. **SEARLE**: Textual Inversion via a network $\Phi$, inserting a pseudo-token `$` into the text query (512-dim).
+3. **Pic2Word**: ViT-L/14 combined with an `IM2TEXT` MLP, inserting a token `*` into the query (768-dim).
 
-*Lưu ý: Tất cả các vector đầu ra đều được chuẩn hóa L2 (`L2 Normalization`) để đảm bảo phép đo Inner Product của FAISS tương đương tuyệt đối với Cosine Similarity.*
+*Note: all output vectors are $L_2$-normalized so that FAISS's Inner Product metric is exactly equivalent to Cosine Similarity.*
 
 ### B. FAISS Benchmarking Harness
-Hệ thống thử nghiệm 4 thuật toán Index để tìm ra điểm cân bằng giữa Tốc độ / Bộ nhớ / Độ chính xác:
-- `IndexFlatIP`: Vét cạn (Brute-force) - Baseline chính xác 100%.
-- `IndexIVFFlat`: Phân mảnh không gian Voronoi (Inverted File).
-- `IndexHNSWFlat`: Duyệt đồ thị tốc độ siêu tốc độ (Hierarchical Navigable Small World).
-- `IndexIVFPQ`: Lượng tử hóa vector thành mã Byte (Product Quantization) - Giảm hàng chục lần dung lượng RAM.
+Four index types are swept to find the Speed / Memory / Accuracy trade-off:
+- `IndexFlatIP`: exhaustive brute-force search — 100%-accurate baseline.
+- `IndexIVFFlat`: Voronoi-cell space partitioning (Inverted File).
+- `IndexHNSWFlat`: graph-based search (Hierarchical Navigable Small World).
+- `IndexIVFPQ`: Product Quantization — compresses vectors into byte codes, cutting memory by an order of magnitude.
 
-### C. Cơ chế An toàn (Guardrails)
-Do giới hạn phần cứng và khối lượng dữ liệu khổng lồ (hơn 200,000 ảnh), pipeline được trang bị:
-- `gc.collect()` và `torch.cuda.empty_cache()` để chống rò rỉ VRAM (OOM Leak).
-- Script cảnh vệ `check_data_integrity.py` ngăn chặn lỗi NaN/Inf và sai lệch chuẩn hóa L2 trước khi chạy FAISS.
+### C. Guardrails
+Given hardware constraints and the sheer data volume (200,000+ images), the pipeline includes:
+- `gc.collect()` and `torch.cuda.empty_cache()` to prevent VRAM leaks (OOM).
+- A `check_data_integrity.py` guard script that catches NaN/Inf values and L2-normalization mismatches before any FAISS run.
+
+### D. Key Contributions
+- **Recall Retention@K**: a custom metric measuring the direct top-K overlap between an approximate (ANN) index and `IndexFlatIP` (exact search), isolating index-induced error from the model's own retrieval quality — independent of ground truth.
+- **Adaptive `nlist`**: `nlist ≈ √N`–`4√N` scaled to each dataset's gallery size, grounded quantitatively in FAISS's official guideline (`4√N`–`16√N`) and its minimum-training-data constraint (`N ≥ 30·nlist` points per centroid).
+- **Repeated measurement for objectivity**: empirically verified that `FlatIP`/`IVFFlat`/`IVFPQ` are fully deterministic across rebuilds (fixed k-means seed), while only `HNSWFlat` has genuine construction randomness (random level assignment) → Latency/QPS is measured over 7 repeated trials for every index type; HNSWFlat is additionally rebuilt independently 5 times to report Recall/Retention as mean ± std.
+- **Reproducibility diagnostic trail**: found and fixed two serious bugs (an incorrect L2-normalization in CLIP4Cir causing 98.4% self-retrieval; a batch-indexing crash in Pic2Word) — see `SANITY_CHECK_REPORT.md` for the full investigation.
+
+The full scientific report (IEEE format) is at [`thesis_report/main.tex`](thesis_report/main.tex); an interactive Recall-Retention-vs-Speedup visualization across all 120 configurations is at `data/results/faiss_tradeoff.html` (open directly in a browser).
 
 ---
 
-## 📂 2. Cấu trúc Thư mục
+## 📂 2. Directory Structure
 
 ```text
 cir_faiss_thesis/
 ├── data/
-│   ├── raw/                 # Chứa ảnh gốc và JSON annotations (fashionIQ, circo, cirr)
-│   ├── embeddings/          # Chứa vector file (.npy) của Gallery sau khi trích xuất
-│   ├── queries/             # Chứa vector file (.pkl) của Queries kèm Ground Truth
-│   └── results/             # Chứa báo cáo Benchmark dạng CSV
-├── src/
-│   ├── data/
-│   │   ├── generic_dataloader.py       # Dataloader lấy ảnh Gallery
-│   │   └── generic_query_dataloader.py # Dataloader lấy Truy vấn (Ảnh mồi + Text)
-│   ├── extractors/
-│   │   ├── base_adapter.py             # Interface gốc
-│   │   ├── clip4cir_adapter.py         # Adapter CLIP4Cir
-│   │   ├── searle_adapter.py           # Adapter SEARLE
-│   │   └── pic2word_adapter.py         # Adapter Pic2Word
-│   ├── evaluation/
-│   │   └── eval_harness.py             # Hệ thống đo lường Metric & FAISS
-│   └── scripts/
-│       ├── extract_features.py         # Chạy trích xuất Gallery
-│       ├── extract_queries.py          # Chạy trích xuất Queries
-│       ├── run_eval_benchmark.py       # Chạy đo lường FAISS
-│       └── check_data_integrity.py     # Kiểm duyệt dữ liệu Vector
-├── third_party/             # Source code gốc của CLIP4Cir, SEARLE, Pic2Word
-├── checkpoints/             # Nơi lưu Weights/Models (.pt) tải từ internet
-├── run_pipeline.bat         # Kịch bản TỰ ĐỘNG HÓA chạy toàn bộ Pipeline 1-click
-└── setup_env.bat            # Khởi tạo môi trường ảo Python
+│   ├── raw/                 # [NOT committed] Source images + JSON annotations (fashionIQ, circo, cirr) - download yourself, see Step 1
+│   ├── embeddings/          # [NOT committed] Gallery vectors (.npy) after extraction - generated by running the pipeline
+│   ├── queries/              # [NOT committed] Query vectors (.pkl) with ground truth - generated by running the pipeline
+│   └── results/             # [Committed] Benchmark CSV/JSON reports + HTML artifact - the thesis's main results
+├── src/                      # [Committed] All thesis code
+├── thesis_report/            # [Committed] IEEE-format LaTeX scientific report
+├── third_party/              # Git submodule - original CLIP4Cir/SEARLE/Pic2Word source code, see Step 1.1
+├── checkpoints/              # [NOT committed] Model weights (.pt) - download yourself, see Step 1
+├── run_pipeline.bat           # One-click script that runs the entire pipeline
+└── setup_env.bat              # Sets up the Python virtual environment
 ```
+
+Directories marked **[NOT committed]** are excluded from git (see `.gitignore`) because they are too large (checkpoints ~11GB, embeddings ~1GB) and/or contain third-party-licensed data or code (original datasets, the three models' original source code, screenshots of tables from papers) that should not be redistributed. Follow Step 1 below to set these up yourself.
 
 ---
 
-## 🛠️ 3. Hướng dẫn Chạy (How to run)
+## 🛠️ 3. How to Run
 
-### Bước 1: Chuẩn bị Dữ liệu & Môi trường
-1. Cài đặt Python 3.9+ và chạy `setup_env.bat` để tạo môi trường ảo `.venv`.
-2. Tải các bộ Weights vào thư mục `checkpoints/`.
-3. Tải toàn bộ Image và Captions của 3 Datasets đặt vào `data/raw/` theo cấu trúc:
+### Step 1: Prepare Data & Environment
+
+**1.1. Fetch the 3 models' original source code (already configured as git submodules in `.gitmodules`):**
+```bash
+git submodule update --init --recursive
+```
+(If you just cloned this repo, use `git clone --recurse-submodules <url>` to pull the submodules in one step.)
+
+> ⚠️ **Required patch after fetching the Pic2Word submodule** (`third_party/composed_image_retrieval`): the original author's `model/clip.py` uses the token names `<start_of_text>`/`<end_of_text>`, which don't match the current CLIP tokenizer vocabulary (`<|startoftext|>`/`<|endoftext|>`), causing a tokenization error. Update those two lines in `model/clip.py`'s `tokenize` function before running Pic2Word — see the related comment in `src/extractors/pic2word_adapter.py`, or open an issue if you need the exact patch.
+
+**1.2. Download the fine-tuned checkpoints into `checkpoints/`** (full provenance/SHA256 details in `CHECKPOINT_PROVENANCE.md`):
+- **SEARLE** (highest-trust source — official GitHub Release):
+  `https://github.com/miccunifi/SEARLE/releases/download/weights/SEARLE_ViT-B32.pt`
+- **CLIP4Cir** (official Google Drive, SHA256-verified): see the Google Drive folder ID `1ny2hhzP8HZBnXhjvDEni8P8G4_inCNTv` linked from `ABaldrati/CLIP4Cir`'s official README, or run `python src/extractors/download_checkpoints.py`.
+- **Pic2Word** (⚠️ the original Google Drive link is dead — an open, unresolved GitHub Issue #30 on the original repo; a community mirror is used instead, indirectly verified via behavioral verification — see `CHECKPOINT_PROVENANCE.md` §3):
+  `https://huggingface.co/flashingtt/pic2word/resolve/main/pic2word_model.pt`
+
+**1.3. Set up the environment:** Python 3.9+, run `setup_env.bat` to create a `venv` and install `requirements.txt`.
+
+**1.4. Download the images + captions for all 3 datasets into `data/raw/`**, structured as:
    - `data/raw/fashionIQ/images`, `data/raw/fashionIQ/captions`
    - `data/raw/circo/unlabeled2017`, `data/raw/circo/annotations`
    - `data/raw/cirr/captions`, `data/raw/cirr/image_splits`
 
-### Bước 2: Chạy Tự động Toàn bộ Benchmark
-Chỉ cần mở Terminal / Command Prompt và chạy:
+   (Native-resolution FashionIQ images: see `src/scripts/download_fashioniq_highres.py`; CIRCO/CIRR annotations: see `download_circo_annotations.py`, `download_fashioniq_annotations.py` at the project root.)
+
+### Step 2: Run the Full Benchmark Automatically
+Just open a terminal / command prompt and run:
 ```cmd
 .\run_pipeline.bat
 ```
 
-Script này sẽ tự động:
-1. Duyệt qua 3 Mô hình $\times$ 3 Bộ dữ liệu.
-2. Trích xuất Gallery và kiểm định tính toàn vẹn (Data Integrity).
-3. Trích xuất Queries và Ground Truths.
-4. Đẩy vào `eval_harness.py` test qua FlatIP, IVFFlat, HNSW, IVFPQ.
-5. Xuất ra file Excel CSV báo cáo tại thư mục `data/results/`.
+This script automatically:
+1. Iterates over 3 models $\times$ 3 datasets.
+2. Extracts gallery features and runs data-integrity checks.
+3. Extracts queries and ground truths.
+4. Feeds everything into `eval_harness.py`, testing FlatIP, IVFFlat, HNSW, and IVFPQ.
+5. Exports CSV reports to `data/results/`.
 
 ---
 
-## 📈 4. Các Chỉ số Đánh giá (Metrics)
+## 📈 4. Evaluation Metrics
 
-Trong thư mục `data/results/`, bạn sẽ thu được các phân tích sâu sắc:
-- **Tốc độ:** `Latency (ms/query)` và `QPS` (Queries Per Second) được đo lường cô lập nghiêm ngặt bằng đồng hồ của CPU.
-- **Recall@K (FashionIQ, CIRR):** Đo lường tỷ lệ ảnh mục tiêu nằm trong top K kết quả trả về.
-- **Subset Recall@K (CIRR):** Đo lường khả năng phân biệt hình ảnh vi tế bằng cách tìm trong 6 bức hình bị nhiễu.
-- **mAP@K (CIRCO):** Tính toán độ chính xác trung bình (Mean Average Precision) đối với bộ dữ liệu CIRCO vì có nhiều Ground Truth hợp lệ cho cùng một truy vấn.
+In `data/results/`, you'll find:
+- **Speed:** `Latency (ms/query)` and `QPS` (Queries Per Second), measured in strict isolation via CPU wall-clock timing.
+- **Recall@K (FashionIQ, CIRR):** the fraction of queries whose target image appears in the top-K results.
+- **Subset Recall@K (CIRR):** fine-grained discrimination ability, measured by searching within a curated set of 6 similar distractor images.
+- **mAP@K (CIRCO):** Mean Average Precision, used because CIRCO queries can have multiple valid ground-truth targets.
+
+---
+
+## 🔍 5. Key Findings
+
+Full details and reasoning are in `thesis_report/main.tex`. Three main findings (after repeated measurement and mechanistic investigation, not just raw numbers):
+
+1. **HNSWFlat is faster than brute force at every scale tested** (2.3K–123K images); its margin widens from ~1–5× to 22.8× as the gallery grows — explained by differing cost growth rates (FlatIP linear in $N$, HNSWFlat roughly logarithmic in $N$).
+2. **IVFPQ is an extreme, different trade-off**: compressing 512–768-dim vectors into just 8–16 sub-quantizers produces a reconstruction error ~440–470× larger than the score gap needed to rank the true top-10 correctly (proven via the Cauchy-Schwarz inequality) — retention is only 10.9–58.7% depending on the dataset.
+3. **The HNSWFlat-vs-IVFFlat ordering is model-dependent**: the CIRCO/Pic2Word exception shows signs of being tied to the HNSW graph degree $M$ not scaling with embedding dimensionality (768-d, the highest of the three models) — consistent evidence on CIRCO and CIRR, but the pattern does not replicate on FashionIQ.
+
+See the full interactive chart across all 120 configurations at `data/results/faiss_tradeoff.html`.
+
+---
+
+## 📄 6. License & Citation
+
+Code in this repository (`src/`, `thesis_report/`) is released under the MIT License — see `LICENSE`.
+
+Submodules under `third_party/` (see Step 1.1) retain their respective original authors' licenses (CLIP4Cir, SEARLE, Pic2Word) — they are not covered by the MIT license above.
+
+If you build on this thesis's code or results, please cite the report in `thesis_report/main.tex` along with the three original works: CLIP4Cir (Baldrati et al., 2023), SEARLE (Baldrati et al., 2023), Pic2Word (Saito et al., 2023) — full entries in `thesis_report/references.bib`.

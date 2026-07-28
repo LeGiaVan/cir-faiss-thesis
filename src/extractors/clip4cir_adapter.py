@@ -32,8 +32,12 @@ class CLIP4CirAdapter(BaseAdapter):
         :param clip_checkpoint_path: Đường dẫn tới file weights của CLIP (vd: cirr_clip_RN50x4_fullft.pt)
         :param combiner_checkpoint_path: Đường dẫn tới file weights của Combiner (vd: cirr_comb_RN50x4_fullft.pt)
         """
+        from data_utils import targetpad_transform
+        
         print(f"Loading CLIP model {self.clip_model_name}...")
-        self.model, self.preprocess = clip.load(self.clip_model_name, device=self.device, jit=False)
+        self.model, _ = clip.load(self.clip_model_name, device=self.device, jit=False)
+        # Bắt buộc sử dụng TargetPad vì mô hình CLIP4Cir được fine-tune với phép biến đổi này
+        self.preprocess = targetpad_transform(target_ratio=1.25, dim=self.model.visual.input_resolution)
         self.model.eval()
 
         if clip_checkpoint_path:
@@ -114,11 +118,17 @@ class CLIP4CirAdapter(BaseAdapter):
         with torch.no_grad():
             image_features = self.model.encode_image(processed_images)
             text_features = self.model.encode_text(text_tokens)
-            
-            # L2 Normalize trước khi đưa vào Combiner
-            image_features = F.normalize(image_features, dim=-1)
-            text_features = F.normalize(text_features, dim=-1)
-            
+
+            # QUAN TRỌNG: chỉ L2-normalize phía ẢNH, giữ NGUYÊN (không normalize) phía TEXT.
+            # Đây đúng theo convention của validate.py gốc (CLIP4Cir): reference_image_features
+            # được lấy lại từ gallery index đã normalize, nhưng text_features = encode_text(...)
+            # được đưa thẳng vào combine_features KHÔNG qua F.normalize. Combiner được train với
+            # quy ước này (combiner_train.py cũng không normalize input), nên nếu normalize cả 2
+            # phía như trước đây sẽ làm sai tỉ lệ nhánh residual dynamic_scalar*text + (1-ds)*image
+            # mà Combiner đã học, khiến query gần như luôn trùng ảnh tham chiếu (self-retrieval).
+            image_features = F.normalize(image_features.float(), dim=-1)
+            text_features = text_features.float()
+
             # 2. Dùng Combiner network để dung hợp 2 đặc trưng
             query_features = self.combiner.combine_features(image_features, text_features)
             

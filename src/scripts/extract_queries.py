@@ -27,29 +27,44 @@ def query_collate_fn(batch):
     group_members = [item[3] for item in batch]
     return images, captions, target_ids, group_members
 
-def get_adapter(model_name: str):
+def get_adapter(model_name: str, dataset: str):
     if model_name == "clip4cir":
         adapter = CLIP4CirAdapter(clip_model_name="RN50x4")
-        base_ckpt_dir = "checkpoints/CLIP4Cir/FashionIQ/RN50x4_fullft"
-        clip_ckpt = os.path.join(base_ckpt_dir, "fiq_clip_RN50x4_fullft.pt")
-        comb_ckpt = os.path.join(base_ckpt_dir, "fiq_comb_RN50x4_fullft.pt")
+        # Checkpoint CLIP4Cir PHẢI khớp đúng dataset đang trích xuất - đây là bug đã sửa
+        # (trước đây hard-code luôn checkpoint FashionIQ kể cả khi chạy trên CIRR/CIRCO).
+        if dataset == "fashioniq":
+            base_ckpt_dir = "checkpoints/CLIP4Cir/FashionIQ/RN50x4_fullft"
+            clip_ckpt = os.path.join(base_ckpt_dir, "fiq_clip_RN50x4_fullft.pt")
+            comb_ckpt = os.path.join(base_ckpt_dir, "fiq_comb_RN50x4_fullft.pt")
+        elif dataset == "cirr":
+            base_ckpt_dir = "checkpoints/CLIP4Cir/CIRR/RN50x4_fullft"
+            clip_ckpt = os.path.join(base_ckpt_dir, "cirr_clip_RN50x4_fullft.pt")
+            comb_ckpt = os.path.join(base_ckpt_dir, "cirr_comb_RN50x4_fullft.pt")
+        elif dataset == "circo":
+            raise ValueError(
+                "CLIP4Cir không có checkpoint chính chủ train trên CIRCO. Theo quyết định học thuật "
+                "trong AUDIT_AND_REVISED_PLAN.md, KHÔNG chạy CLIP4Cir trên CIRCO trong bảng so sánh chính."
+            )
+        else:
+            raise ValueError(f"Unknown dataset for clip4cir: {dataset}")
+
         if os.path.exists(clip_ckpt) and os.path.exists(comb_ckpt):
             adapter.load_model(clip_checkpoint_path=clip_ckpt, combiner_checkpoint_path=comb_ckpt)
         else:
-            print("[CẢNH BÁO] Không tìm thấy checkpoints CLIP4Cir, sẽ dùng pre-trained trắng.")
+            print(f"[CẢNH BÁO] Không tìm thấy checkpoints CLIP4Cir cho {dataset} ({clip_ckpt}), sẽ dùng pre-trained trắng.")
             adapter.load_model()
         return adapter, 640
-        
+
     elif model_name == "searle":
         adapter = SearleAdapter()
         adapter.load_model()
         return adapter, 512
-        
+
     elif model_name == "pic2word":
         adapter = Pic2WordAdapter()
         adapter.load_model()
         return adapter, 768
-        
+
     else:
         raise ValueError(f"Unknown model: {model_name}")
 
@@ -57,25 +72,38 @@ def main():
     parser = argparse.ArgumentParser(description="Trích xuất Query hàng loạt")
     parser.add_argument("--model", type=str, required=True, choices=["clip4cir", "searle", "pic2word"], help="Tên mô hình")
     parser.add_argument("--dataset", type=str, required=True, choices=["fashioniq", "circo", "cirr"], help="Tập dữ liệu")
+    parser.add_argument("--category", type=str, default=None, choices=["dress", "shirt", "toptee"],
+                         help="BẮT BUỘC khi --dataset fashioniq. Phải khớp category của gallery đã trích xuất.")
     parser.add_argument("--batch-size", type=int, default=64, help="Kích thước batch")
     parser.add_argument("--limit", type=int, default=None, help="Giới hạn số lượng truy vấn")
-    
+
     args = parser.parse_args()
-    
-    print(f"=== PIPELINE TRÍCH XUẤT QUERY: {args.model.upper()} trên {args.dataset.upper()} ===")
-    
-    adapter, expected_dim = get_adapter(args.model)
-        
-    dataset = GenericQueryDataset(dataset_name=args.dataset, split="val", limit=args.limit)
+
+    if args.dataset == "fashioniq" and args.category is None:
+        parser.error("--category là bắt buộc khi --dataset fashioniq (dress|shirt|toptee).")
+
+    tag = f"{args.dataset}_{args.category}" if args.category else args.dataset
+    print(f"=== PIPELINE TRÍCH XUẤT QUERY: {args.model.upper()} trên {tag.upper()} ===")
+    out_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "queries", args.model)
+    suffix = f"_{args.limit}" if args.limit else ""
+    out_file = os.path.join(out_dir, f"{tag}_queries{suffix}.pkl")
+
+    if os.path.exists(out_file):
+        print(f"[SKIP] Truy vấn cho {args.model} trên {tag} đã tồn tại ở {out_file}. Bỏ qua trích xuất!")
+        sys.exit(0)
+
+    adapter, expected_dim = get_adapter(args.model, args.dataset)
+
+    dataset = GenericQueryDataset(dataset_name=args.dataset, split="val", limit=args.limit, category=args.category)
     if len(dataset) == 0:
-        print(f"[LỖI] Không tìm thấy câu truy vấn nào cho {args.dataset}")
+        print(f"[LỖI] Không tìm thấy câu truy vấn nào cho {tag}")
         sys.exit(1)
 
     dataloader = DataLoader(
         dataset, 
         batch_size=args.batch_size, 
         shuffle=False, 
-        num_workers=2 if sys.platform != 'win32' else 0,
+        num_workers=4,
         pin_memory=True if torch.cuda.is_available() else False,
         collate_fn=query_collate_fn
     )
@@ -108,20 +136,17 @@ def main():
     
     out_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "queries", args.model)
     os.makedirs(out_dir, exist_ok=True)
-    
-    suffix = f"_{args.limit}" if args.limit else ""
-    out_path = os.path.join(out_dir, f"{args.dataset}_queries{suffix}.pkl")
-    
+
     export_data = {
         "query_features": final_features,
         "target_ids": all_target_ids,
         "group_members": all_group_members
     }
     
-    with open(out_path, 'wb') as f:
+    with open(out_file, 'wb') as f:
         pickle.dump(export_data, f)
-    
-    print(f"\n[THÀNH CÔNG] File Pickle lưu tại: {out_path}")
+
+    print(f"\n[THÀNH CÔNG] File Pickle lưu tại: {out_file}")
 
 if __name__ == "__main__":
     main()
