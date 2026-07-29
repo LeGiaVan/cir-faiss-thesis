@@ -32,7 +32,7 @@ Given hardware constraints and the sheer data volume (200,000+ images), the pipe
 - **Recall Retention@K**: a custom metric measuring the direct top-K overlap between an approximate (ANN) index and `IndexFlatIP` (exact search), isolating index-induced error from the model's own retrieval quality — independent of ground truth.
 - **Adaptive `nlist`**: `nlist ≈ √N`–`4√N` scaled to each dataset's gallery size, grounded quantitatively in FAISS's official guideline (`4√N`–`16√N`) and its minimum-training-data constraint (`N ≥ 30·nlist` points per centroid).
 - **Repeated measurement for objectivity**: empirically verified that `FlatIP`/`IVFFlat`/`IVFPQ` are fully deterministic across rebuilds (fixed k-means seed), while only `HNSWFlat` has genuine construction randomness (random level assignment) → Latency/QPS is measured over 7 repeated trials for every index type; HNSWFlat is additionally rebuilt independently 5 times to report Recall/Retention as mean ± std.
-- **Reproducibility diagnostic trail**: found and fixed two serious bugs (an incorrect L2-normalization in CLIP4Cir causing 98.4% self-retrieval; a batch-indexing crash in Pic2Word) — see `SANITY_CHECK_REPORT.md` for the full investigation.
+- **Reproducibility diagnostic trail**: found and fixed two serious bugs (an incorrect L2-normalization in CLIP4Cir causing 98.4% self-retrieval; a batch-indexing crash in Pic2Word) — see `thesis_report/main.tex`, Section IV-B ("Sanity-Check: Validation Against Published Results") for the full investigation.
 
 The full scientific report (IEEE format) is at [`thesis_report/main.tex`](thesis_report/main.tex); an interactive Recall-Retention-vs-Speedup visualization across all 120 configurations is at `data/results/faiss_tradeoff.html` (open directly in a browser).
 
@@ -71,11 +71,11 @@ git submodule update --init --recursive
 
 > ⚠️ **Required patch after fetching the Pic2Word submodule** (`third_party/composed_image_retrieval`): the original author's `model/clip.py` uses the token names `<start_of_text>`/`<end_of_text>`, which don't match the current CLIP tokenizer vocabulary (`<|startoftext|>`/`<|endoftext|>`), causing a tokenization error. Update those two lines in `model/clip.py`'s `tokenize` function before running Pic2Word — see the related comment in `src/extractors/pic2word_adapter.py`, or open an issue if you need the exact patch.
 
-**1.2. Download the fine-tuned checkpoints into `checkpoints/`** (full provenance/SHA256 details in `CHECKPOINT_PROVENANCE.md`):
+**1.2. Download the fine-tuned checkpoints into `checkpoints/`** (full provenance/SHA256 details in `thesis_report/main.tex`, Section IV-A, Table III):
 - **SEARLE** (highest-trust source — official GitHub Release):
   `https://github.com/miccunifi/SEARLE/releases/download/weights/SEARLE_ViT-B32.pt`
 - **CLIP4Cir** (official Google Drive, SHA256-verified): see the Google Drive folder ID `1ny2hhzP8HZBnXhjvDEni8P8G4_inCNTv` linked from `ABaldrati/CLIP4Cir`'s official README, or run `python src/extractors/download_checkpoints.py`.
-- **Pic2Word** (⚠️ the original Google Drive link is dead — an open, unresolved GitHub Issue #30 on the original repo; a community mirror is used instead, indirectly verified via behavioral verification — see `CHECKPOINT_PROVENANCE.md` §3):
+- **Pic2Word** (⚠️ the original Google Drive link is dead — an open, unresolved GitHub Issue #30 on the original repo; a community mirror is used instead, indirectly verified via behavioral verification — see `thesis_report/main.tex`, Section IV-A footnote):
   `https://huggingface.co/flashingtt/pic2word/resolve/main/pic2word_model.pt`
 
 **1.3. Set up the environment:** Python 3.9+, run `setup_env.bat` to create a `venv` and install `requirements.txt`.
