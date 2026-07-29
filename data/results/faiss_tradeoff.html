@@ -114,24 +114,24 @@ details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px
 
 <div class="wrap">
   <h1>FAISS Trade-off: Recall Retention vs Speedup</h1>
-  <p class="lede">Moi diem la 1 cau hinh FAISS (nlist/nprobe/M/efSearch/m). Truc X = toc do so voi brute-force (FlatIP, log scale). Truc Y = Recall Retention@10 (% trung khop voi top-10 cua FlatIP - khong qua ground truth). Duong dut net = nguong 95% tham chieu. Sao xam = FlatIP (goc, speedup=1x, retention=100%). <b>Do lap lai:</b> Latency/QPS = trung binh 7 lan tim kiem tren moi index; rieng HNSWFlat con duoc xay dung lai doc lap 5 lan (moi lan 3 lan tim kiem) vi day la loai index duy nhat co tinh ngau nhien khi xay dung (random level assignment) - cac diem HNSWFlat co vach sai so doc the hien do lech chuan qua 5 lan xay do. IVFFlat/IVFPQ/FlatIP da duoc kiem chung thuc nghiem la deterministic (seed k-means co dinh) nen chi can xay 1 lan.</p>
+  <p class="lede">Each point is one FAISS configuration (nlist/nprobe/M/efSearch/m). X axis = speedup over brute force (FlatIP, log scale). Y axis = Recall Retention@10 (% overlap with FlatIP's own top-10, independent of ground truth). Dashed line = the 95% reference threshold. Gray star = FlatIP (the exact baseline, speedup&nbsp;=&nbsp;1&times;, retention&nbsp;=&nbsp;100%). <b>Repeated measurement:</b> Latency/QPS are averaged over 7 search trials per index; HNSWFlat is additionally rebuilt independently 5 times (3 search trials each), since it's the only index type with genuine construction randomness (random level assignment) &mdash; its points show a vertical error bar for the resulting std across builds. IVFFlat/IVFPQ/FlatIP were empirically verified deterministic across rebuilds (fixed k-means seed), so a single build suffices for them.</p>
 
   <div class="legend">
     <span class="item"><span class="swatch" style="background:var(--series-1)"></span> IVFFlat (n=1, deterministic)</span>
     <span class="item"><span class="swatch" style="background:var(--series-2)"></span> HNSWFlat (n=5 builds, mean&plusmn;std)</span>
     <span class="item"><span class="swatch" style="background:var(--series-3)"></span> IVFPQ (n=1, deterministic)</span>
-    <span class="item"><span class="star">&#9733;</span> FlatIP (brute-force, goc)</span>
+    <span class="item"><span class="star">&#9733;</span> FlatIP (exact brute-force baseline)</span>
   </div>
 
   <div class="grid" id="grid"></div>
-  <p class="note">Truc X dung chung thang log giua moi o de so sanh truc tiep muc do tang toc giua cac dataset quy mo khac nhau (CIRR/FashionIQ ~2-6K anh vs CIRCO 123K anh).</p>
+  <p class="note">The X axis shares the same log scale across every panel, so speedup gains can be compared directly across datasets of very different scale (CIRR/FashionIQ ~2&ndash;6K images vs.\ CIRCO 123K images).</p>
 
   <section>
-    <h2>Diem ngot (sweet spot) moi (model, dataset, index)</h2>
-    <p class="sub">Cau hinh dat Speedup cao nhat trong so cac cau hinh co Recall Retention@10 >= 95%. Neu khong cau hinh nao dat nguong, lay retention cao nhat do duoc (danh dau canh bao).</p>
+    <h2>Sweet spot per (model, dataset, index)</h2>
+    <p class="sub">The highest-speedup configuration among those reaching Recall Retention@10 &ge; 95%. If no configuration reaches the threshold, the best retention actually observed is shown instead (flagged).</p>
     <div class="tablewrap">
       <table id="sweetTable">
-        <thead><tr><th>Model</th><th>Dataset</th><th>Index</th><th>Tham so</th><th>Speedup</th><th>Retention@10</th><th>n</th><th>Ti le bo nho</th><th>Trang thai</th></tr></thead>
+        <thead><tr><th>Model</th><th>Dataset</th><th>Index</th><th>Params</th><th>Speedup</th><th>Retention@10</th><th>n</th><th>Memory ratio</th><th>Status</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -139,10 +139,10 @@ details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px
 
   <section>
     <details>
-      <summary>Xem toan bo du lieu tho (120 dong)</summary>
+      <summary>View all raw data (120 rows)</summary>
       <div class="tablewrap" style="margin-top:10px;">
         <table id="fullTable">
-          <thead><tr><th>Model</th><th>Dataset</th><th>Index</th><th>Tham so</th><th>n</th><th>QPS</th><th>Speedup</th><th>Memory (MB)</th><th>Ti le bo nho</th><th>Retention@10</th><th>Retention@50</th><th>Metric chinh</th><th>Gia tri</th><th>% so FlatIP</th></tr></thead>
+          <thead><tr><th>Model</th><th>Dataset</th><th>Index</th><th>Params</th><th>n</th><th>QPS</th><th>Speedup</th><th>Memory (MB)</th><th>Memory ratio</th><th>Retention@10</th><th>Retention@50</th><th>Main metric</th><th>Value</th><th>% of FlatIP</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -179,7 +179,7 @@ function buildCell(model, dataset) {
   if (rows.length === 0) {
     const div = document.createElement("div");
     div.className = "cell empty";
-    div.textContent = "(khong chay)";
+    div.textContent = "(not run)";
     return div;
   }
   const div = document.createElement("div");
@@ -253,12 +253,12 @@ function attachTooltip() {
       ? Math.round(d.qps).toLocaleString() + ' &plusmn; ' + Math.round(d.qps_std).toLocaleString()
       : Math.round(d.qps).toLocaleString();
     tip.innerHTML = '<b>' + MODEL_LABEL[d.model] + ' / ' + DATASET_LABEL[d.dataset] + ' / ' + d.index + '</b>' +
-      'Tham so: ' + d.params + '<br>' +
+      'Params: ' + d.params + '<br>' +
       'Speedup: ' + d.speedup.toFixed(2) + 'x (QPS ' + qpsStr + ')<br>' +
       'Retention@10: ' + retStr + '<br>' +
       'Retention@50: ' + d.retention_at50.toFixed(1) + '%<br>' +
-      'Bo nho: ' + d.memory_mb.toFixed(2) + ' MB (' + (d.memory_ratio*100).toFixed(1) + '% so FlatIP)<br>' +
-      d.main_metric_name + ': ' + d.main_metric_value.toFixed(2) + ' (' + (d.main_metric_vs_flatip_pct ? d.main_metric_vs_flatip_pct.toFixed(1) : "?") + '% so FlatIP)';
+      'Memory: ' + d.memory_mb.toFixed(2) + ' MB (' + (d.memory_ratio*100).toFixed(1) + '% of FlatIP)<br>' +
+      d.main_metric_name + ': ' + d.main_metric_value.toFixed(2) + ' (' + (d.main_metric_vs_flatip_pct ? d.main_metric_vs_flatip_pct.toFixed(1) : "?") + '% of FlatIP)';
     tip.style.display = "block";
     tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 260) + "px";
     tip.style.top = Math.min(e.clientY + 14, window.innerHeight - 140) + "px";
@@ -278,7 +278,7 @@ function renderSweetTable() {
       '<td>' + r.params + '</td><td>' + r.speedup.toFixed(1) + 'x</td><td>' + retStr + '</td>' +
       '<td>' + nRuns + '</td>' +
       '<td>' + (r.memory_ratio*100).toFixed(1) + '%</td>' +
-      '<td class="' + (ok ? 'status-ok' : 'status-warn') + '">' + (ok ? 'Dat >=95%' : 'Chua dat (cao nhat do duoc)') + '</td>';
+      '<td class="' + (ok ? 'status-ok' : 'status-warn') + '">' + (ok ? 'Reaches &ge;95%' : 'Below threshold (best observed)') + '</td>';
     tbody.appendChild(tr);
   });
 }
