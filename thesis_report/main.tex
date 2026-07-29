@@ -30,6 +30,7 @@
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
 
 \definecolor{okgreen}{RGB}{20,120,60}
 \definecolor{phase1bg}{RGB}{235,242,252}
@@ -422,24 +423,33 @@ Re-examining our own sweep data instead shows a consistent, mechanistic signal: 
 \begin{figure}[!ht]
 \centering
 \begin{tikzpicture}
-\begin{axis}[
-    width=0.95\linewidth, height=5.2cm,
-    ybar, bar width=8pt, enlarge x limits=0.25,
-    symbolic x coords={CIRCO,CIRR,FashionIQ},
-    xtick=data,
-    ylabel={Retention@10 gain, $M{:}16\!\to\!32$ (pts)},
+\begin{groupplot}[
+    group style={group size=3 by 1, horizontal sep=0.35cm},
+    width=0.36\linewidth, height=4.6cm,
+    ybar, bar width=8pt, enlarge x limits=0.6,
+    symbolic x coords={G}, xtick=\empty,
     label style={font=\scriptsize}, tick label style={font=\scriptsize},
-    legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=none, fill=none},
     ymajorgrids, grid style={gray!20},
     nodes near coords, every node near coord/.append style={font=\tiny},
+    title style={font=\scriptsize},
 ]
-\addplot[fill=seriesBlue] coordinates {(CIRCO,6.11) (CIRR,0.46) (FashionIQ,5.05)};
+\nextgroupplot[title={CIRCO}, ymin=0, ymax=13.5, ylabel={Retention@10 gain (pts)}, ylabel style={font=\scriptsize},
+    legend style={at={(0.03,0.97)}, anchor=north west, draw=none, fill=none, font=\tiny, /tikz/every even column/.append style={column sep=2pt}}]
+\addplot[fill=seriesBlue] coordinates {(G,6.11)};
 \addlegendentry{SEARLE (512-d)}
-\addplot[fill=seriesOrange] coordinates {(CIRCO,11.63) (CIRR,1.17) (FashionIQ,5.43)};
+\addplot[fill=seriesOrange] coordinates {(G,11.63)};
 \addlegendentry{Pic2Word (768-d)}
-\end{axis}
+
+\nextgroupplot[title={CIRR}, ymin=0, ymax=1.5, yticklabel style={font=\scriptsize}]
+\addplot[fill=seriesBlue] coordinates {(G,0.46)};
+\addplot[fill=seriesOrange] coordinates {(G,1.17)};
+
+\nextgroupplot[title={FashionIQ}, ymin=0, ymax=6.5]
+\addplot[fill=seriesBlue] coordinates {(G,5.05)};
+\addplot[fill=seriesOrange] coordinates {(G,5.43)};
+\end{groupplot}
 \end{tikzpicture}
-\caption{Retention@10 gain from doubling HNSW graph degree ($M{:}16\!\to\!32$, \texttt{efSearch}$=128$). Pic2Word gains more than SEARLE on CIRCO and CIRR, consistent with its higher embedding dimensionality needing more graph connectivity -- but the pattern does not replicate on FashionIQ.}
+\caption{Retention@10 gain from doubling HNSW graph degree ($M{:}16\!\to\!32$, \texttt{efSearch}$=128$), one panel per dataset with its own $y$-axis -- CIRCO and FashionIQ's gains (5--12 pts) would otherwise dwarf CIRR's (under 1.2 pts) on a shared axis. Pic2Word gains more than SEARLE on CIRCO and CIRR, consistent with its higher embedding dimensionality needing more graph connectivity -- but the pattern does not replicate on FashionIQ.}
 \label{fig:msensitivity}
 \end{figure}
 
