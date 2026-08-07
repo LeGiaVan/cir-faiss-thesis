@@ -119,14 +119,12 @@ class CLIP4CirAdapter(BaseAdapter):
             image_features = self.model.encode_image(processed_images)
             text_features = self.model.encode_text(text_tokens)
 
-            # QUAN TRỌNG: chỉ L2-normalize phía ẢNH, giữ NGUYÊN (không normalize) phía TEXT.
-            # Đây đúng theo convention của validate.py gốc (CLIP4Cir): reference_image_features
-            # được lấy lại từ gallery index đã normalize, nhưng text_features = encode_text(...)
-            # được đưa thẳng vào combine_features KHÔNG qua F.normalize. Combiner được train với
-            # quy ước này (combiner_train.py cũng không normalize input), nên nếu normalize cả 2
-            # phía như trước đây sẽ làm sai tỉ lệ nhánh residual dynamic_scalar*text + (1-ds)*image
-            # mà Combiner đã học, khiến query gần như luôn trùng ảnh tham chiếu (self-retrieval).
-            image_features = F.normalize(image_features.float(), dim=-1)
+            # QUAN TRỌNG: Mạng Combiner của CLIP4Cir được huấn luyện và đánh giá trên 
+            # vector thô (unnormalized) của cả ẢNH và TEXT (xem combiner_train.py và validate.py).
+            # Việc normalize image_features ở đây sẽ phá hỏng độ lớn (magnitude) gốc 
+            # khiến tỷ lệ cổng residual bên trong Combiner bị sai lệch nghiêm trọng.
+            # (Hàm combine_features bên trong Combiner sẽ tự động L2-normalize đầu ra cuối cùng)
+            image_features = image_features.float()
             text_features = text_features.float()
 
             # 2. Dùng Combiner network để dung hợp 2 đặc trưng
