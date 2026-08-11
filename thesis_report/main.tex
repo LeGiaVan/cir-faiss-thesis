@@ -54,7 +54,7 @@
 \makeatother
 \begin{document}
 
-\title{Balancing Accuracy and Query Cost in Composed Image Retrieval: A FAISS-Based Approximate Nearest Neighbor Benchmark}
+\title{When Does Approximate Search Preserve Composed Image Retrieval Quality? A Scale-Aware FAISS Benchmark}
 
 \author{
 \IEEEauthorblockN{Gia-Van Le}
@@ -94,48 +94,18 @@ phucnq@uel.edu.vn\\
 \maketitle
 
 \begin{abstract}
-Composed Image Retrieval (CIR) systems answer queries formed by a reference image and a free-text modifier. Recent state-of-the-art models -- CLIP4Cir, SEARLE, and Pic2Word -- report Recall@K and mAP@K under exhaustive, exact (brute-force) nearest-neighbor search, an assumption that breaks down once the image gallery grows beyond what a single query can scan in real time. This paper studies what happens when exact search is replaced by Approximate Nearest Neighbor (ANN) indexing from the FAISS library (\texttt{IndexIVFFlat}, \texttt{IndexHNSWFlat}, \texttt{IndexIVFPQ}) across three CIR models and three benchmarks of increasing gallery scale (FashionIQ, 3.8K--6.3K images; CIRR, 2.3K images; CIRCO, 123K images). We first reproduce the published validation-set results, uncovering and fixing two significant reproducibility bugs -- a feature-normalization mismatch that caused 98.4\% of CIRR queries to retrieve their own reference image, and a batch-indexing bug that crashed Pic2Word query encoding entirely -- before any ANN experiment could be considered valid. We then adopt the standard ANN recall metric and adapt it as \emph{Recall Retention} for CIR evaluation, measuring an ANN index's neighbor-set overlap with exact search directly, decoupling indexing error from a model's inherent retrieval quality, and sweep 120 index configurations with gallery-size-adaptive clustering parameters. The results show that the accuracy/speed trade-off is strongly scale-dependent: HNSWFlat reaches a $22.8\times$ speedup at $97.0\%\pm0.3\%$ Recall Retention@10 (mean $\pm$ std over 5 independently rebuilt indices) on the 123K-image CIRCO gallery, shrinking to sub-$5\times$ (never below $1\times$ at any of the five gallery sizes actually measured) on the 2--6K-image FashionIQ and CIRR galleries, while IVFFlat can turn genuinely counter-productive (speedup $<1\times$) at that same small scale; IVFPQ, meanwhile, trades up to $149.4\times$ speedup and a $98.7\%$ memory reduction for Recall Retention as low as $10.9\%$ (best case across the swept grid: $58.7\%$), which we trace to reconstruction error roughly two orders of magnitude larger than the score gap needed for correct top-10 ranking. All latency figures and HNSWFlat accuracy figures are averaged over repeated trials rather than single runs, to guard against measurement noise. These findings indicate that ANN indexing is not a uniformly beneficial substitute for exact search in CIR, but a scale- and index-type-dependent decision.
+Composed Image Retrieval (CIR) systems answer queries formed by a reference image and a free-text modifier. Current state-of-the-art models, including CLIP4Cir, SEARLE, and Pic2Word, report retrieval accuracy based entirely on exhaustive (brute-force) search. While this exact search is feasible for small laboratory datasets, it becomes increasingly impractical in real-world applications with massive image galleries, where scanning every image challenges real-time latency requirements. To address this gap, this paper observes what happens when exact search is replaced by Approximate Nearest Neighbor (ANN) indexing from the FAISS library (IVFFlat, HNSWFlat, IVFPQ) across three CIR models and three benchmarks of increasing gallery scale. We first reproduce the published validation-set results, uncovering and fixing significant reproducibility bugs (such as feature-normalization mismatches and batch-indexing errors) before any ANN experiment could be considered valid. We then adopt the standard ANN recall metric and adapt it as \emph{Recall Retention} for CIR evaluation, measuring an ANN index's neighbor-set overlap with exact search directly, decoupling indexing error from a model's inherent retrieval quality, and sweep various index configurations with gallery-size-adaptive clustering parameters. Observations from the benchmark show that the relationship between accuracy and speed is strongly scale-dependent: HNSWFlat demonstrates significant speedups with minimal accuracy drop on large galleries, but its advantage shrinks on smaller datasets, while IVFFlat can occasionally be slower than brute-force search at small scales; IVFPQ, meanwhile, exhibits extreme speedups and memory reduction alongside severe accuracy degradation, which we trace to reconstruction error vastly outscaling the score gap needed for correct ranking. All latency and accuracy figures are averaged over repeated trials to guard against measurement noise. These findings highlight that the effectiveness of ANN indexing in CIR is not uniform, but a scale- and index-type-dependent observation.
 \end{abstract}
 
 \begin{IEEEkeywords}
 Composed Image Retrieval, Approximate Nearest Neighbor Search, FAISS, Recall Retention, CLIP, Reproducibility
 \end{IEEEkeywords}
 
-\begin{figure}[!ht]
-    \centering
-    \begin{tikzpicture}[
-        box/.style={draw, rounded corners, text width=3.55cm, minimum height=1.05cm,
-                    align=center, font=\scriptsize, inner sep=5pt, fill=phase1bg},
-        resbox/.style={box, fill=phase2bg},
-        phaselabel/.style={font=\scriptsize\bfseries\itshape, align=center},
-        arr/.style={-{Stealth[length=2.3mm, width=1.8mm]}, thick},
-        node distance=6mm and 8mm
-    ]
-
-        \node[box] (gal) {Gallery images};
-        \node[box, right=of gal] (ref) {Reference image + text modifier};
-
-        \node[phaselabel, above=4mm of gal] (p1lab) {Phase 1: gallery indexing\\(computed once)};
-        \node[phaselabel, above=4mm of ref] (p2lab) {Phase 2: query \& search\\(every request)};
-
-        \node[box, below=of gal] (adp1) {Adapter\\\footnotesize CLIP4Cir / SEARLE / Pic2Word};
-        \node[box, below=of adp1] (emb) {Gallery embeddings\\\footnotesize $d$-dim, $L_2$-normalized};
-        \node[box, below=of emb] (idx) {Build FAISS index\\\footnotesize FlatIP / IVFFlat / HNSWFlat / IVFPQ};
-
-        \node[box, below=of ref] (adp2) {Adapter query encoder};
-        \node[box, below=of adp2] (qv) {Query vector\\\footnotesize $d$-dim, $L_2$-normalized};
-        \node[resbox, below=of qv] (res) {FAISS search\\\footnotesize $\to$ Top-$K$ retrieved images};
-
-        \draw[arr] (gal) -- (adp1);
-        \draw[arr] (adp1) -- (emb);
-        \draw[arr] (emb) -- (idx);
-        \draw[arr] (ref) -- (adp2);
-        \draw[arr] (adp2) -- (qv);
-        \draw[arr] (qv) -- (res);
-        \draw[arr] (idx) -- (res);
-    \end{tikzpicture}
-    \caption{The two-phase CIR + FAISS evaluation pipeline. The gallery index (Phase 1) is built once and reused for every subsequent query (Phase 2). All three CIR models are wrapped by a common \texttt{BaseAdapter} interface that emits $L_2$-normalized $d$-dimensional vectors, allowing a single FAISS evaluation harness to be reused across models.}
-    \label{fig:pipeline}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{images/fig1.png}
+\caption{The two-phase Composed Image Retrieval evaluation pipeline used in this study. Phase 1 indexes the gallery once. Phase 2 executes composed queries against the index. In an exact search setup, the index is simply an exhaustive list and Phase 2 computes every cosine similarity. In an ANN setup, Phase 1 clusters the vectors and Phase 2 routes queries only to nearby clusters, trading recall for query speed.}
+\label{fig:pipeline}
 \end{figure}
 
 \section{Introduction}
@@ -145,14 +115,14 @@ Composed Image Retrieval (CIR) is the task of retrieving an image from a gallery
 
 All three papers evaluate retrieval quality by computing the cosine similarity between the query vector and \emph{every} gallery vector -- an exhaustive, $O(N)$ brute-force search. On the galleries used for evaluation (a few thousand images for FashionIQ and CIRR), this is inexpensive: our own brute-force measurements average well under a millisecond per query. On CIRCO, whose gallery already contains 123,403 images, brute-force search already costs on the order of 1--3~ms per query in our measurements (Section~\ref{sec:results}) -- and a production catalog with millions of listings would push this well past what a real-time service can afford. The standard industrial remedy is Approximate Nearest Neighbor (ANN) search, implemented in libraries such as FAISS~\cite{johnson2019faiss}, which trades a controlled amount of accuracy for sub-linear query cost. Yet none of the three CIR papers above -- nor, to our knowledge, any published CIR work -- reports what happens to retrieval quality once exact search is replaced by an ANN index. The trade-off is assumed, not measured.
 
-This gap motivates the following research question: \emph{does replacing exact search with FAISS-based approximate nearest-neighbor indexing preserve Composed Image Retrieval quality while reducing query cost, and how does this trade-off depend on gallery scale and on the CIR model family (supervised vs.\ zero-shot)?}
+This gap motivates the following research question: \emph{does replacing exact search with FAISS-based approximate nearest-neighbor indexing preserve Composed Image Retrieval quality while reducing query cost, and how do these behaviors depend on gallery scale and on the CIR model family (supervised vs.\ zero-shot)?}
 
 Our contributions are as follows:
 \begin{itemize}
-    \item We build a single reproducible evaluation harness around a common \texttt{BaseAdapter} interface (Fig.~\ref{fig:pipeline}) that wraps CLIP4Cir, SEARLE, and Pic2Word, each evaluated under its dataset-specific protocol (per-category indexing for FashionIQ, subset masking for CIRR, multi-ground-truth mAP for CIRCO).
-    \item In the course of validating this harness against the published validation-set numbers, we uncover and fix two reproducibility bugs that would otherwise have invalidated every downstream ANN experiment: a query-feature normalization mismatch that caused 98.4\% of CLIP4Cir/CIRR queries to retrieve their own reference image instead of the target, and a batch-indexing bug that crashed Pic2Word query encoding outright. We report this diagnostic process as a methodological contribution in its own right.
-    \item We adopt the standard ANN recall metric~\cite{aumuller2017annbenchmarks} and adapt it as \emph{Recall Retention} for CIR evaluation. This metric measures the neighbor-set overlap between an ANN index and exact search directly, isolating the system-level indexing error from the CIR model's inherent prediction error -- a critical decoupling that raw Recall@K cannot provide.
-    \item We sweep 120 FAISS index configurations across 14 (model, dataset) combinations with a gallery-size-adaptive parameter grid, and show that the resulting accuracy/speed/memory trade-off depends strongly on gallery scale and on the index family, yielding concrete deployment guidance rather than a single blanket recommendation.
+    \item We build a single reproducible evaluation harness around a common \texttt{BaseAdapter} interface (Fig.~\ref{fig:pipeline}) that wraps CLIP4Cir, SEARLE, and Pic2Word, each evaluated under its dataset-specific protocol.
+    \item In the course of validating this harness against the published validation-set numbers, we uncover and fix reproducibility bugs that would otherwise have invalidated every downstream ANN experiment, reporting this diagnostic process as a methodological contribution.
+    \item We adopt the standard ANN recall metric~\cite{aumuller2017annbenchmarks} and adapt it as \emph{Recall Retention} for CIR evaluation. This metric measures the neighbor-set overlap between an ANN index and exact search directly, isolating the system-level indexing error from the CIR model's inherent prediction error, which is a critical decoupling that raw Recall@K cannot provide.
+    \item We sweep various FAISS index configurations across multiple (model, dataset) combinations with a gallery-size-adaptive parameter grid, and observe that the resulting accuracy, speed, and memory behaviors depend strongly on gallery scale and on the index family, yielding concrete deployment observations rather than a single blanket recommendation.
 \end{itemize}
 
 The remainder of this paper is organized as follows. Section~\ref{sec:relatedwork} reviews CIR models and ANN search algorithms. Section~\ref{sec:methodology} describes the evaluation harness, the per-dataset protocol, and the Recall Retention metric. Section~\ref{sec:results} reports the reproducibility validation, the sweep results, and discusses the three main findings. Section~\ref{sec:conclusion} concludes.
@@ -195,7 +165,6 @@ All three CIR models, despite unrelated training procedures, reduce at inference
 Each benchmark defines a different notion of ``the gallery'' and a different metric, and the three protocols cannot be mixed without invalidating the comparison to published numbers (Table~\ref{tab:protocol}).
 
 \begin{table}[!ht]
-\centering
 \caption{Per-dataset gallery construction and evaluation metric.}
 \label{tab:protocol}
 \renewcommand{\arraystretch}{1.2}
@@ -218,7 +187,6 @@ Critically, FashionIQ and CIRR galleries must be restricted to their official va
 Table~\ref{tab:sweep} lists the index types and parameter grid swept for every (model, dataset) combination. A first implementation used a fixed \texttt{nlist} across all datasets; this triggered FAISS's own ``too few points per centroid'' warning on the smaller galleries (CIRR, FashionIQ) and produced artificially collapsed IVFFlat/IVFPQ recall as a result. FAISS's official guidance~\cite{johnson2019faiss,faisswiki2024guidelines} recommends $\texttt{nlist} \in [4\sqrt{N}, 16\sqrt{N}]$ together with a training-data floor of roughly $30 \times \texttt{nlist}$ vectors per index -- i.e., $N \gtrsim 30\,\texttt{nlist}$ for stable $k$-means centroids. Applying the guideline's own lower bound, $\texttt{nlist} = 4\sqrt{N}$, to our two smaller-scale benchmarks violates this floor: for CIRR ($N{=}2{,}297$) it requires $N \geq 5{,}751$ training vectors while only $2{,}297$ exist, and the shortfall is similar for every FashionIQ category ($N{=}3{,}817$--$6{,}346$, requiring $7{,}414$--$9{,}559$). Only on CIRCO ($N{=}123{,}403$) does $4\sqrt{N}=1{,}405$ comfortably clear its own floor ($42{,}155 \leq 123{,}403$). We therefore extend the swept grid one step below the official range, to $\texttt{nlist}_{\text{small}} \approx \sqrt{N}$ -- which satisfies the $30\times$ floor on every benchmark tested, including CIRR and FashionIQ -- while retaining $\texttt{nlist}_{\text{large}} \approx 4\sqrt{N}$, the official range's own lower bound, for IVFFlat; IVFPQ uses $\texttt{nlist}_{\text{small}}$ throughout, since its already-small per-cell vector budget (after Product Quantization) makes the more conservative choice necessary for stable cluster training. In short, the adaptive formula is not an arbitrary interpolation but the range of \texttt{nlist} values that keeps every one of our galleries above FAISS's own minimum-training-data guideline, which the fixed-\texttt{nlist} baseline and even the official range's lower bound fail to do at CIR-typical gallery scales.
 
 \begin{table}[!ht]
-\centering
 \caption{FAISS index types and swept parameters ($N$ = gallery size).}
 \label{tab:sweep}
 \renewcommand{\arraystretch}{1.25}
@@ -278,7 +246,6 @@ For the efficiency metrics reported in Table~\ref{tab:sweetspot} and the subsequ
 Table~\ref{tab:matrix} summarizes which (model, dataset) pairs are evaluated. CLIP4Cir is excluded from CIRCO because no CLIP4Cir checkpoint was ever trained or released for it (the authors report FashionIQ and CIRR only); including it would compare a supervised, out-of-domain checkpoint against two purpose-built zero-shot models on their home benchmark.
 
 \begin{table}[!ht]
-\centering
 \caption{Model $\times$ dataset evaluation matrix and checkpoint provenance.}
 \label{tab:matrix}
 \renewcommand{\arraystretch}{1.2}
@@ -300,7 +267,6 @@ Pic2Word & \checkmark & \checkmark & \checkmark & Unofficial community mirror\te
 Applying the protocol of Section~\ref{subsec:sanitycheck} initially surfaced a severe anomaly: CLIP4Cir on CIRR scored Recall@1~$=0.81\%$, far below even the weakest configuration reported in the original paper ($21.38\%$). Diagnosis proceeded by elimination: the checkpoint's SHA-256 hash matched a fresh download from the authors' Google Drive folder (ruling out a corrupted file), and a targeted script revealed that $98.4\%$ of queries retrieved \emph{the reference image itself} at rank 1 instead of the target. Inspecting the official CLIP4Cir training and validation code showed that the Combiner network is trained and evaluated with the image feature $L_2$-normalized but the text feature left \emph{unnormalized}; our adapter normalized both, distorting the learned residual gate $\texttt{output} = \text{MLP}(\cdot) + \text{gate}\cdot\text{text} + (1-\text{gate})\cdot\text{image}$ enough that the image term dominated almost every query. Removing the erroneous text normalization dropped the self-retrieval rate to $7.5\%$ and raised Recall@1 to $37.38\%$ (Table~\ref{tab:sanitycheck}), within $2.5$--$5.8$ points of the published (RN50, a smaller backbone than ours) validation numbers. A second bug -- Pic2Word's query encoder called a single-sample-only tensor-indexing routine (\texttt{encode\_text\_img\_vis}) under batched inference, crashing immediately -- was fixed by switching to the batch-safe \texttt{encode\_text\_img\_retrieval} routine used in the authors' own evaluation script.
 
 \begin{table}[!ht]
-\centering
 \caption{Sanity-check outcome: brute-force validation-set results vs.\ published numbers. Comparisons against Test splits are indirect and introduce a dataset-difficulty artifact.}
 \label{tab:sanitycheck}
 \renewcommand{\arraystretch}{1.25}
@@ -324,7 +290,6 @@ The initial CLIP4Cir/FashionIQ gap ($\approx\!11$ points) was ultimately traced 
 Table~\ref{tab:sweetspot} reports, for every (dataset, model, index type), the highest-speedup configuration that retains at least $95\%$ Recall Retention@10 (or, where no configuration reaches that bar, the best Recall Retention@10 actually observed, marked ``No'').
 
 \begin{table*}[!t]
-\centering
 \caption{Sweet-spot FAISS configurations: highest speedup at Recall Retention@10 $\geq 95\%$ (``Reaches 95\%'' = No indicates the best-observed configuration fell short of the threshold).}
 \label{tab:sweetspot}
 \renewcommand{\arraystretch}{1.15}
@@ -382,7 +347,6 @@ To understand \emph{why} the loss is this severe rather than simply report it, w
 Table~\ref{tab:pqerror} reports both sides of this bound. The reconstruction error is $\approx\!440$--$470\times$ larger than the score gap needed to keep the true rank-10 candidate ahead of rank-11 -- large enough, by Eq.~\eqref{eq:cauchyschwarz}, to overturn the correct ranking for essentially every query, consistent with the observed $14.5$--$20.3\%$ retention on this exact configuration (directly re-measured, matching the swept values).
 
 \begin{table}[!ht]
-\centering
 \caption{SEARLE/CIRCO: PQ reconstruction error vs.\ the rank-10/11 score gap it must stay under to preserve ranking.}
 \label{tab:pqerror}
 \renewcommand{\arraystretch}{1.2}
@@ -403,7 +367,6 @@ The $512$--$768$-d CLIP-derived embeddings used by all three CIR models are simp
 We tested, rather than assumed, two standard geometric explanations for this exception on the same CIRCO gallery images embedded by both models: Relative Contrast (Beyer et al.-style ratio of mean random-pair distance to nearest-neighbor distance) and Local Intrinsic Dimensionality (Levina-Bickel MLE estimator, $k{=}20$). Table~\ref{tab:geometry} shows neither differs meaningfully between SEARLE and Pic2Word -- if anything, in the wrong direction to explain Pic2Word's difficulty -- so global embedding-space hardness is not the mechanism.
 
 \begin{table}[!ht]
-\centering
 \caption{CIRCO embedding-geometry comparison: neither metric explains Pic2Word's harder case.}
 \label{tab:geometry}
 \renewcommand{\arraystretch}{1.2}
