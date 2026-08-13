@@ -319,95 +319,7 @@ Least-squares fitting gives $a{=}2.73{\times}10^{-5}$, $b{=}{-}0.085$ ($R^2{=}0.
 
 ANN indexing is therefore not risk-free for IVFFlat at small scale (it can genuinely be slower there), but for HNSWFlat the trade-off is better described as ``at least as fast at every gallery size we measured, with a margin that grows log-linearly with $N$'' rather than a scale threshold to cross.
 
-\begin{table*}[p]
-\centering
-\caption{Sweet-spot FAISS configurations: highest speedup at Recall Retention@10 $\geq 95\%$ (``Reaches 95\%'' = No indicates the best-observed configuration fell short of the threshold).}
-\label{tab:sweetspot}
-\renewcommand{\arraystretch}{0.85}
-\scriptsize
-\begin{tabular}{p{1.5cm} p{1.6cm} p{1.5cm} p{4.0cm} c c c c}
-\toprule
-\textbf{Dataset} & \textbf{Model} & \textbf{Index} & \textbf{Parameters} & \textbf{Speedup} & \textbf{Ret.@10} & \textbf{Mem.\ ratio} & \textbf{$\geq$95\%} \\
-\midrule
-\multirow{9}{*}{\textbf{FashionIQ}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.2$\times$ & 99.1 $\pm$ 0.05\% & 110.6\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=32$ & 1.2$\times$ & 96.5\% & 101.7\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.8$\times$ & 32.1\% & 7.3\% & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.3$\times$ & 99.2 $\pm$ 0.04\% & 113.4\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=128$ & 1.1$\times$ & 99.1\% & 106.0\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.6$\times$ & 28.5\% & 7.5\% & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.1$\times$ & 98.8 $\pm$ 0.03\% & 108.8\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=32$ & 0.9$\times$ & 96.7\% & 101.6\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.8$\times$ & 30.8\% & 7.1\% & \textcolor{gray}{$\times$} \\
-\midrule
-\multirow{9}{*}{\textbf{CIRR}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $M{=}16$, efSearch$=32$ & 4.1$\times$ & 96.2 $\pm$ 0.14\% & 105.6\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.8$\times$ & 95.4\% & 102.4\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=32$ & 1.8$\times$ & 57.1\% & 14.2\% & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}16$, efSearch$=32$ & 4.7$\times$ & 95.9 $\pm$ 0.10\% & 107.0\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.7$\times$ & 97.8\% & 102.5\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=32$ & 1.7$\times$ & 58.7\% & 14.4\% & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=32$ & 2.9$\times$ & 98.2 $\pm$ 0.10\% & 108.8\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.8$\times$ & 96.6\% & 102.3\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=32$ & 2.0$\times$ & 55.5\% & 14.0\% & \textcolor{gray}{$\times$} \\
-\midrule
-\multirow{6}{*}{\textbf{CIRCO}} & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}32$, efSearch$=128$ & 22.8$\times$ & 97.0 $\pm$ 0.27\% & 113.3\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & nlist$=351$, nprobe$=32$ & 6.8$\times$ & 96.3\% & 100.7\% & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & $m{=}16$, nprobe$=32$ & 102.0$\times$ & 20.3\% & 1.7\% & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=128$ & 5.3$\times$ & 91.5 $\pm$ 0.34\% & 108.9\% & \textcolor{gray}{$\times$} \\
- &  & IVFFlat & nlist$=1405$, nprobe$=128$ & 1.4$\times$ & 97.2\% & 101.4\% & \textcolor{okgreen}{\checkmark} \\
-  &  & IVFPQ & $m{=}16$, nprobe$=32$ & 30.3$\times$ & 16.5\% & 1.3\% & \textcolor{gray}{$\times$} \\
-\bottomrule
-\end{tabular}
-\end{table*}
 
-\begin{table*}[p]
-\centering
-\caption{Accuracy impact at the sweet-spot configurations from Table~\ref{tab:sweetspot}. $\Delta$Metric denotes the change in the final retrieval metric (Recall@10 for FashionIQ/CIRR, mAP@10 for CIRCO) relative to the FlatIP baseline. Green checkmarks indicate configurations where the end-to-end metric loss is practically negligible (drop $\leq 2$ points or actually improves). Retention often degrades at smaller $K$ (e.g., $K{=}1$), but for HNSWFlat and IVFFlat it remains robust.}
-\label{tab:accuracy_impact}
-\renewcommand{\arraystretch}{0.85}
-\scriptsize
-\begin{tabular}{p{1.5cm} p{1.6cm} p{1.5cm} p{2.8cm} c c c c c}
-\toprule
-\textbf{Dataset} & \textbf{Model} & \textbf{Index} & \textbf{Ret.@1} & \textbf{Ret.@10} & \textbf{Ret.@50} & \textbf{$\Delta$Metric (pts)} & \textbf{Acceptable?} \\
-\midrule
-\multirow{9}{*}{\textbf{FashionIQ}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & --- & $99.1 \pm 0.05\%$ & 98.5\% & $-0.02$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & --- & 96.5\% & 94.6\% & $-0.48$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & --- & 32.1\% & 45.8\% & $-11.92$ & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{SEARLE} & HNSWFlat & --- & $99.2 \pm 0.04\%$ & 98.5\% & $-0.18$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & --- & 99.1\% & 98.1\% & $+0.05$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & --- & 28.5\% & 40.8\% & $-8.55$ & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & --- & $98.8 \pm 0.03\%$ & 98.0\% & $-0.27$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & --- & 96.7\% & 94.2\% & $-0.45$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & --- & 30.8\% & 43.0\% & $-11.16$ & \textcolor{gray}{$\times$} \\
-\midrule
-\multirow{9}{*}{\textbf{CIRR}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $99.4 \pm 0.1\%$ & $96.2 \pm 0.14\%$ & $92.0 \pm 0.2\%$ & $-0.38$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & 99.0\% & 97.9\% & 93.9\% & $-0.67$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & 35.7\% & 63.5\% & 70.6\% & $-12.06$ & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{SEARLE} & HNSWFlat & $96.8 \pm 0.1\%$ & $95.9 \pm 0.10\%$ & $86.2 \pm 0.2\%$ & $-1.77$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & 98.7\% & 97.8\% & 92.8\% & $-0.52$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & 35.4\% & 58.7\% & 66.3\% & $-13.46$ & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & $98.7 \pm 0.1\%$ & $98.2 \pm 0.10\%$ & $92.7 \pm 0.2\%$ & $-0.37$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & 97.8\% & 96.6\% & 90.6\% & $-1.01$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & 31.4\% & 55.5\% & 62.0\% & $-13.92$ & \textcolor{gray}{$\times$} \\
-\midrule
-\multirow{6}{*}{\textbf{CIRCO}} & \multirow{3}{*}{SEARLE} & HNSWFlat & $98.3 \pm 0.3\%$ & $97.0 \pm 0.27\%$ & $94.8 \pm 0.3\%$ & $+0.13$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFFlat & 98.2\% & 96.3\% & 95.5\% & $+0.05$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & 10.9\% & 20.3\% & 31.6\% & $-5.69$ & \textcolor{gray}{$\times$} \\
-\cmidrule(lr){2-8}
- & \multirow{3}{*}{Pic2Word} & HNSWFlat & $90.1 \pm 0.3\%$ & $91.5 \pm 0.34\%$ & $88.3 \pm 0.3\%$ & $-0.20$ & \textcolor{gray}{$\times$} \\
- &  & IVFFlat & 98.2\% & 97.2\% & 95.9\% & $-0.02$ & \textcolor{okgreen}{\checkmark} \\
- &  & IVFPQ & 8.2\% & 16.5\% & 25.0\% & $-7.32$ & \textcolor{gray}{$\times$} \\
-\bottomrule
-\end{tabular}
-\end{table*}
 \vspace{0.2cm}
 \noindent\textbf{Finding 2: IVFPQ does not reach the ``retains recall'' regime tested here; it is a different, more extreme trade-off.} IVFPQ delivers the largest speedups observed (up to $149.4\times$) and the smallest memory footprint (as low as $1.3\%$ of the exact index), directly reflecting Product Quantization's compression strength, but its Recall Retention@10 across the entire sweep ranges only $49.7$--$58.7\%$ on CIRR, $23.2$--$32.1\%$ on FashionIQ, and $10.9$--$20.3\%$ on CIRCO. No $m \in \{8, 16\}$ configuration on any dataset approaches the $95\%$ bar. These figures are exact point estimates, not averages: IVFPQ was empirically confirmed deterministic across rebuilds (Section~\ref{subsec:repeated}), so repeated construction would not change them.
 
@@ -474,6 +386,101 @@ This is a plausible, partially-confirmed mechanism rather than a fully generaliz
 This paper reproduced three CIR models (CLIP4Cir, SEARLE, Pic2Word) under a single evaluation harness and measured how FAISS-based ANN indexing trades retrieval quality for query cost across three benchmarks of increasing scale. Harness validation surfaced and fixed two reproducibility bugs (a normalization mismatch causing near-total self-retrieval, and a batch-indexing crash), without which any downstream ANN measurement would have been meaningless. The central finding is that the accuracy/speed trade-off is scale-dependent: HNSWFlat and IVFFlat both deliver large speedups on the 123K-image CIRCO gallery, but on the 2--6K-image galleries the margin shrinks to $1$--$5\times$. IVFPQ's extreme speed and memory gains come at an accuracy cost far outside the ``retains recall'' regime, explained by its reconstruction error dwarfing the task's rank-discrimination gap.
 
 Two limitations bound these conclusions. First, the Pic2Word checkpoint originates from an unverified community mirror, compensated only by behavioral (not cryptographic) verification against published numbers. Second, the parameter grid (2--3 values per axis, chosen under a fixed time budget) is coarse; in particular, no tested IVFPQ configuration approached the $95\%$ retention bar, leaving open whether a wider grid (larger $m$, larger nlist) could close some of that gap. Future work should sweep HNSWFlat's graph degree beyond $M{=}32$ for Pic2Word on CIRCO to test the dimensionality-driven under-provisioning hypothesis of Finding~3, submit predictions to the official CIRCO test-set evaluation server to obtain a fully independent accuracy check, and widen the IVFPQ parameter grid to determine whether its accuracy cost can be meaningfully reduced or is inherent to compressing $512$--$768$-d embeddings at $m\in\{8,16\}$.
+
+
+\appendices
+\section{Detailed FAISS Configuration Results}
+This appendix provides the full configuration parameters and accuracy impact metrics for the optimal configurations discussed in Section~\ref{subsec:resultsdiscussion}.
+
+\begin{table*}[htbp]
+\centering
+\caption{Sweet-spot FAISS configurations: highest speedup at Recall Retention@10 $\geq 95\%$ (``Reaches 95\%'' = No indicates the best-observed configuration fell short of the threshold).}
+\label{tab:sweetspot}
+\renewcommand{\arraystretch}{0.85}
+\scriptsize
+\begin{tabular}{p{1.5cm} p{1.6cm} p{1.5cm} p{4.0cm} c c c c}
+\toprule
+\textbf{Dataset} & \textbf{Model} & \textbf{Index} & \textbf{Parameters} & \textbf{Speedup} & \textbf{Ret.@10} & \textbf{Mem.\ ratio} & \textbf{$\geq$95\%} \\
+\midrule
+\multirow{9}{*}{\textbf{FashionIQ}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.2$\times$ & 99.1 $\pm$ 0.05\% & 110.6\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=32$ & 1.2$\times$ & 96.5\% & 101.7\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.8$\times$ & 32.1\% & 7.3\% & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.3$\times$ & 99.2 $\pm$ 0.04\% & 113.4\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=128$ & 1.1$\times$ & 99.1\% & 106.0\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.6$\times$ & 28.5\% & 7.5\% & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=128$ & 1.1$\times$ & 98.8 $\pm$ 0.03\% & 108.8\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$\approx \sqrt{N}$, nprobe$=32$ & 0.9$\times$ & 96.7\% & 101.6\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=$nlist$\approx\sqrt{N}$ & 2.8$\times$ & 30.8\% & 7.1\% & \textcolor{gray}{$\times$} \\
+\midrule
+\multirow{9}{*}{\textbf{CIRR}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $M{=}16$, efSearch$=32$ & 4.1$\times$ & 96.2 $\pm$ 0.14\% & 105.6\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.8$\times$ & 95.4\% & 102.4\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=32$ & 1.8$\times$ & 57.1\% & 14.2\% & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}16$, efSearch$=32$ & 4.7$\times$ & 95.9 $\pm$ 0.10\% & 107.0\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.7$\times$ & 97.8\% & 102.5\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=32$ & 1.7$\times$ & 58.7\% & 14.4\% & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=32$ & 2.9$\times$ & 98.2 $\pm$ 0.10\% & 108.8\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$=48$, nprobe$=8$ & 1.8$\times$ & 96.6\% & 102.3\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=32$ & 2.0$\times$ & 55.5\% & 14.0\% & \textcolor{gray}{$\times$} \\
+\midrule
+\multirow{6}{*}{\textbf{CIRCO}} & \multirow{3}{*}{SEARLE} & HNSWFlat & $M{=}32$, efSearch$=128$ & 22.8$\times$ & 97.0 $\pm$ 0.27\% & 113.3\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & nlist$=351$, nprobe$=32$ & 6.8$\times$ & 96.3\% & 100.7\% & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & $m{=}16$, nprobe$=32$ & 102.0$\times$ & 20.3\% & 1.7\% & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & $M{=}32$, efSearch$=128$ & 5.3$\times$ & 91.5 $\pm$ 0.34\% & 108.9\% & \textcolor{gray}{$\times$} \\
+ &  & IVFFlat & nlist$=1405$, nprobe$=128$ & 1.4$\times$ & 97.2\% & 101.4\% & \textcolor{okgreen}{\checkmark} \\
+  &  & IVFPQ & $m{=}16$, nprobe$=32$ & 30.3$\times$ & 16.5\% & 1.3\% & \textcolor{gray}{$\times$} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\caption{Accuracy impact at the sweet-spot configurations from Table~\ref{tab:sweetspot}. $\Delta$Metric denotes the change in the final retrieval metric (Recall@10 for FashionIQ/CIRR, mAP@10 for CIRCO) relative to the FlatIP baseline. Green checkmarks indicate configurations where the end-to-end metric loss is practically negligible (drop $\leq 2$ points or actually improves). Retention often degrades at smaller $K$ (e.g., $K{=}1$), but for HNSWFlat and IVFFlat it remains robust.}
+\label{tab:accuracy_impact}
+\renewcommand{\arraystretch}{0.85}
+\scriptsize
+\begin{tabular}{p{1.5cm} p{1.6cm} p{1.5cm} p{2.8cm} c c c c c}
+\toprule
+\textbf{Dataset} & \textbf{Model} & \textbf{Index} & \textbf{Ret.@1} & \textbf{Ret.@10} & \textbf{Ret.@50} & \textbf{$\Delta$Metric (pts)} & \textbf{Acceptable?} \\
+\midrule
+\multirow{9}{*}{\textbf{FashionIQ}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & --- & $99.1 \pm 0.05\%$ & 98.5\% & $-0.02$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & --- & 96.5\% & 94.6\% & $-0.48$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & --- & 32.1\% & 45.8\% & $-11.92$ & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{SEARLE} & HNSWFlat & --- & $99.2 \pm 0.04\%$ & 98.5\% & $-0.18$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & --- & 99.1\% & 98.1\% & $+0.05$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & --- & 28.5\% & 40.8\% & $-8.55$ & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & --- & $98.8 \pm 0.03\%$ & 98.0\% & $-0.27$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & --- & 96.7\% & 94.2\% & $-0.45$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & --- & 30.8\% & 43.0\% & $-11.16$ & \textcolor{gray}{$\times$} \\
+\midrule
+\multirow{9}{*}{\textbf{CIRR}} & \multirow{3}{*}{CLIP4Cir} & HNSWFlat & $99.4 \pm 0.1\%$ & $96.2 \pm 0.14\%$ & $92.0 \pm 0.2\%$ & $-0.38$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & 99.0\% & 97.9\% & 93.9\% & $-0.67$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & 35.7\% & 63.5\% & 70.6\% & $-12.06$ & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{SEARLE} & HNSWFlat & $96.8 \pm 0.1\%$ & $95.9 \pm 0.10\%$ & $86.2 \pm 0.2\%$ & $-1.77$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & 98.7\% & 97.8\% & 92.8\% & $-0.52$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & 35.4\% & 58.7\% & 66.3\% & $-13.46$ & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & $98.7 \pm 0.1\%$ & $98.2 \pm 0.10\%$ & $92.7 \pm 0.2\%$ & $-0.37$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & 97.8\% & 96.6\% & 90.6\% & $-1.01$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & 31.4\% & 55.5\% & 62.0\% & $-13.92$ & \textcolor{gray}{$\times$} \\
+\midrule
+\multirow{6}{*}{\textbf{CIRCO}} & \multirow{3}{*}{SEARLE} & HNSWFlat & $98.3 \pm 0.3\%$ & $97.0 \pm 0.27\%$ & $94.8 \pm 0.3\%$ & $+0.13$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFFlat & 98.2\% & 96.3\% & 95.5\% & $+0.05$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & 10.9\% & 20.3\% & 31.6\% & $-5.69$ & \textcolor{gray}{$\times$} \\
+\cmidrule(lr){2-8}
+ & \multirow{3}{*}{Pic2Word} & HNSWFlat & $90.1 \pm 0.3\%$ & $91.5 \pm 0.34\%$ & $88.3 \pm 0.3\%$ & $-0.20$ & \textcolor{gray}{$\times$} \\
+ &  & IVFFlat & 98.2\% & 97.2\% & 95.9\% & $-0.02$ & \textcolor{okgreen}{\checkmark} \\
+ &  & IVFPQ & 8.2\% & 16.5\% & 25.0\% & $-7.32$ & \textcolor{gray}{$\times$} \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 \section*{Acknowledgment}
 This research was conducted at the Faculty of Information Systems, University of Economics and Law, Vietnam National University Ho Chi Minh City / VNUHCM.
