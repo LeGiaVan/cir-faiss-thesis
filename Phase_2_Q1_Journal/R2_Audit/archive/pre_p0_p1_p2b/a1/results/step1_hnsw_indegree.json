@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "module": "module_a1_hubness",
+    "step": "step1_build_neighbor_dataset",
+    "timestamp": "2026-10-14T07:41:32.958891Z",
+    "git_commit": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "random_seed": 42,
+    "hardware": {
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "threads": 12
+    },
+    "dataset": "circo",
+    "index_config": {
+      "type": "HNSWFlat",
+      "M": 32,
+      "efSearch": 128,
+      "efConstruction": 200
+    }
+  },
+  "results": {
+    "searle": {
+      "n_rows": 10200,
+      "n_queries": 1020,
+      "n_gallery": 123403,
+      "dim": 512,
+      "overall_miss_rate": 0.03019607843137255,
+      "retention_at_10": 0.9698039215686275,
+      "antihub_gallery_count": 115076,
+      "antihub_gallery_ratio": 0.9325218997917393,
+      "k_occurrence_skewness": 6.7991929952867265,
+      "in_degree_indeg0_ratio": 8.10353070832962e-06
+    },
+    "pic2word": {
+      "n_rows": 10200,
+      "n_queries": 1020,
+      "n_gallery": 123403,
+      "dim": 768,
+      "overall_miss_rate": 0.09411764705882353,
+      "retention_at_10": 0.9058823529411765,
+      "antihub_gallery_count": 115336,
+      "antihub_gallery_ratio": 0.934628817775905,
+      "k_occurrence_skewness": 8.329794821169095,
+      "in_degree_indeg0_ratio": 0.0001620706141665924
+    }
+  }
+}

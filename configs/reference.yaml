@@ -1,0 +1,129 @@
+# ==============================================================================
+# CIR-FAISS THESIS EXPERIMENTAL REFERENCE CONFIGURATION
+# File cấu hình chuẩn hóa duy nhất cho Phase 2 Stage A (và toàn bộ hệ sinh thái CIR-FAISS).
+# Tuân thủ nghiêm ngặt theo phản biện của Mentor (Mục 3.2).
+# ==============================================================================
+
+experiment_metadata:
+  version: "1.0.0"
+  random_seed: 42
+  protocol_name: "ICRCV_BENCHMARK_AND_STRESS_AUDIT"
+  created_at: "2026-10-13"
+
+# ------------------------------------------------------------------------------
+# 1. CẤU HÌNH THI CÔNG & GIAO THỨC ĐO ĐỘ TRỄ (LATENCY BENCHMARK PROTOCOL)
+# ------------------------------------------------------------------------------
+execution:
+  num_threads: 8                # Số luồng OpenMP / FAISS threads (faiss.omp_set_num_threads)
+  batch_size: 2000              # Kích thước batch cho tính toán ma trận / k-occurrence
+  latency_benchmark:
+    warmup_runs: 1              # 1 lượt khởi động trước khi đo (bắt buộc như ICRCV)
+    measured_runs: 7            # 7 lần đo lặp
+    aggregation: "median"       # Trung vị, kèm std và từng lần đo
+    query_batch_size: 1          # Latency từng query; không trộn với throughput batch
+
+# ------------------------------------------------------------------------------
+# 2. CẤU HÌNH CHỈ MỤC HNSW (HIERARCHICAL NAVIGABLE SMALL WORLD)
+# ------------------------------------------------------------------------------
+hnsw:
+  # Cấu hình Tham chiếu (Reference): Khớp 100% Bảng V bài báo ICRCV
+  reference:
+    M: 32
+    efSearch: 128
+    efConstruction: 200
+    metric: "INNER_PRODUCT"     # Dùng trên vector đã chuẩn hóa L2 (tương đương Cosine)
+    description: "Cấu hình chuẩn đối chiếu với Bảng V bài ICRCV (Retention kỳ vọng ~97.0% SEARLE, ~91.5% Pic2Word trên CIRCO 123K)"
+
+  # Cấu hình Chịu tải (Stress-test): Giảm dung lượng cạnh và vùng tìm kiếm để phân tích cơ chế lỗi
+  stress:
+    M: 16
+    efSearch: 32
+    efConstruction: 100
+    metric: "INNER_PRODUCT"
+    description: "Cấu hình chịu tải nhằm khuếch đại sai số, tạo nhiều sự kiện lỗi để phân tích cơ chế thất bại"
+
+# ------------------------------------------------------------------------------
+# 3. CẤU HÌNH CHỈ MỤC IVF & IVFPQ (INVERTED FILE WITH PRODUCT QUANTIZATION)
+# ------------------------------------------------------------------------------
+ivf:
+  nlist: 1024                   # Cố định; không đồng nhất với 4*sqrt(N)
+  nprobe_list: [8, 16, 32, 64]  # Dải nprobe khảo sát
+  default_nprobe: 16
+  metric: "INNER_PRODUCT"
+
+ivfpq:
+  nlist: 1024
+  m_subquantizers: 64           # Số lượng sub-vector (chia hết cho 512 và 768)
+  audit_m_list: [8, 16]         # P1 chạy lại cấu hình đã có; quét 32/64 thuộc P2a
+  nbits: 8                      # 8 bits mỗi codebook (256 centroids)
+  nprobe_list: [8, 16, 32, 64]
+  default_nprobe: 16
+  metric: "INNER_PRODUCT"
+
+# ------------------------------------------------------------------------------
+# 4. BỘ DỮ LIỆU & MÔ HÌNH (DATASETS & MODELS)
+# ------------------------------------------------------------------------------
+models:
+  searle:
+    name: "searle"
+    dimension: 512
+    backbone: "CLIP ViT-B/32"
+    type: "textual_inversion"    # Không có mạng Combiner riêng biệt (Lưu ý phản biện 3.3)
+  pic2word:
+    name: "pic2word"
+    dimension: 768
+    backbone: "CLIP ViT-L/14"
+    type: "textual_inversion"    # Không có mạng Combiner riêng biệt (Lưu ý phản biện 3.3)
+
+datasets:
+  circo:
+    name: "CIRCO"
+    gallery_size: 123403
+    num_queries: 220
+    query_profiles:
+      val_labeled: {num_queries: 220, splits: [val], ground_truth: true}
+      val_test_retention: {num_queries: 1020, splits: [val, test], ground_truth: false}
+    k_eval: 10                  # Đo lường tại Recall@10 và Retention@10
+  fashioniq:
+    name: "FashionIQ"
+    categories: ["dress", "shirt", "toptee"]
+    k_eval: 10
+
+# ------------------------------------------------------------------------------
+# 5. CHUẨN HÓA ĐỊNH NGHĨA TOÁN HỌC & ĐO ĐẠC KHÔNG GIAN
+# ------------------------------------------------------------------------------
+metrics:
+  # Relative Contrast (RC)
+  relative_contrast:
+    formula: "mean(random_nonself_cosine_distance) / mean(nearest_nonself_cosine_distance)"
+    distance: "1 - inner_product_of_unit_vectors"
+    k_nn: 1
+    random_pairs: 20000
+    sample_size: 10000          # Cỡ mẫu ngẫu nhiên cố định để đảm bảo tính tái lập
+    note: "Định nghĩa chuẩn hóa để tránh nhầm lẫn giữa Bảng VIII ICRCV và các module mới"
+
+  # Local Intrinsic Dimensionality (LID)
+  local_intrinsic_dimensionality:
+    estimator: "levina_bickel_mle" # Maximum Likelihood Estimation
+    k_nn: 20
+    sample_size: 10000
+    distance: "euclidean_chord_on_unit_sphere"
+    formula: "mean((k-1) / sum_j<k(log(T_k/T_j)))"
+    zero_distance_policy: "exclude_neighborhood_with_nonpositive_distance; report_count"
+    note: "Ước lượng chiều nội tại cục bộ qua MLE"
+
+  # Hubness & Anti-Hub
+  hubness:
+    k_occurrence: 10            # N_10(x)
+    hub_threshold_factor: 3     # N_10 >= 3*k (>= 30)
+    super_hub_factor: 5         # N_10 >= 5*k (>= 50)
+    statistical_test: "two_sided_mann_whitney_u" # Mặc định kiểm định 2 phía
+    alpha: 0.05
+
+audit:
+  bootstrap_replicates: 2000
+  hnsw_build_seeds: [42, 43, 44, 45, 46]
+  hnsw_profile: "reference"
+  query_profile: "val_test_retention"
+  graph_degree_bins: [0, 1, 5, 10, 30]
+  geometry_seed: 42

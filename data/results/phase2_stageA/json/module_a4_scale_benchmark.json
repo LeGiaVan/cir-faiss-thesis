@@ -1,0 +1,57 @@
+[
+  {
+    "scale": 10000,
+    "flat_latency_ms": 0.5533299996221269,
+    "flat_qps": 1807.1819059737038,
+    "hnsw_latency_ms": 0.049696818248114796,
+    "hnsw_speedup": 11.134113191303086,
+    "hnsw_retention": 97.31818181818183,
+    "ivf_latency_ms": 0.11540590891275894,
+    "ivf_speedup": 4.79464184143653,
+    "ivf_retention": 98.22727272727272
+  },
+  {
+    "scale": 50000,
+    "flat_latency_ms": 2.751104545313865,
+    "flat_qps": 363.4850817244881,
+    "hnsw_latency_ms": 0.12151590940034525,
+    "hnsw_speedup": 22.639871263688608,
+    "hnsw_retention": 95.54545454545455,
+    "ivf_latency_ms": 0.36164545454084873,
+    "ivf_speedup": 7.607186847700643,
+    "ivf_retention": 97.31818181818183
+  },
+  {
+    "scale": 123403,
+    "flat_latency_ms": 7.664973635903813,
+    "flat_qps": 130.46328342710925,
+    "hnsw_latency_ms": 0.18298363641158424,
+    "hnsw_speedup": 41.888847474115245,
+    "hnsw_retention": 93.63636363636363,
+    "ivf_latency_ms": 0.7218040906908838,
+    "ivf_speedup": 10.619188412422528,
+    "ivf_retention": 95.95454545454545
+  },
+  {
+    "scale": 250000,
+    "flat_latency_ms": 15.77342136350291,
+    "flat_qps": 63.39766957623695,
+    "hnsw_latency_ms": 0.19103181812996892,
+    "hnsw_speedup": 82.56960289605487,
+    "hnsw_retention": 92.9090909090909,
+    "ivf_latency_ms": 0.9187690908385611,
+    "ivf_speedup": 17.167993047204604,
+    "ivf_retention": 95.27272727272728
+  },
+  {
+    "scale": 500000,
+    "flat_latency_ms": 37.466347727141425,
+    "flat_qps": 26.69056394182499,
+    "hnsw_latency_ms": 0.2726059089499441,
+    "hnsw_speedup": 137.43776821074337,
+    "hnsw_retention": 93.13636363636364,
+    "ivf_latency_ms": 1.1547581816557795,
+    "ivf_speedup": 32.44518923729932,
+    "ivf_retention": 93.9090909090909
+  }
+]

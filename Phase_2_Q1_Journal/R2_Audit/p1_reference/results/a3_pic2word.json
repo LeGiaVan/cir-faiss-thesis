@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "module": "a3_pic2word",
+    "timestamp": "2026-10-15T15:15:37.934678+00:00",
+    "git_commit": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "git_dirty": true,
+    "source_tree_sha256": "b16f65e1336a8d5b82b4d5745a7ab9791ad043f55190c169d997a4d92fadefff",
+    "random_seed": 42,
+    "hardware": {
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "logical_cpus": 12,
+      "threads": 8
+    },
+    "versions": {
+      "numpy": "2.4.2",
+      "scipy": "1.15.1",
+      "pandas": "3.0.3",
+      "statsmodels": "0.14.6",
+      "faiss-cpu": "1.15.1",
+      "PyYAML": "6.0.3"
+    },
+    "model": "pic2word",
+    "dataset": "circo",
+    "gallery_size": 123403,
+    "num_queries": 220,
+    "profile": "reference",
+    "index_config": {
+      "nlist": 1024,
+      "nprobe_list": [
+        8,
+        16,
+        32,
+        64
+      ],
+      "default_nprobe": 16,
+      "metric": "INNER_PRODUCT"
+    },
+    "config_sha256": "7f6fbbcab59d72934e0e3a917f077091d09f5c23e8323346ff06906119887817",
+    "resolved_config": {
+      "experiment_metadata": {
+        "version": "1.0.0",
+        "random_seed": 42,
+        "protocol_name": "ICRCV_BENCHMARK_AND_STRESS_AUDIT",
+        "created_at": "2026-10-13"
+      },
+      "execution": {
+        "num_threads": 8,
+        "batch_size": 2000,
+        "latency_benchmark": {
+          "warmup_runs": 1,
+          "measured_runs": 7,
+          "aggregation": "median",
+          "query_batch_size": 1
+        }
+      },
+      "hnsw": {
+        "reference": {
+          "M": 32,
+          "efSearch": 128,
+          "efConstruction": 200,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chuẩn đối chiếu với Bảng V bài ICRCV (Retention kỳ vọng ~97.0% SEARLE, ~91.5% Pic2Word trên CIRCO 123K)"
+        },
+        "stress": {
+          "M": 16,
+          "efSearch": 32,
+          "efConstruction": 100,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chịu tải nhằm khuếch đại sai số, tạo nhiều sự kiện lỗi để phân tích cơ chế thất bại"
+        }
+      },
+      "ivf": {
+        "nlist": 1024,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "ivfpq": {
+        "nlist": 1024,
+        "m_subquantizers": 64,
+        "audit_m_list": [
+          8,
+          16
+        ],
+        "nbits": 8,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "models": {
+        "searle": {
+          "name": "searle",
+          "dimension": 512,
+          "backbone": "CLIP ViT-B/32",
+          "type": "textual_inversion"
+        },
+        "pic2word": {
+          "name": "pic2word",
+          "dimension": 768,
+          "backbone": "CLIP ViT-L/14",
+          "type": "textual_inversion"
+        }
+      },
+      "datasets": {
+        "circo": {
+          "name": "CIRCO",
+          "gallery_size": 123403,
+          "num_queries": 220,
+          "query_profiles": {
+            "val_labeled": {
+              "num_queries": 220,
+              "splits": [
+                "val"
+              ],
+              "ground_truth": true
+            },
+            "val_test_retention": {
+              "num_queries": 1020,
+              "splits": [
+                "val",
+                "test"
+              ],
+              "ground_truth": false
+            }
+          },
+          "k_eval": 10
+        },
+        "fashioniq": {
+          "name": "FashionIQ",
+          "categories": [
+            "dress",
+            "shirt",
+            "toptee"
+          ],
+          "k_eval": 10
+        }
+      },
+      "metrics": {
+        "relative_contrast": {
+          "formula": "mean(random_nonself_cosine_distance) / mean(nearest_nonself_cosine_distance)",
+          "distance": "1 - inner_product_of_unit_vectors",
+          "k_nn": 1,
+          "random_pairs": 20000,
+          "sample_size": 10000,
+          "note": "Định nghĩa chuẩn hóa để tránh nhầm lẫn giữa Bảng VIII ICRCV và các module mới"
+        },
+        "local_intrinsic_dimensionality": {
+          "estimator": "levina_bickel_mle",
+          "k_nn": 20,
+          "sample_size": 10000,
+          "distance": "euclidean_chord_on_unit_sphere",
+          "formula": "mean((k-1) / sum_j<k(log(T_k/T_j)))",
+          "zero_distance_policy": "exclude_neighborhood_with_nonpositive_distance; report_count",
+          "note": "Ước lượng chiều nội tại cục bộ qua MLE"
+        },
+        "hubness": {
+          "k_occurrence": 10,
+          "hub_threshold_factor": 3,
+          "super_hub_factor": 5,
+          "statistical_test": "two_sided_mann_whitney_u",
+          "alpha": 0.05
+        }
+      },
+      "audit": {
+        "bootstrap_replicates": 2000,
+        "hnsw_build_seeds": [
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "hnsw_profile": "reference",
+        "query_profile": "val_test_retention",
+        "graph_degree_bins": [
+          0,
+          1,
+          5,
+          10,
+          30
+        ],
+        "geometry_seed": 42
+      }
+    },
+    "inputs": [
+      {
+        "path": "data/embeddings/pic2word/circo_gallery.npy",
+        "sha256": "5e8baaf2a25faf890db36add46d3ea807234d01c37c9a026e26ddff8082cbe89",
+        "bytes": 379094144
+      },
+      {
+        "path": "data/queries/pic2word/circo_queries.pkl",
+        "sha256": "0fd1bb6934f27c884acfa76b56ae6791e758c388efb78540b12abd3e92f8fe9c",
+        "bytes": 691092
+      },
+      {
+        "path": "data/embeddings/pic2word/circo_names.npy",
+        "sha256": "a3aeed58e3e0c78cca5349b985b56a807037bef2c280d2090061f7a639380923",
+        "bytes": 5923472
+      }
+    ],
+    "numerical_code_signature": {
+      "Phase_2_Q1_Journal/R2_Audit/scripts/run_p1_reference.py": "715c897aeef89222b3d437cf59a6856418e2891a8205c60bb92ec97ca71864f4",
+      "src/phase2/protocol.py": "371e3e3e6bfcbe4e8e27922b68975ce4b75ba1bc9a65876c48766a74c8cef81c",
+      "src/phase2/stage_a/measure_pq_perturbation.py": "10f1559ce7854f9f8cbd8dcefdc2685e67c28837e850653de0d291b98bba8b0b",
+      "src/phase2/stage_a/measure_ivf_routing.py": "abaf2388d7337c5ecfccc1897278ab1a1f60bb5eadff16a8fc06b35861d87ac0"
+    },
+    "query_profile": "val_labeled"
+  },
+  "results": {
+    "nlist": 1024,
+    "cluster_size_stats": {
+      "mean": 120.5107421875,
+      "std": 64.75176368432298,
+      "min": 1,
+      "max": 459
+    },
+    "by_nprobe": {
+      "8": {
+        "nprobe": 8,
+        "retention_at_10": 71.45454545454545,
+        "candidate_lost_by_partition": 28.545454545454547,
+        "target_misrouting_rate": 22.272727272727273,
+        "retained_candidate_ratio": 71.45454545454545,
+        "mean_routing_margin": 0.0023656529459086333
+      },
+      "16": {
+        "nprobe": 16,
+        "retention_at_10": 82.72727272727273,
+        "candidate_lost_by_partition": 17.272727272727273,
+        "target_misrouting_rate": 14.545454545454545,
+        "retained_candidate_ratio": 82.72727272727272,
+        "mean_routing_margin": 0.001282163303006779
+      },
+      "32": {
+        "nprobe": 32,
+        "retention_at_10": 90.5909090909091,
+        "candidate_lost_by_partition": 9.409090909090908,
+        "target_misrouting_rate": 5.454545454545454,
+        "retained_candidate_ratio": 90.5909090909091,
+        "mean_routing_margin": 0.0007414742626927115
+      },
+      "64": {
+        "nprobe": 64,
+        "retention_at_10": 95.18181818181819,
+        "candidate_lost_by_partition": 4.818181818181818,
+        "target_misrouting_rate": 2.727272727272727,
+        "retained_candidate_ratio": 95.18181818181819,
+        "mean_routing_margin": 0.00043936784971844065
+      }
+    }
+  }
+}

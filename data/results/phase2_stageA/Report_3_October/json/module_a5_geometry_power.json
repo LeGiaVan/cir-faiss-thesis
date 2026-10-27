@@ -1,0 +1,112 @@
+{
+  "records": [
+    {
+      "model": "searle",
+      "dataset": "circo",
+      "N": 123403,
+      "dimension": 512,
+      "relative_contrast": 3.8639315908487464,
+      "lid": 12.152973175048828,
+      "hubness_skewness": 2.6589632690804472,
+      "anti_hub_ratio": 8.477103473983615,
+      "hnsw_retention_m16_ef32": 74.07
+    },
+    {
+      "model": "pic2word",
+      "dataset": "circo",
+      "N": 123403,
+      "dimension": 768,
+      "relative_contrast": 3.553149428279303,
+      "lid": 11.881860733032227,
+      "hubness_skewness": 2.6593284720061425,
+      "anti_hub_ratio": 10.720971127120087,
+      "hnsw_retention_m16_ef32": 56.03
+    },
+    {
+      "model": "clip4cir",
+      "dataset": "cirr",
+      "N": 2297,
+      "dimension": 640,
+      "relative_contrast": 4.066658105495334,
+      "lid": 5.6259074211120605,
+      "hubness_skewness": 0.6271092910085265,
+      "anti_hub_ratio": 1.436656508489334,
+      "hnsw_retention_m16_ef32": 96.25
+    },
+    {
+      "model": "searle",
+      "dataset": "cirr",
+      "N": 2297,
+      "dimension": 512,
+      "relative_contrast": 3.257561589008474,
+      "lid": 7.155450820922852,
+      "hubness_skewness": 0.9834021758264534,
+      "anti_hub_ratio": 4.092294296909012,
+      "hnsw_retention_m16_ef32": 95.91
+    },
+    {
+      "model": "pic2word",
+      "dataset": "cirr",
+      "N": 2297,
+      "dimension": 768,
+      "relative_contrast": 3.0434721386669747,
+      "lid": 7.167591094970703,
+      "hubness_skewness": 1.3289501530828038,
+      "anti_hub_ratio": 6.356116673922507,
+      "hnsw_retention_m16_ef32": 91.77
+    },
+    {
+      "model": "clip4cir",
+      "dataset": "fashioniq",
+      "N": 3817,
+      "dimension": 640,
+      "relative_contrast": 3.4999550468937404,
+      "lid": 8.220593452453613,
+      "hubness_skewness": 1.327382435286177,
+      "anti_hub_ratio": 3.3010217448257793,
+      "hnsw_retention_m16_ef32": 76.37
+    },
+    {
+      "model": "searle",
+      "dataset": "fashioniq",
+      "N": 3817,
+      "dimension": 512,
+      "relative_contrast": 3.0832850695752323,
+      "lid": 9.862565040588379,
+      "hubness_skewness": 2.163129867017993,
+      "anti_hub_ratio": 5.816085931359707,
+      "hnsw_retention_m16_ef32": 78.7
+    },
+    {
+      "model": "pic2word",
+      "dataset": "fashioniq",
+      "N": 3817,
+      "dimension": 768,
+      "relative_contrast": 3.0095446832511126,
+      "lid": 9.964115142822266,
+      "hubness_skewness": 1.6852774567760394,
+      "anti_hub_ratio": 6.261461881058422,
+      "hnsw_retention_m16_ef32": 78.98
+    }
+  ],
+  "correlations": {
+    "relative_contrast_vs_retention": {
+      "spearman_rho": -0.14285714285714288,
+      "spearman_p": 0.735764859879812,
+      "pearson_r": -0.04789311424497994,
+      "pearson_p": 0.910337634860283
+    },
+    "lid_vs_retention": {
+      "spearman_rho": -0.880952380952381,
+      "spearman_p": 0.0038503204637324014,
+      "pearson_r": -0.8689990303545326,
+      "pearson_p": 0.0050826164446798735
+    },
+    "hubness_skewness_vs_retention": {
+      "spearman_rho": -0.8571428571428572,
+      "spearman_p": 0.006530017254715292,
+      "pearson_r": -0.8549116307496183,
+      "pearson_p": 0.006828748251765277
+    }
+  }
+}

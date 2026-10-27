@@ -1,0 +1,152 @@
+{
+  "searle": {
+    "nlist": 351,
+    "cluster_size_stats": {
+      "mean": 351.57549857549856,
+      "std": 139.46915791445363,
+      "min": 1,
+      "max": 1175
+    },
+    "by_nprobe": {
+      "1": {
+        "nprobe": 1,
+        "retention_at_10": 46.09090909090909,
+        "candidate_lost_by_partition": 53.90909090909091,
+        "target_misrouting_rate": 50.0,
+        "retained_candidate_ratio": 46.09090909090909,
+        "mean_routing_margin": 0.01360988508571278
+      },
+      "2": {
+        "nprobe": 2,
+        "retention_at_10": 62.13636363636363,
+        "candidate_lost_by_partition": 37.86363636363637,
+        "target_misrouting_rate": 35.90909090909091,
+        "retained_candidate_ratio": 62.13636363636363,
+        "mean_routing_margin": 0.006867680495435542
+      },
+      "4": {
+        "nprobe": 4,
+        "retention_at_10": 76.4090909090909,
+        "candidate_lost_by_partition": 23.59090909090909,
+        "target_misrouting_rate": 18.636363636363637,
+        "retained_candidate_ratio": 76.4090909090909,
+        "mean_routing_margin": 0.004568748514760624
+      },
+      "8": {
+        "nprobe": 8,
+        "retention_at_10": 86.18181818181819,
+        "candidate_lost_by_partition": 13.818181818181818,
+        "target_misrouting_rate": 10.909090909090908,
+        "retained_candidate_ratio": 86.18181818181819,
+        "mean_routing_margin": 0.0030165301805192774
+      },
+      "16": {
+        "nprobe": 16,
+        "retention_at_10": 92.36363636363636,
+        "candidate_lost_by_partition": 7.636363636363637,
+        "target_misrouting_rate": 2.727272727272727,
+        "retained_candidate_ratio": 92.36363636363636,
+        "mean_routing_margin": 0.0012948825278065422
+      },
+      "32": {
+        "nprobe": 32,
+        "retention_at_10": 96.27272727272727,
+        "candidate_lost_by_partition": 3.727272727272727,
+        "target_misrouting_rate": 0.9090909090909091,
+        "retained_candidate_ratio": 96.27272727272727,
+        "mean_routing_margin": 0.0007007306272333319
+      },
+      "64": {
+        "nprobe": 64,
+        "retention_at_10": 98.77272727272727,
+        "candidate_lost_by_partition": 1.2272727272727273,
+        "target_misrouting_rate": 0.0,
+        "retained_candidate_ratio": 98.77272727272727,
+        "mean_routing_margin": 0.0003436083143407648
+      },
+      "128": {
+        "nprobe": 128,
+        "retention_at_10": 99.81818181818181,
+        "candidate_lost_by_partition": 0.18181818181818182,
+        "target_misrouting_rate": 0.0,
+        "retained_candidate_ratio": 99.81818181818181,
+        "mean_routing_margin": 0.00021365379745310004
+      }
+    }
+  },
+  "pic2word": {
+    "nlist": 351,
+    "cluster_size_stats": {
+      "mean": 351.57549857549856,
+      "std": 170.87161963541868,
+      "min": 1,
+      "max": 1366
+    },
+    "by_nprobe": {
+      "1": {
+        "nprobe": 1,
+        "retention_at_10": 34.95454545454545,
+        "candidate_lost_by_partition": 65.04545454545455,
+        "target_misrouting_rate": 57.27272727272727,
+        "retained_candidate_ratio": 34.95454545454545,
+        "mean_routing_margin": 0.012015606937083331
+      },
+      "2": {
+        "nprobe": 2,
+        "retention_at_10": 52.72727272727273,
+        "candidate_lost_by_partition": 47.27272727272727,
+        "target_misrouting_rate": 43.18181818181818,
+        "retained_candidate_ratio": 52.72727272727273,
+        "mean_routing_margin": 0.007230961729179729
+      },
+      "4": {
+        "nprobe": 4,
+        "retention_at_10": 68.9090909090909,
+        "candidate_lost_by_partition": 31.09090909090909,
+        "target_misrouting_rate": 25.454545454545453,
+        "retained_candidate_ratio": 68.9090909090909,
+        "mean_routing_margin": 0.004814530841328881
+      },
+      "8": {
+        "nprobe": 8,
+        "retention_at_10": 80.77272727272727,
+        "candidate_lost_by_partition": 19.227272727272727,
+        "target_misrouting_rate": 13.18181818181818,
+        "retained_candidate_ratio": 80.77272727272728,
+        "mean_routing_margin": 0.0028509329665790907
+      },
+      "16": {
+        "nprobe": 16,
+        "retention_at_10": 90.4090909090909,
+        "candidate_lost_by_partition": 9.590909090909092,
+        "target_misrouting_rate": 6.363636363636363,
+        "retained_candidate_ratio": 90.4090909090909,
+        "mean_routing_margin": 0.0016769449819218029
+      },
+      "32": {
+        "nprobe": 32,
+        "retention_at_10": 96.04545454545455,
+        "candidate_lost_by_partition": 3.9545454545454546,
+        "target_misrouting_rate": 3.6363636363636362,
+        "retained_candidate_ratio": 96.04545454545455,
+        "mean_routing_margin": 0.0007656534964388067
+      },
+      "64": {
+        "nprobe": 64,
+        "retention_at_10": 98.5909090909091,
+        "candidate_lost_by_partition": 1.4090909090909092,
+        "target_misrouting_rate": 1.3636363636363635,
+        "retained_candidate_ratio": 98.5909090909091,
+        "mean_routing_margin": 0.00040963498706167396
+      },
+      "128": {
+        "nprobe": 128,
+        "retention_at_10": 99.45454545454545,
+        "candidate_lost_by_partition": 0.5454545454545454,
+        "target_misrouting_rate": 0.9090909090909091,
+        "retained_candidate_ratio": 99.45454545454545,
+        "mean_routing_margin": 0.00022374692965637554
+      }
+    }
+  }
+}
