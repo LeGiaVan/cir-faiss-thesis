@@ -1,0 +1,8 @@
+{
+  "ip_top10_identical": true,
+  "ip_max_score_shift_residual": 2.980232238769531e-07,
+  "n_queries": 1020,
+  "n_gallery": 123403,
+  "dimension": 512,
+  "l2_truth": "centered gallery and centered query; separate exact L2 ranking"
+}

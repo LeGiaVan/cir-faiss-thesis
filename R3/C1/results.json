@@ -1,0 +1,235 @@
+{
+  "metadata": {
+    "timestamp_utc": "2026-10-27T05:51:15.711727+00:00",
+    "module": "R3_C1",
+    "signature": "8a67f150520c3bf4848f8211d9b42e68840cec2370b21a2c6f8502090bd82c09",
+    "inputs_sha256": {
+      "configs/reference.yaml": "7F6FBBCAB59D72934E0E3A917F077091D09F5C23E8323346FF06906119887817",
+      "data/embeddings/searle/circo_gallery.npy": "C17A50ED309F3A993BF76CDE27D802D307384572AE40032A59F273A32FCAD903",
+      "data/embeddings/pic2word/circo_gallery.npy": "5E8BAAF2A25FAF890DB36ADD46D3EA807234D01C37C9A026E26DDFF8082CBE89",
+      "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_searle.pkl": "F000D39CABC90DC30C5FBA26202AD82FB41ED6F3A2DCA9646D732F49A33C1729",
+      "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_pic2word.pkl": "B0064441C5630D4DDF29C79088404F45B46233B467AF023FEE11F3ABAAEC4C2E"
+    },
+    "script_sha256": "45c04b2e3867f86875fd990c05f8cf4617e5177ab1280ad7579676ea6c5a9080",
+    "git_commit_stage0": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "git_dirty": true,
+    "provenance_note": "Input hashes pinned; working tree dirty and test feature row IDs are reconstructed, not independently verified.",
+    "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "threads": 8,
+    "python": "3.12.7",
+    "faiss": "1.15.1",
+    "numpy": "2.4.2",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "efSearch": [
+      32,
+      48,
+      64,
+      96,
+      128,
+      160,
+      192,
+      256,
+      384
+    ],
+    "M": 32,
+    "efConstruction": 200,
+    "k": 10,
+    "query_count": 1020,
+    "latency": "1 warmup, 7 measured runs, median ms/query, batch size 1 including Python overhead"
+  },
+  "analysis": {
+    "bootstrap": "crossed paired seed and query percentile, fixed per-build ndis; 2000 resamples",
+    "interpolation": "linear retention on ndis; five log-spaced points within common support across IP builds",
+    "bootstrap_seed": 42
+  },
+  "results": {
+    "searle": {
+      "exact_check": {
+        "ip_top10_identical": true,
+        "ip_max_score_shift_residual": 2.980232238769531e-07,
+        "n_queries": 1020,
+        "n_gallery": 123403,
+        "dimension": 512,
+        "l2_truth": "centered gallery and centered query; separate exact L2 ranking"
+      },
+      "common_support": [
+        774.6176470588235,
+        4203.267647058824
+      ],
+      "comparison": [
+        {
+          "ndis_per_query": 774.6176470588235,
+          "original_retention": 0.8678480715409443,
+          "centered_retention": 0.8645200604039779,
+          "delta": -0.003328011136966641,
+          "ci_lower": -0.009954335222412658,
+          "ci_upper": 0.0028380983309385555,
+          "per_seed_delta": [
+            -0.0003381371493322544,
+            -0.006355023597102914,
+            -0.004968682674904318,
+            0.00021174195874294836,
+            -0.005189954222236665
+          ]
+        },
+        {
+          "ndis_per_query": 1182.2581084364188,
+          "original_retention": 0.9301487933639382,
+          "centered_retention": 0.9294269876725648,
+          "delta": -0.000721805691373356,
+          "ci_lower": -0.005098702135284548,
+          "ci_upper": 0.0036519013123818642,
+          "per_seed_delta": [
+            -0.0015627900354603242,
+            -0.003304191373376364,
+            -0.0002655940345355219,
+            0.002387629052819077,
+            -0.0008640820663136471
+          ]
+        },
+        {
+          "ndis_per_query": 1804.418270447066,
+          "original_retention": 0.9646556954806365,
+          "centered_retention": 0.9644290088431559,
+          "delta": -0.00022668663748068283,
+          "ci_lower": -0.003797279987318595,
+          "ci_upper": 0.0030445986952482283,
+          "per_seed_delta": [
+            0.0010076795891782115,
+            -0.0008589906994487823,
+            -0.0018692027124894571,
+            -0.00018507886407359957,
+            0.0007721594994302122
+          ]
+        },
+        {
+          "ndis_per_query": 2753.988550799001,
+          "original_retention": 0.9827446216013606,
+          "centered_retention": 0.982968602550918,
+          "delta": 0.0002239809495574824,
+          "ci_lower": -0.002623041613870597,
+          "ci_upper": 0.002742077211100456,
+          "per_seed_delta": [
+            0.00031437912915623496,
+            -0.0001222444964630331,
+            -0.0005146826869166656,
+            4.0639725557728436e-05,
+            0.0014018130764531472
+          ]
+        },
+        {
+          "ndis_per_query": 4203.267647058824,
+          "original_retention": 0.9922461708469578,
+          "centered_retention": 0.9923438552030819,
+          "delta": 9.768435612389481e-05,
+          "ci_lower": -0.001452440687209869,
+          "ci_upper": 0.0016509737272860923,
+          "per_seed_delta": [
+            0.00016874088653047302,
+            -0.000511931569517126,
+            -1.2971037930155822e-05,
+            0.0007379628780281957,
+            0.00010662062350808696
+          ]
+        }
+      ]
+    },
+    "pic2word": {
+      "exact_check": {
+        "ip_top10_identical": true,
+        "ip_max_score_shift_residual": 1.7881393432617188e-07,
+        "n_queries": 1020,
+        "n_gallery": 123403,
+        "dimension": 768,
+        "l2_truth": "centered gallery and centered query; separate exact L2 ranking"
+      },
+      "common_support": [
+        884.1813725490196,
+        4199.787254901961
+      ],
+      "comparison": [
+        {
+          "ndis_per_query": 884.1813725490196,
+          "original_retention": 0.7830535480863523,
+          "centered_retention": 0.8053289440915802,
+          "delta": 0.02227539600522778,
+          "ci_lower": 0.012631596450866523,
+          "ci_upper": 0.03196907653152448,
+          "per_seed_delta": [
+            0.015066034683955613,
+            0.022897044906851616,
+            0.016841020374741465,
+            0.02296718201521525,
+            0.03360569804537495
+          ]
+        },
+        {
+          "ndis_per_query": 1305.307531045675,
+          "original_retention": 0.8583343120598165,
+          "centered_retention": 0.8828204099320073,
+          "delta": 0.024486097872190825,
+          "ci_lower": 0.017521388929304063,
+          "ci_upper": 0.031120868387753527,
+          "per_seed_delta": [
+            0.021008472294074886,
+            0.021887777516147032,
+            0.02306216139928087,
+            0.028594287694001085,
+            0.02787779045745026
+          ]
+        },
+        {
+          "ndis_per_query": 1927.0115877838139,
+          "original_retention": 0.9118741950647038,
+          "centered_retention": 0.9344868734743934,
+          "delta": 0.022612678409689814,
+          "ci_lower": 0.01738415725498703,
+          "ci_upper": 0.028084432309320617,
+          "per_seed_delta": [
+            0.020942473205124552,
+            0.019141868968955856,
+            0.025024789304001323,
+            0.02257943170545452,
+            0.025374828864912824
+          ]
+        },
+        {
+          "ndis_per_query": 2844.826656656406,
+          "original_retention": 0.9442973280461485,
+          "centered_retention": 0.9643964264254177,
+          "delta": 0.020099098379269265,
+          "ci_lower": 0.01580804257160122,
+          "ci_upper": 0.02447055760182488,
+          "per_seed_delta": [
+            0.02048075488209203,
+            0.018732769987859717,
+            0.021042175765149718,
+            0.018480536220250112,
+            0.02175925504099473
+          ]
+        },
+        {
+          "ndis_per_query": 4199.787254901961,
+          "original_retention": 0.96707283151868,
+          "centered_retention": 0.9808258847848382,
+          "delta": 0.013753053266158315,
+          "ci_lower": 0.010030570023467729,
+          "ci_upper": 0.017499163234191602,
+          "per_seed_delta": [
+            0.013038257103834676,
+            0.013746357128242574,
+            0.011382508384904993,
+            0.01348845905373816,
+            0.017109684660071182
+          ]
+        }
+      ]
+    }
+  }
+}
