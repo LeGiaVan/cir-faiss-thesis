@@ -1,0 +1,257 @@
+{
+  "metadata": {
+    "module": "P0_legacy_reanalysis",
+    "timestamp": "2026-10-15T15:09:35.053981+00:00",
+    "git_commit": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "git_dirty": true,
+    "source_tree_sha256": "3e4d8d4fe948875ee482e75dd295c9ffc14ed371d6a305d8abe60f62b58dd60b",
+    "random_seed": 42,
+    "hardware": {
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "logical_cpus": 12,
+      "threads": 12
+    },
+    "versions": {
+      "numpy": "2.4.2",
+      "scipy": "1.15.1",
+      "pandas": "3.0.3",
+      "statsmodels": "0.14.6",
+      "faiss-cpu": "1.15.1",
+      "PyYAML": "6.0.3"
+    },
+    "model": null,
+    "dataset": "multiple",
+    "gallery_size": null,
+    "num_queries": null,
+    "profile": "legacy_reanalysis",
+    "index_config": null,
+    "config_sha256": "7f6fbbcab59d72934e0e3a917f077091d09f5c23e8323346ff06906119887817",
+    "resolved_config": {
+      "experiment_metadata": {
+        "version": "1.0.0",
+        "random_seed": 42,
+        "protocol_name": "ICRCV_BENCHMARK_AND_STRESS_AUDIT",
+        "created_at": "2026-10-13"
+      },
+      "execution": {
+        "num_threads": 8,
+        "batch_size": 2000,
+        "latency_benchmark": {
+          "warmup_runs": 1,
+          "measured_runs": 7,
+          "aggregation": "median",
+          "query_batch_size": 1
+        }
+      },
+      "hnsw": {
+        "reference": {
+          "M": 32,
+          "efSearch": 128,
+          "efConstruction": 200,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chuẩn đối chiếu với Bảng V bài ICRCV (Retention kỳ vọng ~97.0% SEARLE, ~91.5% Pic2Word trên CIRCO 123K)"
+        },
+        "stress": {
+          "M": 16,
+          "efSearch": 32,
+          "efConstruction": 100,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chịu tải nhằm khuếch đại sai số, tạo nhiều sự kiện lỗi để phân tích cơ chế thất bại"
+        }
+      },
+      "ivf": {
+        "nlist": 1024,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "ivfpq": {
+        "nlist": 1024,
+        "m_subquantizers": 64,
+        "audit_m_list": [
+          8,
+          16
+        ],
+        "nbits": 8,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "models": {
+        "searle": {
+          "name": "searle",
+          "dimension": 512,
+          "backbone": "CLIP ViT-B/32",
+          "type": "textual_inversion"
+        },
+        "pic2word": {
+          "name": "pic2word",
+          "dimension": 768,
+          "backbone": "CLIP ViT-L/14",
+          "type": "textual_inversion"
+        }
+      },
+      "datasets": {
+        "circo": {
+          "name": "CIRCO",
+          "gallery_size": 123403,
+          "num_queries": 220,
+          "query_profiles": {
+            "val_labeled": {
+              "num_queries": 220,
+              "splits": [
+                "val"
+              ],
+              "ground_truth": true
+            },
+            "val_test_retention": {
+              "num_queries": 1020,
+              "splits": [
+                "val",
+                "test"
+              ],
+              "ground_truth": false
+            }
+          },
+          "k_eval": 10
+        },
+        "fashioniq": {
+          "name": "FashionIQ",
+          "categories": [
+            "dress",
+            "shirt",
+            "toptee"
+          ],
+          "k_eval": 10
+        }
+      },
+      "metrics": {
+        "relative_contrast": {
+          "formula": "mean(random_nonself_cosine_distance) / mean(nearest_nonself_cosine_distance)",
+          "distance": "1 - inner_product_of_unit_vectors",
+          "k_nn": 1,
+          "random_pairs": 20000,
+          "sample_size": 10000,
+          "note": "Định nghĩa chuẩn hóa để tránh nhầm lẫn giữa Bảng VIII ICRCV và các module mới"
+        },
+        "local_intrinsic_dimensionality": {
+          "estimator": "levina_bickel_mle",
+          "k_nn": 20,
+          "sample_size": 10000,
+          "distance": "euclidean_chord_on_unit_sphere",
+          "formula": "mean((k-1) / sum_j<k(log(T_k/T_j)))",
+          "zero_distance_policy": "exclude_neighborhood_with_nonpositive_distance; report_count",
+          "note": "Ước lượng chiều nội tại cục bộ qua MLE"
+        },
+        "hubness": {
+          "k_occurrence": 10,
+          "hub_threshold_factor": 3,
+          "super_hub_factor": 5,
+          "statistical_test": "two_sided_mann_whitney_u",
+          "alpha": 0.05
+        }
+      },
+      "audit": {
+        "bootstrap_replicates": 2000,
+        "hnsw_build_seeds": [
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "hnsw_profile": "reference",
+        "query_profile": "val_test_retention",
+        "graph_degree_bins": [
+          0,
+          1,
+          5,
+          10,
+          30
+        ],
+        "geometry_seed": 42
+      }
+    },
+    "inputs": [
+      {
+        "path": "data/results/phase2_stageA/json/module_a1_hubness.json",
+        "sha256": "f44ebed34303e1fa145415698e3bdac4800be9720c539cd4af1ada8b5570d7dc",
+        "bytes": 10960
+      },
+      {
+        "path": "data/results/phase2_stageA/json/module_a2_pq_perturbation.json",
+        "sha256": "987582d695caca81a12effd4d201ec6c5c6496c7f7f42ee92bb4ebe2e09777dc",
+        "bytes": 528618
+      },
+      {
+        "path": "data/results/phase2_stageA/json/module_a3_ivf_routing.json",
+        "sha256": "d1dbc55e96d01e3136e7909d54f9bdb80b0a0a3cd65008aa85f98b9106054854",
+        "bytes": 5459
+      },
+      {
+        "path": "data/results/phase2_stageA/json/module_a4_scale_benchmark.json",
+        "sha256": "19f2b52f4a64d1ef16fa0874594da31b2506163cd23f86962b01e0ecb7d0c0b5",
+        "bytes": 1815
+      },
+      {
+        "path": "data/results/phase2_stageA/json/module_a5_geometry_power.json",
+        "sha256": "bae37a0926271fec4a346d2b368102822c0e3328525a1411e5d9124371272eb4",
+        "bytes": 3292
+      }
+    ],
+    "analysis": "P0 legacy reanalysis; not new ANN runs",
+    "source_sha256": {
+      "module_a1_hubness.json": "f44ebed34303e1fa145415698e3bdac4800be9720c539cd4af1ada8b5570d7dc",
+      "module_a2_pq_perturbation.json": "987582d695caca81a12effd4d201ec6c5c6496c7f7f42ee92bb4ebe2e09777dc",
+      "module_a3_ivf_routing.json": "d1dbc55e96d01e3136e7909d54f9bdb80b0a0a3cd65008aa85f98b9106054854",
+      "module_a4_scale_benchmark.json": "19f2b52f4a64d1ef16fa0874594da31b2506163cd23f86962b01e0ecb7d0c0b5",
+      "module_a5_geometry_power.json": "bae37a0926271fec4a346d2b368102822c0e3328525a1411e5d9124371272eb4"
+    },
+    "historical_hardware": "unknown; runtime hardware below refers only to reanalysis"
+  },
+  "scale_slopes": {
+    "flat": 1.0719219748919093,
+    "hnsw": 0.42194738913931196,
+    "ivf": 0.6040828420697616
+  },
+  "geometry_correlations": {
+    "relative_contrast": {
+      "rho": -0.14285714285714288,
+      "p_two_sided": 0.735764859879812,
+      "partial_rho": 0.18616842188323374,
+      "partial_p": 0.6893990053766647
+    },
+    "lid": {
+      "rho": -0.880952380952381,
+      "p_two_sided": 0.0038503204637324014,
+      "partial_rho": 0.1111111111111111,
+      "partial_p": 0.8125341307441234
+    },
+    "hubness_skewness": {
+      "rho": -0.8571428571428572,
+      "p_two_sided": 0.006530017254715292,
+      "partial_rho": -0.22075539284417398,
+      "partial_p": 0.6342985852426708
+    },
+    "anti_hub_ratio": {
+      "rho": -0.6666666666666669,
+      "p_two_sided": 0.07098765432098751,
+      "partial_rho": -0.237321571587989,
+      "partial_p": 0.6083595619767848
+    },
+    "log10_N": {
+      "rho": -0.944911182523068,
+      "p_two_sided": 0.00040087754455410873
+    }
+  }
+}

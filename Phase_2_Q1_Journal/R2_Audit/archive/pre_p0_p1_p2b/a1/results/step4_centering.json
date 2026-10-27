@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "module": "module_a1_hubness",
+    "step": "step4_centering_intervention",
+    "timestamp": "2026-10-14T08:02:46.229947Z",
+    "random_seed": 42,
+    "centering_variant": "subtract_gallery_mean_without_renormalization",
+    "index_config": {
+      "type": "HNSWFlat",
+      "M": 32,
+      "efSearch": 128,
+      "efConstruction": 200
+    }
+  },
+  "results": {
+    "searle": {
+      "rank_invariance_verified": true,
+      "centering_variant": "subtract_gallery_mean_without_renormalization",
+      "before": {
+        "skewness": 6.7991929952867265,
+        "kurtosis": 87.93629751251417,
+        "antihub_ratio": 0.9325218997917393,
+        "max_hub": 13,
+        "retention_at_10": 0.9698039215686275
+      },
+      "after": {
+        "skewness": 6.7991929952867265,
+        "kurtosis": 87.93629751251417,
+        "antihub_ratio": 0.9325218997917393,
+        "max_hub": 13,
+        "retention_at_10": 0.9706862745098039
+      },
+      "delta_retention": 0.0008823529411764452,
+      "delta_skewness": 0.0
+    },
+    "pic2word": {
+      "rank_invariance_verified": true,
+      "centering_variant": "subtract_gallery_mean_without_renormalization",
+      "before": {
+        "skewness": 8.329794821169095,
+        "kurtosis": 158.22023386781137,
+        "antihub_ratio": 0.934628817775905,
+        "max_hub": 19,
+        "retention_at_10": 0.9058823529411765
+      },
+      "after": {
+        "skewness": 8.329794821169095,
+        "kurtosis": 158.22023386781137,
+        "antihub_ratio": 0.934628817775905,
+        "max_hub": 19,
+        "retention_at_10": 0.9497058823529412
+      },
+      "delta_retention": 0.043823529411764706,
+      "delta_skewness": 0.0
+    }
+  },
+  "causal_label": {
+    "searle": "inconclusive",
+    "pic2word": "inconclusive"
+  }
+}

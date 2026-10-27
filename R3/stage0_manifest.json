@@ -1,0 +1,153 @@
+{
+  "stage": "R3_stage_0_provenance_and_preregistration",
+  "created_date": "2026-10-27",
+  "timezone": "Asia/Bangkok",
+  "status": "completed_with_blockers",
+  "scope_note": "Read-only inspection and documentation only. No experiment scripts, source data, or result files were changed or run.",
+  "repository": {
+    "path": "cir_faiss_thesis",
+    "branch": "main",
+    "head_commit": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "head_commit_date": "2026-08-13T16:37:23+07:00",
+    "working_tree_clean": false,
+    "dirty_paths_observed": [
+      "M data/results/sweet_spots.csv",
+      "M thesis_report/main.tex",
+      "m third_party/composed_image_retrieval",
+      "?? Phase_2_Q1_Journal/",
+      "?? R3/",
+      "?? configs/",
+      "?? data/results/phase2_stageA/",
+      "?? src/phase2/",
+      "?? thesis_report/compile_latex.bat"
+    ],
+    "query_extractor_submodule": {
+      "path": "third_party/composed_image_retrieval",
+      "head_commit": "8c053297c2fae9cd17ddcded48445a4f47208dbd",
+      "dirty_paths": [
+        "M model/clip.py",
+        "?? model/__pycache__/",
+        "?? third_party/open_clip/__pycache__/"
+      ]
+    },
+    "clean_commit_available": false,
+    "handling": "Do not commit or clean unrelated work. Pin relevant inputs and source files by SHA256; create a clean, isolated commit/worktree before confirmatory runs if possible."
+  },
+  "environment": {
+    "python": "3.12.7",
+    "os": "Windows",
+    "cpu_identifier": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_processors": 12,
+    "faiss_threads_from_reference_config": 8,
+    "omp_num_threads_environment_variable": null,
+    "packages": {
+      "faiss-cpu": "1.15.1",
+      "numpy": "2.4.2",
+      "scipy": "1.15.1",
+      "pandas": "3.0.3",
+      "statsmodels": "0.14.6",
+      "PyYAML": "6.0.3",
+      "torch": "2.14.1",
+      "torchvision": "0.29.1",
+      "Pillow": "12.3.0",
+      "tqdm": "4.67.1"
+    }
+  },
+  "locked_configuration": {
+    "config_path": "configs/reference.yaml",
+    "config_sha256": "7f6fbbcab59d72934e0e3a917f077091d09f5c23e8323346ff06906119887817",
+    "dataset": "CIRCO",
+    "gallery_size": 123403,
+    "query_profile": "val_test_retention",
+    "query_count": 1020,
+    "query_split_counts": {
+      "val": 220,
+      "test": 800
+    },
+    "models": {
+      "searle": {
+        "backbone": "CLIP ViT-B/32",
+        "dimension": 512
+      },
+      "pic2word": {
+        "backbone": "CLIP ViT-L/14",
+        "dimension": 768
+      }
+    },
+    "reference_hnsw": {
+      "M": 32,
+      "efSearch": 128,
+      "efConstruction": 200,
+      "metric": "INNER_PRODUCT"
+    },
+    "stress_hnsw": {
+      "M": 16,
+      "efSearch": 32,
+      "efConstruction": 100,
+      "metric": "INNER_PRODUCT"
+    },
+    "seeds": [42, 43, 44, 45, 46],
+    "bootstrap_replicates": 2000,
+    "latency_protocol": {
+      "warmup_runs": 1,
+      "measured_runs": 7,
+      "aggregation": "median",
+      "query_batch_size": 1
+    },
+    "planned_c1_efsearch_sweep": [32, 48, 64, 96, 128, 160, 192, 256, 384],
+    "planned_c2_original_graph_M_sweep": [32, 40, 48, 64]
+  },
+  "query_identity_audit": {
+    "val": {
+      "count": 220,
+      "status": "verified_in_existing_R2_query_manifest_against_val_feature_prefix_and_ground_truth_order"
+    },
+    "test": {
+      "count": 800,
+      "status": "not_independently_verified_per_row",
+      "current_mapping": "feature rows are assigned test IDs reconstructed from annotation order and the extraction loop",
+      "evidence": "existing query_manifest.json states that the original bundle has no per-row test IDs",
+      "required_before_final_A1": "re-extract with source IDs attached or independently validate every cached row-to-ID alignment; retain a stable manifest"
+    }
+  },
+  "frozen_inputs_sha256": {
+    "configs/reference.yaml": "7F6FBBCAB59D72934E0E3A917F077091D09F5C23E8323346FF06906119887817",
+    "src/phase2/protocol.py": "371E3E3E6BFCBE4E8E27922B68975CE4B75BA1BC9A65876C48766A74C8CEF81C",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/scripts/run_reference_audit.py": "B687C1A60D257E0C82E0E8B745E21B119133CB89E93C6CAB288C501750746F3A",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/scripts/step0_build_circo_1020_queries.py": "5EE574E734BAF8B23E00E979B317D48520BD8023E8D5B05D412D3C6BEAD6AAF2",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/scripts/step3_nested_logistic.py": "EDB8E1F39B5FCA773E503613E366C601F3474339B0181CBD8D38F6D17B398570",
+    "src/extractors/base_adapter.py": "1D6FAD48C391E8E7AB156C0EB40ABAFE99753A3DE0DFC63221BF3F26C8E0FAFD",
+    "src/extractors/searle_adapter.py": "923254CC4E2FFEB31A6438EA4F50927953A95EA92315EB4C0646D2EEEEAD3309",
+    "src/extractors/pic2word_adapter.py": "9ADE9EDADB140AFB27EC2379EFFD16141F4D906A46C5EA1982004DA964142C6C",
+    "data/embeddings/searle/circo_gallery.npy": "C17A50ED309F3A993BF76CDE27D802D307384572AE40032A59F273A32FCAD903",
+    "data/embeddings/pic2word/circo_gallery.npy": "5E8BAAF2A25FAF890DB36ADD46D3EA807234D01C37C9A026E26DDFF8082CBE89",
+    "data/queries/searle/circo_queries.pkl": "9A5F65AC6E6F41FB7C87DE456F786BE5CBF46F15BBF8EAF9ED09D18E8CEBC053",
+    "data/queries/pic2word/circo_queries.pkl": "0FD1BB6934F27C884ACFA76B56AE6791E758C388EFB78540B12ABD3E92F8FE9C",
+    "data/annotations/circo/val.json": "B38E464E1CE522B2788BD183A34FD0E16F1C8A012BD7CE58DE67824C43F55EFE",
+    "data/annotations/circo/test.json": "3D9D4709E4D9C34B9A59234D1AAD8C770873A0C7C8BAEE149B9B209DE6AEC727",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_searle.pkl": "F000D39CABC90DC30C5FBA26202AD82FB41ED6F3A2DCA9646D732F49A33C1729",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_pic2word.pkl": "B0064441C5630D4DDF29C79088404F45B46233B467AF023FEE11F3ABAAEC4C2E",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/query_manifest.json": "FE20B3F1AB260E2B3B6F1AE1A94C63DF33A0DF45382FAABD9ABF395E1EF985DF",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/neighbor_level_data.parquet": "06C1708EC0F1B697BDD9CA2238FC1B024BEDBF652DC4FBCA713691D3EECBBA41",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/centering_per_query.parquet": "07B1C15C35AD9973BEDE5E9A9B59218C4941E32AE3360C1523A48A6C911EEEE4",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/results/step1_hnsw_indegree.json": "80925C3EC972BE62B6EBC38A4E84885B012AB39015011C09C6AD99FFC26913E9",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/results/step3_nested_logit.json": "E6C7A4EA8B35CDFC5BFAD2F9A0AA59146F39750232C71BAE416F283ED496313A",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/results/step4_centering.json": "9A9DBAABD8B0E287C81C84D1E7C32D898A11AD4DF70B8181B7F946D7AC06DE4B",
+    "R3/mentor_feedback_R3.md": "CC1B68CE3DC1BCFB3E9D8A1A045E1ACF0B851B9B9A4CDBDABA53EB34A3EC4D59",
+    "R3/R3_execution_plan.md_at_stage0_start": "C96B7A2D54B63EE8B3CB01C43C073EC9E01E41462384D0823AC2744D27B3BD89"
+  },
+  "existing_R2_artifacts_observed": {
+    "query_cache_searle": "present",
+    "query_cache_pic2word": "present",
+    "neighbor_level_data": "present",
+    "five_seed_reference_checkpoints_per_model": "present",
+    "centering_per_query": "present",
+    "step1_step2_step3_step4_results": "present",
+    "note": "Presence and hashes were recorded; Stage 0 did not independently rerun or revalidate the numerical results."
+  },
+  "blockers": [
+    "Repository is dirty and relevant Phase 2 source/config directories are untracked; the current HEAD alone does not identify the code used. File-level SHA256 values pin the inspected snapshot, but the clean-commit criterion is not met.",
+    "Test query feature rows do not carry source IDs; current row-to-test-ID alignment is reconstructed from order and remains unverified per row."
+  ],
+  "next_gate": "Before confirmatory C1–C3 runs, preserve this preregistration, resolve or explicitly accept the dirty-tree provenance limitation, and confirm the test-query identity handling required for any analysis that clusters by query ID."
+}

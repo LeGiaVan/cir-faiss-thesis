@@ -1,0 +1,304 @@
+{
+  "metadata": {
+    "module": "module_a1_hubness",
+    "timestamp": "2026-10-15T15:10:59.371656+00:00",
+    "git_commit": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "git_dirty": true,
+    "source_tree_sha256": "eff0d13d3daa8d9b1022a1b99abcbae816c7447d0dfbf4a9592732c99ea71ed0",
+    "random_seed": 42,
+    "hardware": {
+      "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+      "logical_cpus": 12,
+      "threads": 8
+    },
+    "versions": {
+      "numpy": "2.4.2",
+      "scipy": "1.15.1",
+      "pandas": "3.0.3",
+      "statsmodels": "0.14.6",
+      "faiss-cpu": "1.15.1",
+      "PyYAML": "6.0.3"
+    },
+    "model": [
+      "searle",
+      "pic2word"
+    ],
+    "dataset": "circo",
+    "gallery_size": {
+      "searle": 123403,
+      "pic2word": 123403
+    },
+    "num_queries": 1020,
+    "profile": "reference",
+    "index_config": {
+      "M": 32,
+      "efSearch": 128,
+      "efConstruction": 200,
+      "metric": "INNER_PRODUCT",
+      "description": "Cấu hình chuẩn đối chiếu với Bảng V bài ICRCV (Retention kỳ vọng ~97.0% SEARLE, ~91.5% Pic2Word trên CIRCO 123K)"
+    },
+    "config_sha256": "7f6fbbcab59d72934e0e3a917f077091d09f5c23e8323346ff06906119887817",
+    "resolved_config": {
+      "experiment_metadata": {
+        "version": "1.0.0",
+        "random_seed": 42,
+        "protocol_name": "ICRCV_BENCHMARK_AND_STRESS_AUDIT",
+        "created_at": "2026-10-13"
+      },
+      "execution": {
+        "num_threads": 8,
+        "batch_size": 2000,
+        "latency_benchmark": {
+          "warmup_runs": 1,
+          "measured_runs": 7,
+          "aggregation": "median",
+          "query_batch_size": 1
+        }
+      },
+      "hnsw": {
+        "reference": {
+          "M": 32,
+          "efSearch": 128,
+          "efConstruction": 200,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chuẩn đối chiếu với Bảng V bài ICRCV (Retention kỳ vọng ~97.0% SEARLE, ~91.5% Pic2Word trên CIRCO 123K)"
+        },
+        "stress": {
+          "M": 16,
+          "efSearch": 32,
+          "efConstruction": 100,
+          "metric": "INNER_PRODUCT",
+          "description": "Cấu hình chịu tải nhằm khuếch đại sai số, tạo nhiều sự kiện lỗi để phân tích cơ chế thất bại"
+        }
+      },
+      "ivf": {
+        "nlist": 1024,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "ivfpq": {
+        "nlist": 1024,
+        "m_subquantizers": 64,
+        "audit_m_list": [
+          8,
+          16
+        ],
+        "nbits": 8,
+        "nprobe_list": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "default_nprobe": 16,
+        "metric": "INNER_PRODUCT"
+      },
+      "models": {
+        "searle": {
+          "name": "searle",
+          "dimension": 512,
+          "backbone": "CLIP ViT-B/32",
+          "type": "textual_inversion"
+        },
+        "pic2word": {
+          "name": "pic2word",
+          "dimension": 768,
+          "backbone": "CLIP ViT-L/14",
+          "type": "textual_inversion"
+        }
+      },
+      "datasets": {
+        "circo": {
+          "name": "CIRCO",
+          "gallery_size": 123403,
+          "num_queries": 220,
+          "query_profiles": {
+            "val_labeled": {
+              "num_queries": 220,
+              "splits": [
+                "val"
+              ],
+              "ground_truth": true
+            },
+            "val_test_retention": {
+              "num_queries": 1020,
+              "splits": [
+                "val",
+                "test"
+              ],
+              "ground_truth": false
+            }
+          },
+          "k_eval": 10
+        },
+        "fashioniq": {
+          "name": "FashionIQ",
+          "categories": [
+            "dress",
+            "shirt",
+            "toptee"
+          ],
+          "k_eval": 10
+        }
+      },
+      "metrics": {
+        "relative_contrast": {
+          "formula": "mean(random_nonself_cosine_distance) / mean(nearest_nonself_cosine_distance)",
+          "distance": "1 - inner_product_of_unit_vectors",
+          "k_nn": 1,
+          "random_pairs": 20000,
+          "sample_size": 10000,
+          "note": "Định nghĩa chuẩn hóa để tránh nhầm lẫn giữa Bảng VIII ICRCV và các module mới"
+        },
+        "local_intrinsic_dimensionality": {
+          "estimator": "levina_bickel_mle",
+          "k_nn": 20,
+          "sample_size": 10000,
+          "distance": "euclidean_chord_on_unit_sphere",
+          "formula": "mean((k-1) / sum_j<k(log(T_k/T_j)))",
+          "zero_distance_policy": "exclude_neighborhood_with_nonpositive_distance; report_count",
+          "note": "Ước lượng chiều nội tại cục bộ qua MLE"
+        },
+        "hubness": {
+          "k_occurrence": 10,
+          "hub_threshold_factor": 3,
+          "super_hub_factor": 5,
+          "statistical_test": "two_sided_mann_whitney_u",
+          "alpha": 0.05
+        }
+      },
+      "audit": {
+        "bootstrap_replicates": 2000,
+        "hnsw_build_seeds": [
+          42,
+          43,
+          44,
+          45,
+          46
+        ],
+        "hnsw_profile": "reference",
+        "query_profile": "val_test_retention",
+        "graph_degree_bins": [
+          0,
+          1,
+          5,
+          10,
+          30
+        ],
+        "geometry_seed": 42
+      }
+    },
+    "inputs": [
+      {
+        "path": "data/embeddings/searle/circo_gallery.npy",
+        "sha256": "c17a50ed309f3a993bf76cde27d802d307384572ae40032a59f273a32fcad903",
+        "bytes": 252729472
+      },
+      {
+        "path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_searle.pkl",
+        "sha256": "f000d39cabc90dc30c5fba26202ad82fb41ed6f3a2dca9646d732f49a33c1729",
+        "bytes": 2103880
+      },
+      {
+        "path": "data/queries/searle/circo_queries.pkl",
+        "sha256": "9a5f65ac6e6f41fb7c87de456f786be5cbf46f15bbf8eaf9ed09d18e8cebc053",
+        "bytes": 465812
+      },
+      {
+        "path": "data/annotations/circo/val.json",
+        "sha256": "b38e464e1ce522b2788bd183a34fd0e16f1c8a012bd7ce58de67824c43f55efe",
+        "bytes": 116026
+      },
+      {
+        "path": "data/annotations/circo/test.json",
+        "sha256": "3d9d4709e4d9c34b9a59234d1aad8c770873a0c7c8baee149b9b209de6aec727",
+        "bytes": 172461
+      },
+      {
+        "path": "data/embeddings/pic2word/circo_gallery.npy",
+        "sha256": "5e8baaf2a25faf890db36add46d3ea807234d01c37c9a026e26ddff8082cbe89",
+        "bytes": 379094144
+      },
+      {
+        "path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_pic2word.pkl",
+        "sha256": "b0064441c5630d4ddf29c79088404f45b46233b467af023fee11f3abaaec4c2e",
+        "bytes": 3148362
+      },
+      {
+        "path": "data/queries/pic2word/circo_queries.pkl",
+        "sha256": "0fd1bb6934f27c884acfa76b56ae6791e758c388efb78540b12abd3e92f8fe9c",
+        "bytes": 691092
+      },
+      {
+        "path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/query_manifest.json",
+        "sha256": "fe20b3f1ab260e2b3b6f1ae1a94c63df33a0df45382faabd9abf395e1ef985df",
+        "bytes": 65573
+      }
+    ],
+    "query_profile": "val_test_retention",
+    "normalization": "gallery/query L2; centered gallery not renormalized",
+    "build_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "nondeterminism_note": "OpenMP HNSW insertion may differ even with identical RNG seed",
+    "query_alignment_limitations": "reconstructed from step0 extraction loop and test annotation order; original bundle has no per-row IDs",
+    "step": "step1_build_neighbor_dataset",
+    "primary_seed": 42
+  },
+  "results": {
+    "searle": {
+      "n_rows": 10200,
+      "n_queries": 1020,
+      "n_gallery": 123403,
+      "dim": 512,
+      "overall_miss_rate": 0.03323529411764706,
+      "retention_at_10": 0.966764705882353,
+      "antihub_gallery_count": 115076,
+      "antihub_gallery_ratio": 0.9325218997917393,
+      "k_occurrence_skewness": 6.7991929952867265,
+      "in_degree_indeg0_ratio": 4.8621184249977716e-05,
+      "primary_seed": 42,
+      "graph": {
+        "indegree_mean": 21.53582976102688,
+        "indegree_zero_ratio": 4.8621184249977716e-05,
+        "indegree_max": 176,
+        "indegree_skewness": 1.4668904739993534,
+        "outdegree_mean": 21.53582976102688,
+        "outdegree_zero_ratio": 0.0,
+        "edges": 2657586
+      }
+    },
+    "pic2word": {
+      "n_rows": 10200,
+      "n_queries": 1020,
+      "n_gallery": 123403,
+      "dim": 768,
+      "overall_miss_rate": 0.09156862745098039,
+      "retention_at_10": 0.9084313725490196,
+      "antihub_gallery_count": 115336,
+      "antihub_gallery_ratio": 0.934628817775905,
+      "k_occurrence_skewness": 8.329794821169095,
+      "in_degree_indeg0_ratio": 0.00011344942991661467,
+      "primary_seed": 42,
+      "graph": {
+        "indegree_mean": 18.3100491884314,
+        "indegree_zero_ratio": 0.00011344942991661467,
+        "indegree_max": 145,
+        "indegree_skewness": 1.6199900854028666,
+        "outdegree_mean": 18.3100491884314,
+        "outdegree_zero_ratio": 0.0,
+        "edges": 2259515
+      }
+    }
+  }
+}

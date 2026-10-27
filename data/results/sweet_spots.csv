@@ -5,18 +5,18 @@ pic2word,circo,IVFPQ,m16_nprobe32,30.3,16.5,0.0,1,0.013,KHONG dat 95.0% - lay re
 searle,circo,HNSWFlat,M32_ef128,22.8,97.0,0.27,5,1.133,OK (>= 95.0%)
 searle,circo,IVFFlat,nlist351_nprobe32,6.8,96.3,0.0,1,1.007,OK (>= 95.0%)
 searle,circo,IVFPQ,m16_nprobe32,102.0,20.3,0.0,1,0.017,KHONG dat 95.0% - lay retention cao nhat
-clip4cir,cirr,HNSWFlat,M16_ef32,4.1,96.2,0.14,5,1.056,OK (>= 95.0%)
-clip4cir,cirr,IVFFlat,nlist48_nprobe8,1.8,95.4,0.0,1,1.024,OK (>= 95.0%)
-clip4cir,cirr,IVFPQ,m16_nprobe32,1.8,57.1,0.0,1,0.142,KHONG dat 95.0% - lay retention cao nhat
+clip4cir,cirr,HNSWFlat,M16_ef32,4.1,98.57,0.026,5,1.056,OK (>= 95.0%)
+clip4cir,cirr,IVFFlat,nlist48_nprobe8,1.8,97.93,0.0,1,1.024,OK (>= 95.0%)
+clip4cir,cirr,IVFPQ,m16_nprobe32,1.8,63.52,0.0,1,0.142,KHONG dat 95.0% - lay retention cao nhat
 pic2word,cirr,HNSWFlat,M32_ef32,2.9,98.2,0.1,5,1.088,OK (>= 95.0%)
 pic2word,cirr,IVFFlat,nlist48_nprobe8,1.8,96.6,0.0,1,1.023,OK (>= 95.0%)
 pic2word,cirr,IVFPQ,m16_nprobe32,2.0,55.5,0.0,1,0.14,KHONG dat 95.0% - lay retention cao nhat
 searle,cirr,HNSWFlat,M16_ef32,4.7,95.9,0.1,5,1.07,OK (>= 95.0%)
 searle,cirr,IVFFlat,nlist48_nprobe8,1.7,97.8,0.0,1,1.025,OK (>= 95.0%)
 searle,cirr,IVFPQ,m16_nprobe32,1.7,58.7,0.0,1,0.144,KHONG dat 95.0% - lay retention cao nhat
-clip4cir,fashioniq,HNSWFlat,M32_ef128,1.2,99.1,0.05,5,1.106,OK (>= 95.0%)
-clip4cir,fashioniq,IVFFlat,nlist62_nprobe32 / nlist73_nprobe32 / nlist80_nprobe32,1.2,96.5,0.0,1,1.017,OK (>= 95.0%)
-clip4cir,fashioniq,IVFPQ,m16_nprobe62 / m16_nprobe73 / m16_nprobe80,2.8,32.1,0.0,1,0.073,KHONG dat 95.0% - lay retention cao nhat
+clip4cir,fashioniq,HNSWFlat,M32_ef128,1.2,99.74,0.02,5,1.106,OK (>= 95.0%)
+clip4cir,fashioniq,IVFFlat,nlist62_nprobe32 / nlist73_nprobe32 / nlist80_nprobe32,1.2,98.46,0.0,1,1.017,OK (>= 95.0%)
+clip4cir,fashioniq,IVFPQ,m16_nprobe62 / m16_nprobe73 / m16_nprobe80,2.8,38.82,0.0,1,0.073,KHONG dat 95.0% - lay retention cao nhat
 pic2word,fashioniq,HNSWFlat,M32_ef128,1.1,98.8,0.03,5,1.088,OK (>= 95.0%)
 pic2word,fashioniq,IVFFlat,nlist62_nprobe32 / nlist73_nprobe32 / nlist80_nprobe32,0.9,96.7,0.0,1,1.016,OK (>= 95.0%)
 pic2word,fashioniq,IVFPQ,m16_nprobe62 / m16_nprobe73 / m16_nprobe80,2.8,30.8,0.0,1,0.071,KHONG dat 95.0% - lay retention cao nhat

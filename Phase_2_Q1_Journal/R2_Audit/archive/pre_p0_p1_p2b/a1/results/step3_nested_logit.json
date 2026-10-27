@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "module": "module_a1_hubness",
+    "step": "step3_nested_logit",
+    "timestamp": "2026-10-14T07:59:43.364876Z",
+    "method": "GEE_independence_clustered_by_query_id",
+    "models": [
+      "M0",
+      "M1",
+      "M2"
+    ]
+  },
+  "results": {
+    "M0": {
+      "coefficients": {
+        "Intercept": {
+          "coef": -3.4693818456677303,
+          "std_err": 0.07433392752686133,
+          "p_value": 0.0,
+          "ci_95_lower": -3.615073666449789,
+          "ci_95_upper": -3.323690024885672
+        },
+        "is_pic2word": {
+          "coef": 1.2050179654938822,
+          "std_err": 0.08068170569983435,
+          "p_value": 1.937478074299595e-50,
+          "ci_95_lower": 1.0468847281109468,
+          "ci_95_upper": 1.3631512028768176
+        }
+      },
+      "qic": 9127.251068702037,
+      "pseudo_r2_mcfadden": null,
+      "pseudo_r2_note": "GEE is not ordinary maximum-likelihood logistic regression; use QIC when available.",
+      "qicu": 9130.709212492886
+    },
+    "M1": {
+      "coefficients": {
+        "Intercept": {
+          "coef": 0.11936517119879739,
+          "std_err": 0.18827046153566215,
+          "p_value": 0.5260749342144342,
+          "ci_95_lower": -0.24963815276383397,
+          "ci_95_upper": 0.4883684951614288
+        },
+        "is_pic2word": {
+          "coef": 0.8986925626882463,
+          "std_err": 0.08474544018389867,
+          "p_value": 2.836370136094402e-26,
+          "ci_95_lower": 0.7325945520738114,
+          "ci_95_upper": 1.064790573302681
+        },
+        "rank": {
+          "coef": 0.05627479435157952,
+          "std_err": 0.01030434802694092,
+          "p_value": 4.727487985431677e-08,
+          "ci_95_lower": 0.036078643334608945,
+          "ci_95_upper": 0.07647094536855009
+        },
+        "log_n10": {
+          "coef": 0.25016231665644767,
+          "std_err": 0.08653423325556393,
+          "p_value": 0.0038413324489680735,
+          "ci_95_lower": 0.08055833604575413,
+          "ci_95_upper": 0.4197662972671412
+        },
+        "log_indeg": {
+          "coef": -1.4965872471326835,
+          "std_err": 0.05805054944813485,
+          "p_value": 1.4575074590659199e-146,
+          "ci_95_lower": -1.6103642333337893,
+          "ci_95_upper": -1.3828102609315778
+        }
+      },
+      "qic": 8058.898324522546,
+      "pseudo_r2_mcfadden": null,
+      "pseudo_r2_note": "GEE is not ordinary maximum-likelihood logistic regression; use QIC when available.",
+      "qicu": 8067.314198251696
+    },
+    "M2": {
+      "coefficients": {
+        "Intercept": {
+          "coef": 8.245342276767357,
+          "std_err": 0.82364548819459,
+          "p_value": 1.3665644495640037e-23,
+          "ci_95_lower": 6.63102678387705,
+          "ci_95_upper": 9.859657769657662
+        },
+        "is_pic2word": {
+          "coef": 0.09013714657605866,
+          "std_err": 0.11741006205664911,
+          "p_value": 0.4426581382546021,
+          "ci_95_lower": -0.13998234647758634,
+          "ci_95_upper": 0.3202566396297037
+        },
+        "rank": {
+          "coef": 0.05797873292873864,
+          "std_err": 0.010561910749342604,
+          "p_value": 4.0326244671234176e-08,
+          "ci_95_lower": 0.037277768252100676,
+          "ci_95_upper": 0.0786796976053766
+        },
+        "log_n10": {
+          "coef": 0.3883671253322207,
+          "std_err": 0.08474946073147846,
+          "p_value": 4.593791350086183e-06,
+          "ci_95_lower": 0.2222612345893313,
+          "ci_95_upper": 0.55447301607511
+        },
+        "log_indeg": {
+          "coef": -1.4994451758177234,
+          "std_err": 0.059602914774785055,
+          "p_value": 1.177400791276984e-139,
+          "ci_95_lower": -1.6162647421499123,
+          "ci_95_upper": -1.3826256094855345
+        },
+        "s1": {
+          "coef": -26.677424257710733,
+          "std_err": 2.4427765189311152,
+          "p_value": 9.153992809127723e-28,
+          "ci_95_lower": -31.465178257095843,
+          "ci_95_upper": -21.889670258325623
+        },
+        "c_contrast": {
+          "coef": 19.719716655281392,
+          "std_err": 2.699631544247711,
+          "p_value": 2.781019165613569e-13,
+          "ci_95_lower": 14.428536057027628,
+          "ci_95_upper": 25.010897253535155
+        }
+      },
+      "qic": 7780.780519378802,
+      "pseudo_r2_mcfadden": null,
+      "pseudo_r2_note": "GEE is not ordinary maximum-likelihood logistic regression; use QIC when available.",
+      "qicu": 7791.983734497007
+    }
+  },
+  "beta_model_path": {
+    "M0": 1.2050179654938822,
+    "M1": 0.8986925626882463,
+    "M2": 0.09013714657605866
+  },
+  "interpretation_note": "If beta drops M0→M1: Hubness explains the gap. If beta drops M1→M2 only: Query features are the mechanism. Stable beta_model with near-zero drop at M1 → Hubness hypothesis not supported."
+}
