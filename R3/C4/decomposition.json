@@ -1,0 +1,169 @@
+{
+  "seed": 42,
+  "sample": "original graphs, all queries and exact neighbors, 1 build per model",
+  "method": "unpenalized logistic regression; standardized predictors; counterfactual distributions use same row/rank coupling; ordered group replacement is descriptive and coupling-dependent",
+  "features": [
+    "rank",
+    "log1p_indegree",
+    "log1p_n10_gallery",
+    "s1",
+    "s100"
+  ],
+  "point": {
+    "gap": 0.058333333333333334,
+    "forward_explained": 0.06367492284481328,
+    "forward_unexplained": -0.005341589511479949,
+    "reverse_explained": 0.051596932567089485,
+    "reverse_unexplained": 0.00673640076624385,
+    "forward_groups": {
+      "node_then_query": [
+        0.014940581397979963,
+        0.04873436499980798
+      ],
+      "query_then_node": [
+        0.029784582732220496,
+        0.03389036366556745
+      ]
+    },
+    "reverse_groups": {
+      "node_then_query": [
+        0.013884150387422793,
+        0.03771277943357947
+      ],
+      "query_then_node": [
+        0.023163053425838145,
+        0.02843387639516412
+      ]
+    }
+  },
+  "bootstrap_ci_95": {
+    "gap": [
+      0.048330882352941175,
+      0.06804166666666664
+    ],
+    "forward_explained": [
+      0.04439805221544038,
+      0.08539181218005217
+    ],
+    "forward_unexplained": [
+      -0.03111137536095271,
+      0.017737970738334566
+    ],
+    "reverse_explained": [
+      0.04305816680982907,
+      0.06026501616923205
+    ],
+    "reverse_unexplained": [
+      -0.0007400317390826523,
+      0.014863942471165662
+    ],
+    "forward_node_first_node": [
+      0.010719325561994956,
+      0.017812756623039886
+    ],
+    "forward_node_first_query": [
+      0.029590461545369713,
+      0.07174092824399504
+    ],
+    "forward_query_first_node": [
+      0.02377327237249545,
+      0.03805578559934724
+    ],
+    "forward_query_first_query": [
+      0.018838037420148845,
+      0.04991020212067108
+    ],
+    "reverse_node_first_node": [
+      0.010439868770830958,
+      0.016541042452900334
+    ],
+    "reverse_node_first_query": [
+      0.028742616269733956,
+      0.04758746531355232
+    ],
+    "reverse_query_first_node": [
+      0.01986557464526784,
+      0.02775387403070547
+    ],
+    "reverse_query_first_query": [
+      0.020875655546680163,
+      0.03506974009334509
+    ]
+  },
+  "bootstrap_attempts": 2000,
+  "bootstrap_success": 2000,
+  "bootstrap_failed": 0,
+  "predictor_ranges": {
+    "rank": {
+      "searle_minmax": [
+        1.0,
+        10.0
+      ],
+      "pic2word_minmax": [
+        1.0,
+        10.0
+      ],
+      "intersection": [
+        1.0,
+        10.0
+      ]
+    },
+    "log1p_indegree": {
+      "searle_minmax": [
+        0.6931471805599453,
+        4.762173934797756
+      ],
+      "pic2word_minmax": [
+        0.6931471805599453,
+        4.836281906951478
+      ],
+      "intersection": [
+        0.6931471805599453,
+        4.762173934797756
+      ]
+    },
+    "log1p_n10_gallery": {
+      "searle_minmax": [
+        0.0,
+        4.672828834461906
+      ],
+      "pic2word_minmax": [
+        0.0,
+        4.836281906951478
+      ],
+      "intersection": [
+        0.0,
+        4.672828834461906
+      ]
+    },
+    "s1": {
+      "searle_minmax": [
+        0.28686410188674927,
+        0.44182395935058594
+      ],
+      "pic2word_minmax": [
+        0.2676333785057068,
+        0.4586661458015442
+      ],
+      "intersection": [
+        0.28686410188674927,
+        0.44182395935058594
+      ]
+    },
+    "s100": {
+      "searle_minmax": [
+        0.2387072592973709,
+        0.3602970242500305
+      ],
+      "pic2word_minmax": [
+        0.19916313886642456,
+        0.35185742378234863
+      ],
+      "intersection": [
+        0.2387072592973709,
+        0.35185742378234863
+      ]
+    }
+  },
+  "limitation": "query-level bootstrap does not address shared image clusters, cross-model covariate support and synthetic mixed rows may be implausible; no causal interpretation"
+}

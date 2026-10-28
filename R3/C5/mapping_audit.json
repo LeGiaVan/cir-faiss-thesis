@@ -1,0 +1,58 @@
+{
+  "searle": {
+    "query_count": 1020,
+    "val_prefix_verified": true,
+    "val_target_order_verified": true,
+    "exact_top10_invariance": true,
+    "c4_exact_verified_by_recomputation": true,
+    "retention_checkpoint_row_matches": true,
+    "r2_checkpoints_sha256": {
+      "reference_searle_42_before.npz": "833399c8a654aa4a73a96cdef90dca916ebc39e21ec219a28ac19082a5054f74",
+      "reference_searle_42_after.npz": "eb2f540fb7b3b0fd3446c30bf2cf869cf000f85bbf359bafee54d104e711e135",
+      "reference_searle_43_before.npz": "8c8a35ef54d8f29b50eec9d62e75b04bf0f9ed9f8e3ad9bebd10bab603da9a76",
+      "reference_searle_43_after.npz": "271046f2c5df7c6dd0fa74d242e8bc98cd9edaeedee22119ab85e6e96d67b713",
+      "reference_searle_44_before.npz": "c57ff040ebe5e4d21baef65f24c245b862a8d8bf5ce88c1df751efc40ee2a8c1",
+      "reference_searle_44_after.npz": "f154367aa39a5fa7b4b1812a99fe4c720ce8ec02a6928736da569021136f7d1e",
+      "reference_searle_45_before.npz": "4496bac1aca250a00a6bb229d8d855409ba91490c35a708d32cf9c8a1ef24f39",
+      "reference_searle_45_after.npz": "e49f6237237f2e6fda09fdfe96a901753dd9cab8d65cba1a9f6e1f1e5b293963",
+      "reference_searle_46_before.npz": "af67b7d79ddd8630765d30a220442f6e5baf23db3c81e55520f7c10eac8f1497",
+      "reference_searle_46_after.npz": "0ab82501e52f8aa9b0db1911203f41ad14bd01e0dd7c5d4526635864d3ddc2bb"
+    },
+    "c4_query_sha256": "2306f5a1af742f6cec49536dff8c91ab2c69e928c076b3dad9421d21767a919b",
+    "s1_boundary_tie_counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "test_identity_limitation": "row/ID alignment reconstructed from annotations; source ID per feature row not independently verified"
+  },
+  "pic2word": {
+    "query_count": 1020,
+    "val_prefix_verified": true,
+    "val_target_order_verified": true,
+    "exact_top10_invariance": true,
+    "c4_exact_verified_by_recomputation": true,
+    "retention_checkpoint_row_matches": true,
+    "r2_checkpoints_sha256": {
+      "reference_pic2word_42_before.npz": "0c593ef1aaf14cbd154dde162c1edad1d5b17953bc97237dcc05d0f5a197f712",
+      "reference_pic2word_42_after.npz": "78b5be14fa33d1ed093cc0cbb2b818074293a63f4a35992e06c9673022cd7c8f",
+      "reference_pic2word_43_before.npz": "eaff12fd72763a4aba3b4cba17ca51d9cf6d9123dbed41519dcaf10f052d86a8",
+      "reference_pic2word_43_after.npz": "d818eba9e77a7edee2d25cc691c7cd86c31cdc1a8a74a1f756d8207468cc5150",
+      "reference_pic2word_44_before.npz": "0bac1ba3f40edb6e4cdcf2707cd813e70770c469b2af47c5c8aa707f0d30d076",
+      "reference_pic2word_44_after.npz": "a2043516e1c2e2caffe76e47db1fd14aa3856682febdf01b9db82d6bb16d4eb6",
+      "reference_pic2word_45_before.npz": "de40c85d3c26237b1986da63e95dbeba67a449e86c5f941ba9fceabef0eec344",
+      "reference_pic2word_45_after.npz": "51661985a5aff8890ff05cb0b871efe3d95db6ea54ecf0c4ca56b72557b96a80",
+      "reference_pic2word_46_before.npz": "c300df73e781b8c6ac262c91a0d1ec5ab78df87c054f9083d4335b64abefd90d",
+      "reference_pic2word_46_after.npz": "d19c9c5c974437f2f64da6f04a27336837fc720d0807226c58bc864b12024b0e"
+    },
+    "c4_query_sha256": "2f93ee3cfe6ef6ccfb6a12c80aadda29e60ddb5b47842c6baf8a51e615e7684e",
+    "s1_boundary_tie_counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "test_identity_limitation": "row/ID alignment reconstructed from annotations; source ID per feature row not independently verified"
+  }
+}

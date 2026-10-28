@@ -20,6 +20,16 @@ data/annotations/
 # Screenshots of tables from third-party papers (copyrighted, cited by reference instead)
 data/third_party_results/
 
+# R3: giữ báo cáo, hình, cấu hình và bảng kết quả tổng hợp; bỏ dữ liệu thô,
+# checkpoint, dữ liệu theo từng query và tệp log của các lần chạy.
+/R3/**/data/
+/R3/**/*.npz
+/R3/**/*.npy
+/R3/**/*.parquet
+/R3/**/*.pkl
+/R3/**/*.pickle
+/R3/**/*.log
+
 # NOTE: data/results/ is intentionally NOT ignored - it holds our own generated
 # benchmark CSVs/JSON/artifact, which back the paper's claims and are small.
 

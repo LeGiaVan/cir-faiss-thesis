@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "module": "R3_C3",
+    "timestamp_utc": "2026-10-27T08:14:31.701194+00:00",
+    "signature": "d4749db292d0302fe2f2038f5ffa1c7d3886df16948c36b0f3e7a4d23ed270ed",
+    "inputs_sha256": {
+      "configs/reference.yaml": "F642E69FF1F482CEB7128A3D986693E7DE965BAEA255B9386E43A27599201341",
+      "data/embeddings/searle/circo_gallery.npy": "C17A50ED309F3A993BF76CDE27D802D307384572AE40032A59F273A32FCAD903",
+      "data/embeddings/pic2word/circo_gallery.npy": "5E8BAAF2A25FAF890DB36ADD46D3EA807234D01C37C9A026E26DDFF8082CBE89",
+      "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_searle.pkl": "F000D39CABC90DC30C5FBA26202AD82FB41ED6F3A2DCA9646D732F49A33C1729",
+      "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_pic2word.pkl": "B0064441C5630D4DDF29C79088404F45B46233B467AF023FEE11F3ABAAEC4C2E"
+    },
+    "config_lf_normalized_sha256": "7F6FBBCAB59D72934E0E3A917F077091D09F5C23E8323346FF06906119887817",
+    "script_sha256": "66940c0bc41133e56740e442c53320c0bcc64bd6cd6dfbd7d73c58a51f2e5119",
+    "protocol_sha256": "931b8b8afb836c5b42dfcab2b9d5a5c196dd39e29223e42f50ace5157d9582e7",
+    "git_commit_stage0": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+    "git_dirty": true,
+    "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "threads": 8,
+    "python": "3.12.7",
+    "faiss": "1.15.1",
+    "numpy": "2.4.2",
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "M": 32,
+    "efConstruction": 200,
+    "efSearch": 128,
+    "metric": "squared L2",
+    "distance_absolute_tolerance": 1e-05,
+    "random_pair_count": 10000,
+    "random_pair_seed": 42,
+    "query_id_provenance": "800 test IDs reconstructed by row order and not independently verified"
+  },
+  "models": {
+    "searle": {
+      "exact": {
+        "identical_top10": false,
+        "different_top10_rows": 1,
+        "different_top10_set_rows": 0,
+        "rank_inversions": [
+          {
+            "query_row": 602,
+            "ids": [
+              26638,
+              109829
+            ],
+            "original_distance_gap": 1.1920928955078125e-07,
+            "centered_distance_gap": 2.384185791015625e-07
+          }
+        ],
+        "max_top10_distance_error": 9.5367431640625e-07,
+        "max_sampled_pair_distance_error": 8.612649327055522e-08,
+        "tolerance_squared_l2": 1e-05,
+        "n_sampled_pairs": 10000,
+        "n_queries": 1020,
+        "n_gallery": 123403,
+        "dimension": 512
+      },
+      "mean_delta": 0.0,
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "per_seed_delta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "pic2word": {
+      "exact": {
+        "identical_top10": true,
+        "different_top10_rows": 0,
+        "different_top10_set_rows": 0,
+        "rank_inversions": [],
+        "max_top10_distance_error": 8.344650268554688e-07,
+        "max_sampled_pair_distance_error": 3.962261319045979e-08,
+        "tolerance_squared_l2": 1e-05,
+        "n_sampled_pairs": 10000,
+        "n_queries": 1020,
+        "n_gallery": 123403,
+        "dimension": 768
+      },
+      "mean_delta": 0.0,
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "per_seed_delta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "bootstrap_replicates": 2000
+}

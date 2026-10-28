@@ -1,0 +1,44 @@
+{
+  "module": "R3_C5",
+  "timestamp_utc": "2026-10-27T15:55:41.739265+00:00",
+  "input_sha256": {
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/centering_per_query.parquet": "07B1C15C35AD9973BEDE5E9A9B59218C4941E32AE3360C1523A48A6C911EEEE4",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/query_manifest.json": "FE20B3F1AB260E2B3B6F1AE1A94C63DF33A0DF45382FAABD9ABF395E1EF985DF",
+    "configs/reference.yaml": "F642E69FF1F482CEB7128A3D986693E7DE965BAEA255B9386E43A27599201341",
+    "src/phase2/protocol.py": "931B8B8AFB836C5B42DFCAB2B9D5A5C196DD39E29223E42F50ACE5157D9582E7",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/scripts/run_reference_audit.py": "D852E358E4E34AF757633453DE63204A62CBB60ED530887A34BC79686A13FE1F",
+    "data/annotations/circo/val.json": "B38E464E1CE522B2788BD183A34FD0E16F1C8A012BD7CE58DE67824C43F55EFE",
+    "data/annotations/circo/test.json": "3D9D4709E4D9C34B9A59234D1AAD8C770873A0C7C8BAEE149B9B209DE6AEC727",
+    "data/embeddings/searle/circo_gallery.npy": "C17A50ED309F3A993BF76CDE27D802D307384572AE40032A59F273A32FCAD903",
+    "data/embeddings/pic2word/circo_gallery.npy": "5E8BAAF2A25FAF890DB36ADD46D3EA807234D01C37C9A026E26DDFF8082CBE89",
+    "data/queries/searle/circo_queries.pkl": "9A5F65AC6E6F41FB7C87DE456F786BE5CBF46F15BBF8EAF9ED09D18E8CEBC053",
+    "data/queries/pic2word/circo_queries.pkl": "0FD1BB6934F27C884ACFA76B56AE6791E758C388EFB78540B12ABD3E92F8FE9C",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_searle.pkl": "F000D39CABC90DC30C5FBA26202AD82FB41ED6F3A2DCA9646D732F49A33C1729",
+    "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/circo_1020_queries_pic2word.pkl": "B0064441C5630D4DDF29C79088404F45B46233B467AF023FEE11F3ABAAEC4C2E"
+  },
+  "script_sha256": "ef17dadb18240cacf79a6a4044bc2565bf8c08790ccfda1187db5809a99baacf",
+  "c4_manifest_sha256": "53fd73de1d84bc55533a1b4b4f616fdd327c368921405402a54ebaa8ebe7db1c",
+  "git_commit_stage0": "727b9b7bc17e3bbed1c6126f1a5ddbd2e24c6425",
+  "git_dirty": true,
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "faiss": "1.15.1",
+  "numpy": "2.4.2",
+  "pandas": "3.0.3",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 42,
+  "reference_index": {
+    "M": 32,
+    "efConstruction": 200,
+    "efSearch": 128
+  },
+  "test_query_identity": "row/ID alignment reconstructed from annotations; source ID per feature row not independently verified",
+  "bootstrap_primary": "query within fixed quintile after averaging five seeds",
+  "bootstrap_sensitivity": "crossed paired seed and query within fixed quintile"
+}
