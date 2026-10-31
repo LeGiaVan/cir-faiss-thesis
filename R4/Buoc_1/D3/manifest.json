@@ -1,0 +1,51 @@
+{
+  "module": "R4_D3",
+  "timestamp_utc": "2026-10-31T07:08:16.586728+00:00",
+  "script_commit": "7b8884577b560d62d745ccaf6590058871f3cdb3",
+  "source_snapshot_clean": true,
+  "script_sha256": "254378b97da818440093bc1658af3b6667a6a8151beb348e6cc29cd6b7a3b337",
+  "preregistration_sha256": "f67dc15492982534e4092248914cba9382c9e983421a7804696b167b3b6d902e",
+  "d1_manifest_sha256": "e756c5adf3e7495ef189fa24543ce34b115da4e41b841da616750c80dc6b6258",
+  "c4_manifest_sha256": "53fd73de1d84bc55533a1b4b4f616fdd327c368921405402a54ebaa8ebe7db1c",
+  "step0_comparison_sha256": "2fa228fa660fe118480c017fd0bfef7202a3d96708b1f441f598e92159e200b8",
+  "query_manifest_sha256": "fe20b3f1ab260e2b3b6f1ae1a94c63df33a0df45382faabd9abf395e1ef985df",
+  "inputs": {
+    "searle": {
+      "gallery_sha256": "c17a50ed309f3a993bf76cde27d802d307384572ae40032a59f273a32fcad903",
+      "query_cache_sha256": "f000d39cabc90dc30c5fba26202ad82fb41ed6f3a2dca9646d732f49a33c1729",
+      "validation_cache_sha256": "9a5f65ac6e6f41fb7c87de456f786be5cbf46f15bbf8eaf9ed09d18e8cebc053",
+      "centrality_sha256": "2f0b59b13b8c603fc25f3069d45552fc72136c53a0afda64ef7ed7210b3670e5",
+      "c4_query_sha256": "2306f5a1af742f6cec49536dff8c91ab2c69e928c076b3dad9421d21767a919b",
+      "c4_top10_exact_recomputed_and_equal": true,
+      "validation_prefix_and_target_order_verified": true,
+      "step0_matching_rows": 800,
+      "step0_ambiguous_rows": 2
+    },
+    "pic2word": {
+      "gallery_sha256": "5e8baaf2a25faf890db36add46d3ea807234d01c37c9a026e26ddff8082cbe89",
+      "query_cache_sha256": "b0064441c5630d4ddf29c79088404f45b46233b467af023fee11f3abaaec4c2e",
+      "validation_cache_sha256": "0fd1bb6934f27c884acfa76b56ae6791e758c388efb78540b12abd3e92f8fe9c",
+      "centrality_sha256": "1ef503155a5729773f30f07db6bc094375bd504309f39c4c9c0d5f947ad33ed8",
+      "c4_query_sha256": "2f93ee3cfe6ef6ccfb6a12c80aadda29e60ddb5b47842c6baf8a51e615e7684e",
+      "c4_top10_exact_recomputed_and_equal": true,
+      "validation_prefix_and_target_order_verified": true,
+      "step0_matching_rows": 800,
+      "step0_ambiguous_rows": 2
+    }
+  },
+  "seeds_bootstrap": 42,
+  "bootstrap_replicates": 2000,
+  "bootstrap": "paired query clusters across models; percentile CI; 10 neighbors kept per query; gallery fixed",
+  "n_queries": 1020,
+  "sensitivity_excluded_ids": [
+    "test:251",
+    "test:631"
+  ],
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "numpy": "2.4.2",
+  "scipy": "1.15.1",
+  "faiss": "1.15.1",
+  "faiss_threads": 8,
+  "limitations": "Query IDs in historical cache reconstructed by row order; duplicate IDs share input; query bootstrap does not fully account for reused gallery images; R4 hypothesis after R3; CIs not simultaneous; normalized centrality is not a shared embedding space"
+}

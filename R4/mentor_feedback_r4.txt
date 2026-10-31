@@ -1,0 +1,198 @@
+C1 và C3 đã đủ chặt để đưa vào bài em nhé; C5 cần đọc lại vì có hiệu ứng trần; C2 không khớp được mật độ, nhưng chính điều đó là một phát hiện và có cách thiết kế khác để trả lời câu hỏi gốc; C4 có một giả thuyết cơ chế cụ thể, kiểm định được ngay bằng dữ liệu em đã có.
+1. Tóm tắt
+Phần	Kết quả chính	Đánh giá	Việc tiếp theo
+C1	Ở cùng ndis, Pic2Word tăng 1,4–2,5 điểm, cả 5 khoảng tin cậy đều dương; SEARLE không khác biệt	Đạt. Thiết kế và trình bày tốt	Bổ sung chi phí ở cùng mức retention, bộ nhớ (Mục 2)
+C3	Dịch cả truy vấn và gallery dưới L2: đồ thị, ndis và retention giống hệt	Đạt. Hiệu ứng chỉ tồn tại với tích vô hướng trên vector không chuẩn hoá	Không cần làm thêm
+C5	Mức tăng tuyệt đối của Pic2Word giảm dần theo s1 (6,2 → 2,7 điểm)	Phần lớn là hiệu ứng trần: tính theo tỉ lệ, centering giảm khoảng 45% số lần bỏ sót ở mọi nhóm s1	Phân tích lại trên thang tương đối (Mục 3)
+C2	Tăng M từ 32 lên 64 chỉ thêm 4–5% số cạnh, không đuổi kịp đồ thị centering (+38% với Pic2Word)	Không khớp được mật độ bằng M; mật độ do bước chọn láng giềng quyết định	Khớp bậc từng nút bằng cách cắt cạnh đồ thị centering (Mục 4)
+C4	Lợi ích của Pic2Word chủ yếu đến từ láng giềng được nâng bậc vào; centering làm độ lệch N10 phía gallery tăng chứ không giảm	Cơ chế chưa rõ; MCS hai model chênh quá ít để tự giải thích	Kiểm định giả thuyết "độ trung tâm" (Mục 5)
+
+Thứ tự ưu tiên (chi tiết ở Mục 7):
+1.Đo độ trung tâm a_j và các tương quan D1–D3 ở Mục 5. Rẻ nhất, dùng dữ liệu sẵn có, và quyết định cách đọc mọi phần còn lại.
+2.C2 khớp bậc từng nút (Mục 4.2).
+3.Centering từng phần với hệ số λ (Mục 5.3): kiểm định liều–đáp ứng.
+4.Phân tích lại C5 và đối chứng truy vấn ảnh (Mục 3, 5.4).
+2. C1 và C3: đã đạt, bổ sung nhỏ
+C1 là thí nghiệm then chốt và em đã làm đúng: so ở cùng số phép tính khoảng cách, nội suy không ngoại suy, bootstrap ghép cặp theo seed và truy vấn, kiểm tra độ nhạy của cách nội suy. C3 xác nhận đúng dự đoán: dưới L2, đồ thị gốc và đồ thị dịch chuyển giống nhau gần như từng cạnh, retention bằng nhau ở cả 5 seed. Retention của đồ thị L2 gốc (khoảng 96,7% và 90,9%) cũng bằng đồ thị tích vô hướng gốc, đúng như kỳ vọng với vector đơn vị. Việc em ghi rõ ngưỡng sai số được điều chỉnh sau khi quan sát là cách làm đúng.
+Bổ sung 1: chi phí ở cùng mức retention
+Người triển khai thường hỏi "cần bao nhiêu chi phí để đạt X% retention" hơn là "ở chi phí Y thì retention bao nhiêu". Thầy nội suy từ sweep.csv của em (theo log ndis, trung bình 5 seed):
+Pic2Word	Đồ thị gốc (ndis)	Centering (ndis)	Chênh lệch
+Retention 90%	1.734	1.453	−16%
+Retention 95%	3.083	2.312	−25%
+Retention 97%	chỉ 1/5 seed đạt trong dải quét (≈ 4.190)	3.154	chưa tính được
+
+Với SEARLE, hai đồ thị cần gần như cùng chi phí (95%: 1.454 so với 1.473). Việc cần làm: mở rộng quét cho đồ thị gốc Pic2Word (efSearch 512, 768) để tìm điểm 97%; báo cáo bảng này kèm khoảng tin cậy bootstrap theo seed và truy vấn.
+Bổ sung 2: bộ nhớ, thời gian dựng, độ trễ
+-Về nguyên tắc FAISS cấp phát cố định 2M ô cho mỗi nút ở tầng 0 (ô trống mang giá trị −1), nên đồ thị có thêm 38% cạnh vẫn chiếm cùng bộ nhớ. Em kiểm tra bằng kích thước faiss.serialize_index của hai chỉ mục.
+-Thời gian dựng của Pic2Word tăng khoảng 13% (38,2 → 43,2 giây, số liệu R3). Ghi vào bảng chi phí.
+-Độ trễ hiện có tính cả phần vòng lặp Python. Khi báo cáo độ trễ ở cùng mức retention, đo bằng một lần gọi search cho cả lô truy vấn với số luồng cố định, để so được với ICRCV.
+Câu có thể dùng trong bài (bản nháp)
+"Trên CIRCO với backbone Pic2Word, trừ vector trung bình của gallery trước khi dựng HNSW (giữ nguyên thứ hạng chính xác, không đổi bộ nhớ, không huấn luyện) giảm khoảng 25% số phép tính khoảng cách cần để đạt retention@10 bằng 95%. Với SEARLE không quan sát được khác biệt." Câu này chỉ được viết ở dạng tổng quát hơn sau khi có kết quả tổng quát hoá (C6) và giải thích được vì sao SEARLE không được lợi (Mục 5).
+3. C5: cần đọc lại vì hiệu ứng trần
+Nhóm s1 thấp có nhiều lần bỏ sót hơn ngay từ đầu, nên có nhiều chỗ để cải thiện hơn. Khi tính theo tỉ lệ số lần bỏ sót được cứu, bức tranh khác hẳn:
+Nhóm s1	Bỏ sót: gốc → centering	Giảm tuyệt đối	Giảm tương đối
+Q1 (thấp)	14,40% → 8,24%	6,17 điểm	43%
+Q2	10,11% → 5,82%	4,28 điểm	42%
+Q3	8,64% → 4,25%	4,38 điểm	51%
+Q4	6,85% → 3,89%	2,96 điểm	43%
+Q5 (cao)	5,63% → 2,97%	2,66 điểm	47%
+
+Với Pic2Word, centering cắt khoảng 42–51% số lần bỏ sót ở mọi nhóm s1. Mức tăng tuyệt đối lớn hơn ở nhóm s1 thấp chủ yếu vì nhóm đó còn nhiều lỗi để sửa, không phải vì centering nhắm riêng vào truy vấn có s1 thấp. Kết luận hiện tại "ủng hộ một phần" nên được viết lại: ủng hộ trên thang tuyệt đối; trên thang tương đối chưa thấy khác biệt theo s1. Điều này cũng có nghĩa là, với Pic2Word, centering tác động lên cấu trúc đồ thị một cách tương đối đồng đều, phù hợp với kết quả C4.
+Việc cần làm
+1.Khớp mô hình GEE nhị thức trên dữ liệu theo láng giềng: missed ~ s1z × centered, cụm theo truy vấn (Phụ lục D). Hệ số tương tác gần 0 nghĩa là hiệu ứng tương đối như nhau theo s1. Ghi rõ đây là phân tích bổ sung, không thuộc đăng ký trước.
+2.Làm lại C5 ở cùng ndis (dùng cách nội suy theo truy vấn của C1), vì cùng efSearch thì đồ thị centering đang được dùng nhiều phép tính hơn.
+3.Giữ nguyên kết quả theo quy tắc đã đăng ký (không đạt). Quy tắc "trung bình 5 nhóm không tăng" quá chặt với 5 nhóm có nhiễu; lần sau đăng ký trước một kiểm định xu hướng, ví dụ hệ số dốc trên thang log-odds kèm khoảng tin cậy.
+Một kết quả nên giữ lại
+Retention gốc của nhóm s1 thấp nhất thấp hơn rõ rệt ở cả hai backbone: SEARLE 92,6% so với ít nhất 97,2% ở các nhóm còn lại; Pic2Word 85,6% so với 94,4% ở nhóm cao nhất. Đây là bằng chứng bên trong từng model rằng truy vấn có độ tương đồng thấp với gallery khó hơn cho HNSW, đúng tiền đề của H-MG, và không bị ảnh hưởng bởi khác biệt thang cosine giữa hai backbone.
+4. C2: vì sao không khớp được mật độ, và nên làm gì
+4.1. Thất bại khớp mật độ là một phát hiện
+Model	Gốc M = 32	Gốc M = 64	Centering M = 32
+SEARLE	2,66 triệu cạnh (bậc ra 21,5)	2,80 triệu (22,7), +5,2%	2,88 triệu (23,4), +8,6%
+Pic2Word	2,26 triệu cạnh (bậc ra 18,3)	2,36 triệu (19,1), +4,4%	3,12 triệu (25,3), +38%
+
+Bậc ra trung bình ở tầng 0 chỉ khoảng 18–23, trong khi trần cho phép là 2M = 64 (M = 32) hoặc 128 (M = 64). Nghĩa là trần M không phải là giới hạn: mật độ đồ thị do bước chọn láng giềng của HNSW quyết định (một ứng viên bị loại nếu nó gần một láng giềng đã chọn hơn là gần nút đang xét). Centering thay đổi hình học mà bước này nhìn thấy, nên ít cạnh bị loại hơn. Vì vậy không thể "mua" mật độ của centering bằng cách tăng M, và phép so sánh với M = 64 không phải đối chứng khớp mật độ.
+Em xác nhận điều này bằng một số đo: tỉ lệ nút có bậc ra bằng trần 2M ở từng đồ thị (dự đoán gần 0%). Kết quả so với M = 64 vẫn có ích như một quan sát phụ: ở cùng ndis, centering vẫn hơn đồ thị gốc dày hơn từ 1,4 đến 4,6 điểm với Pic2Word.
+4.2. Thiết kế mới: khớp bậc từng nút bằng cách cắt cạnh
+Thay vì làm đồ thị gốc dày lên, làm đồ thị centering thưa đi cho đúng bằng đồ thị gốc: với mỗi nút i, giữ lại đúng k_i cạnh, với k_i là bậc ra của nút i trong đồ thị gốc cùng seed. Hai đồ thị khi đó có cùng dãy bậc ra và cùng tổng số cạnh; chỉ khác ở chỗ nối tới những nút nào. Hai quy tắc giữ cạnh:
+-Gần nhất trước: giữ k_i láng giềng có tích vô hướng lớn nhất trong không gian đã centering.
+-Ngẫu nhiên: giữ k_i láng giềng chọn ngẫu nhiên trong danh sách hiện có (3 seed).
+Sau đó chạy lại toàn bộ quy trình C1 (quét efSearch, so ở cùng ndis, 5 seed dựng đồ thị). Cách đọc:
+Kết quả	Ý nghĩa
+Đồ thị centering đã cắt vẫn hơn đồ thị gốc	Lợi ích nằm ở việc chọn cạnh nào, không phải ở số lượng cạnh
+Lợi ích biến mất	Mật độ là cơ chế chính
+Lợi ích giảm một phần	Cả hai cùng đóng góp; báo cáo phần còn lại kèm khoảng tin cậy
+
+Lưu ý kỹ thuật (mã ở Phụ lục A): chỉ sửa tầng 0, giữ nguyên các tầng trên; các cạnh giữ lại phải dồn về đầu danh sách, phần sau gán −1, vì FAISS dừng đọc danh sách ở giá trị −1 đầu tiên; với nút nào bậc ra centering nhỏ hơn bậc ra gốc thì giữ nguyên và ghi lại số nút đó; sau khi sửa, tính lại bậc ra để xác nhận khớp và chạy thử vài truy vấn. Bậc vào sẽ thay đổi sau khi cắt; báo cáo cả phân phối bậc vào.
+Tuỳ chọn, làm theo chiều ngược lại: bổ sung cho đồ thị gốc các láng giềng chính xác kế tiếp (trong top-100 theo tích vô hướng gốc) cho tới khi bậc ra bằng bậc ra của đồ thị centering. Nếu cả hai chiều cho cùng kết luận thì lập luận rất chắc.
+5. C4: một giả thuyết cơ chế cụ thể
+5.1. Những gì C4 đã cho thấy
+-Với Pic2Word, số lần láng giềng chính xác nằm ở nhóm bậc vào thấp nhất giảm từ 14.145 xuống 3.464; khoảng 86% số lần xuất hiện ở nhóm này chuyển lên nhóm cao hơn. Nếu áp tỉ lệ bỏ sót của đồ thị gốc lên phân phối bậc vào mới, riêng việc dịch phân phối đã dự báo 3,6 trên 4,1 điểm giảm (khoảng 88%); tính theo thứ tự ngược lại chỉ còn 46%. Khoảng rộng như vậy là do nhóm quá thô (nhóm thấp nhất trải từ 0 tới 11). Làm lại bằng mô hình liên tục: khớp logit của missed theo log(1 + bậc vào) trên đồ thị gốc, rồi dự báo trên bậc vào sau centering.
+-Centering không làm giảm hubness phía gallery: độ lệch N10 tăng (SEARLE 2,66 → 4,62; Pic2Word 2,66 → 3,40). Tỉ lệ N10 = 0 của Pic2Word giảm một nửa (10,7% → 5,6%) còn của SEARLE tăng nhẹ (8,5% → 9,9%). Hubness không bị xoá mà bị dời sang chỗ khác.
+-MCS của hai model chênh nhau rất ít (0,468 so với 0,495) nên khó tự giải thích mức tăng 4 điểm so với 0 điểm. Nhân tiện, MCS ≈ ‖μ‖² (0,684² = 0,468; 0,703² = 0,494), khớp số liệu của em.
+5.2. Giả thuyết "độ trung tâm"
+Đặt m = ‖μ‖ và u = μ/m là hướng trung bình của gallery. Với mỗi ảnh (vector đơn vị x_j) đặt a_j = u·x_j, gọi là độ trung tâm, và r_j = x_j − a_j·u là phần còn lại. Trung bình của a_j đúng bằng m.
+Đồ thị gốc. Tích vô hướng giữa hai ảnh là x_i·x_j = a_i·a_j + r_i·r_j. Số hạng a_i·a_j cộng thêm điểm cho những ảnh có a_j lớn khi so với hầu như mọi nút, nên ảnh "trung tâm" thành hub, còn ảnh "ngoại vi" (a_j nhỏ) nhận ít cạnh vào.
+Đồ thị centering. Với y = x − μ: y_i·y_j = (a_i − m)(a_j − m) + r_i·r_j và ‖y_j‖² = 1 − 2m·a_j + m². Tích vô hướng trên vector không chuẩn hoá ưu tiên vector có chuẩn lớn: Liu et al. (AAAI 2020) cho thấy trong đồ thị tích vô hướng, 5% vật phẩm có chuẩn lớn nhất có bậc vào gấp 3,2–19,8 lần trung bình. Ở đây chuẩn ‖y_j‖ lớn khi và chỉ khi a_j nhỏ. Vậy centering đảo chiều thiên lệch: ảnh ngoại vi được ưu tiên nhận cạnh vào. Điều này cũng giải thích vì sao độ lệch N10 tăng sau centering: hub mới là các ảnh ngoại vi có chuẩn lớn.
+Nối với CIR. Với truy vấn q, đặt b_q = u·q. Khi đó q·x_j = b_q·a_j + (phần còn lại). Nếu truy vấn CIR nằm ngoài hình nón của ảnh (b_q nhỏ, đúng tinh thần modality gap), thứ hạng láng giềng của nó ít bị kéo về phía ảnh trung tâm, nên top-10 chứa nhiều ảnh ngoại vi hơn so với một truy vấn ảnh. Đó chính là những ảnh có ít cạnh vào trong đồ thị gốc, và được centering nâng lên.
+Dự đoán cần viết vào báo cáo trước khi chạy:
+-D1. Trên đồ thị gốc, bậc vào tương quan dương với a_j; trên đồ thị centering, tương quan âm; mức thay đổi bậc vào tương quan âm mạnh với a_j.
+-D2. N10 gốc tăng theo a_j; N10 sau centering tăng theo ‖y_j‖.
+-D3. Láng giềng chính xác của truy vấn CIR có a_j thấp hơn trung bình gallery, và lệch nhiều hơn ở Pic2Word (so sánh bằng a chuẩn hoá trong từng model).
+-D4. b_q của truy vấn CIR nhỏ hơn hẳn của truy vấn ảnh; trong truy vấn CIR, b_q thấp đi kèm s1 thấp và retention gốc thấp.
+-D5. Sau centering, tỉ lệ bỏ sót giảm mạnh ở láng giềng có a_j thấp, và có thể tăng ở láng giềng có a_j cao. Nếu SEARLE có cả hai chiều thì đó là lời giải thích cho mức trung bình bằng 0.
+-D6. Khác biệt giữa hai model nằm ở D3 (láng giềng ngoại vi đến mức nào), không nằm ở MCS.
+Toàn bộ D1–D6 dùng embedding và đồ thị em đã có; a_j và b_q chỉ là một phép nhân ma trận với vector (Phụ lục B). Nếu D1–D3 sai, giả thuyết bị bác bỏ ngay và em không mất nhiều công.
+5.3. Kiểm định liều–đáp ứng bằng centering từng phần
+Thay y = x − μ bằng y = x − λμ với λ ∈ {0; 0,25; 0,5; 0,75; 1; 1,25}. Mọi giá trị λ đều giữ nguyên thứ hạng chính xác, vì q·(x − λμ) = q·x − λ·q·μ. Với mỗi λ đo: retention ở cùng ndis (quy trình C1), số cạnh, và tương quan Spearman giữa bậc vào và a_j. Dự đoán: tương quan đổi dấu dần khi λ tăng, và mức tăng retention của Pic2Word đi cùng chiều. Quan hệ liều–đáp ứng là loại bằng chứng cơ chế mạnh nhất có được mà không cần huấn luyện lại. Mã ở Phụ lục C.
+5.4. Vai trò mới của đối chứng truy vấn ảnh (H-MG)
+Thí nghiệm đối chứng truy vấn ảnh (R2, Phụ lục E) nay có câu hỏi cụ thể: so b và a_j của láng giềng giữa truy vấn ảnh và truy vấn CIR (D3, D4), và so retention, mức tăng do centering giữa hai loại truy vấn. Dự đoán: truy vấn ảnh có b gần m, láng giềng trung tâm hơn, và được lợi ít hoặc bị thiệt khi centering. Nếu đúng, ba mảnh đang rời rạc (modality gap, hubness, centering) trở thành một câu chuyện thống nhất cho bài.
+6. Hai việc tồn đọng
+-ID của 800 truy vấn test vẫn chưa được xác minh (đã nêu từ R3) và ảnh hưởng tới mọi phân tích ghép cặp theo truy vấn ở C1, C4, C5. Trích lại vector kèm ID từng dòng trước khi chạy các phần mới.
+-Mọi kết quả vẫn ghi git_dirty = True. Các con số dự kiến đưa vào bài phải chạy lại từ một commit sạch.
+7. Thứ tự thực hiện
+#	Việc	Ước lượng	Sản phẩm
+1	Trích lại ID truy vấn test; commit sạch	0,5 ngày	Ghi chú provenance
+2	D1–D3: độ trung tâm, bậc vào, láng giềng	1 ngày	Bảng tương quan; phân phối a_j
+3	C2 khớp bậc từng nút (hai quy tắc giữ cạnh)	2 ngày	Hình retention theo ndis
+4	Centering từng phần theo λ	1–2 ngày	Hình liều–đáp ứng
+	Gửi thầy kết quả bước 2–4		
+5	C5 phân tích lại; bảng chi phí ở cùng retention	1 ngày	Bảng và mô hình GEE
+6	Đối chứng truy vấn ảnh (D4, D5)	1–2 ngày	Bảng so sánh hai loại truy vấn
+7	C6: tổng quát hoá (stress, CIRR, FashionIQ, CLIP4Cir, 500K)	2–3 ngày	Bảng nhiều cấu hình
+
+8. Hướng đóng góp đang hình thành
+Nếu bước 2–4 ủng hộ giả thuyết, phần họ chỉ mục đồ thị của bài có thể là: một phép dịch gallery giữ nguyên thứ hạng chính xác, áp dụng khi dựng HNSW, giảm chi phí tìm kiếm cho CIR khi láng giềng của truy vấn tổ hợp nằm ở vùng ngoại vi của gallery; kèm một thống kê chẩn đoán (ví dụ D3) cho biết trước backbone nào được lợi. Điều này cũng trả lời câu hỏi phản biện chắc chắn sẽ đặt ra: vì sao SEARLE không được lợi.
+Một mở rộng tự nhiên: vector dịch không bắt buộc phải là μ. Trừ bất kỳ vector c nào khỏi gallery đều giữ nguyên thứ hạng chính xác, nên có thể chọn c theo phân phối truy vấn (ví dụ theo hướng nối tâm gallery với tâm truy vấn). Đây là một phương pháp không cần huấn luyện encoder; để dành cho giai đoạn sau, sau khi cơ chế đã rõ.
+Về tính mới, cần tra kỹ trước khi khẳng định: Suzuki et al. (2013) dùng centering để giảm hub; Liu et al. (AAAI 2020) phân tích thiên lệch theo chuẩn trong đồ thị tích vô hướng; Chen et al. (PVLDB 2025) xem tìm tích vô hướng lớn nhất như tìm láng giềng gần với truy vấn được co giãn; Herman (2026) bàn về centering cho biểu diễn FDE. Điểm của em là dùng phép dịch giữ thứ hạng để cải thiện việc dựng đồ thị cho truy vấn tổ hợp đa phương thức, gắn với modality gap. Em tìm thêm các công trình về dịch hoặc centering trước khi dựng HNSW cho dữ liệu cosine.
+9. Cần nộp lần tới
+-Bảng tương quan D1–D2 cho hai model; phân phối a_j của láng giềng chính xác so với toàn gallery (D3).
+-Hình retention theo ndis của C2 khớp bậc (hai quy tắc giữ cạnh), kèm số nút không khớp được.
+-Hình liều–đáp ứng theo λ: retention ở cùng ndis, số cạnh, tương quan bậc vào với a_j.
+-Bảng chi phí ở cùng retention (90%, 95%, 97%) cho C1, có khoảng tin cậy; kích thước chỉ mục.
+-Một trang tóm tắt: dự đoán đã viết trước, kết quả, nhãn trạng thái.
+10. Tài liệu đọc thêm
+1.Liu et al., "Understanding and Improving Proximity Graph-based Maximum Inner Product Search", AAAI 2020: phần phân tích bậc vào theo chuẩn trong ip-NSW.
+2.Morozov và Babenko, "Non-metric Similarity Graphs for Maximum Inner Product Search", NeurIPS 2018: nền tảng của đồ thị tích vô hướng.
+3.Chen et al., "Maximum Inner Product is Query-Scaled Nearest Neighbor", PVLDB 2025: quan hệ hình học giữa tìm theo tích vô hướng và theo khoảng cách.
+4.Suzuki et al., "Centering Similarity Measures to Reduce Hubs", EMNLP 2013: đọc lại để phân biệt centering có chuẩn hoá lại (giảm hub) với centering không chuẩn hoá của em (dời hub).
+5.Mã nguồn FAISS: faiss/impl/HNSW.cpp, hàm shrink_neighbor_list (bước chọn láng giềng) và cách cấp phát mảng neighbors.
+PHỤ LỤC: MÃ THAM KHẢO
+Khung tham khảo, em kiểm tra lại với FAISS 1.15.1. xb là gallery (chuẩn hoá L2, float32), mu = xb.mean(0), xq là truy vấn, gt10 là top-10 chính xác. Hàm sweep lấy từ R3 Phụ lục A, hàm tính bậc vào lấy từ R2 Phụ lục B.
+Phụ lục A. Cắt cạnh tầng 0 để khớp bậc ra từng nút (C2)
+import faiss, numpy as np
+ 
+def level0(index):
+    h = index.hnsw
+    nb  = faiss.vector_to_array(h.neighbors)
+    off = faiss.vector_to_array(h.offsets)
+    cum = faiss.vector_to_array(h.cum_nneighbor_per_level)
+    return h, nb, off, cum
+ 
+def out_degree(index):
+    h, nb, off, cum = level0(index)
+    deg = np.empty(index.ntotal, dtype=np.int64)
+    for i in range(index.ntotal):
+        v = nb[off[i] + cum[0] : off[i] + cum[1]]
+        deg[i] = (v >= 0).sum()
+    return deg
+ 
+def prune_to_degree(index, Y, target, rule="nearest", seed=0):
+    # Y: vector dùng để dựng đồ thị (gallery đã centering)
+    # target: bậc ra của từng nút trong đồ thị gốc cùng seed
+    rng = np.random.default_rng(seed)
+    h, nb, off, cum = level0(index)
+    nb = nb.copy(); not_matched = 0
+    for i in range(index.ntotal):
+        s, e = off[i] + cum[0], off[i] + cum[1]
+        v = nb[s:e]; v = v[v >= 0]; k = int(target[i])
+        if len(v) <= k:
+            not_matched += len(v) < k
+            continue
+        if rule == "nearest":
+            keep = v[np.argsort(-(Y[v] @ Y[i]))[:k]]
+        else:
+            keep = rng.choice(v, size=k, replace=False)
+        nb[s:e] = -1
+        nb[s:s + k] = keep            # dồn về đầu, phần sau là -1
+    buf = faiss.rev_swig_ptr(h.neighbors.data(), h.neighbors.size())
+    buf[:] = nb                       # ghi đè tại chỗ vào bộ nhớ FAISS
+    return not_matched
+ 
+# Sau khi cắt: out_degree(index) phải bằng target (trừ các nút not_matched)
+Phụ lục B. Độ trung tâm và các tương quan D1–D4
+from scipy.stats import spearmanr
+m = float(np.linalg.norm(mu)); u = mu / m
+a  = xb @ u                                  # độ trung tâm từng ảnh
+ny = np.sqrt(np.maximum(1 - 2 * m * a + m * m, 0))   # ||x - mu||
+az = (a - a.mean()) / a.std()                # chuẩn hoá trong model
+b_cir = xq @ u                               # truy vấn CIR
+b_img = xq_img @ u                           # truy vấn ảnh đối chứng
+# D1
+print(spearmanr(a, indeg_goc), spearmanr(a, indeg_cen),
+      spearmanr(a, indeg_cen - indeg_goc))
+# D2
+print(spearmanr(a, n10_goc), spearmanr(ny, n10_cen))
+# D3: so az của láng giềng chính xác với toàn gallery (trung bình 0)
+print(az[gt10.ravel()].mean(), np.percentile(az[gt10.ravel()], [10, 50, 90]))
+# D4: phân phối b_cir và b_img; spearmanr(b_cir, s1);
+#     retention gốc theo nhóm b_cir
+Phụ lục C. Centering từng phần theo λ (5.3)
+EF = [32, 48, 64, 96, 128, 160, 192, 256, 384]
+for lam in [0.0, 0.25, 0.5, 0.75, 1.0, 1.25]:
+    Y = np.ascontiguousarray(xb - lam * mu, dtype="float32")
+    idx = faiss.IndexHNSWFlat(Y.shape[1], 32, faiss.METRIC_INNER_PRODUCT)
+    idx.hnsw.efConstruction = 200
+    idx.add(Y)
+    curve = sweep(idx, xq, gt10, EF)   # thứ hạng chính xác không đổi
+    indeg = in_degree(idx)
+    rho = spearmanr(a, indeg).correlation
+    edges = int(out_degree(idx).sum())
+    # lưu curve, rho, edges; lặp cho 5 seed dựng đồ thị
+Phụ lục D. C5 trên thang log-odds
+import statsmodels.api as sm, statsmodels.formula.api as smf
+# d: Pic2Word, mỗi dòng = (query_id, seed, neighbor, variant)
+# missed 0/1; centered 0/1; s1z = s1 chuẩn hoá trong model
+fit = smf.gee("missed ~ s1z * centered", groups="query_id", data=d,
+              family=sm.families.Binomial()).fit()
+print(fit.params, fit.conf_int())
+# s1z:centered gần 0: hiệu ứng tương đối như nhau theo s1

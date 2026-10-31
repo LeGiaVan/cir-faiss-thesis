@@ -1,0 +1,949 @@
+{
+  "metadata": {
+    "module": "R4_D1",
+    "timestamp_utc": "2026-10-31T06:58:06.734091+00:00",
+    "script_commit": "0850b979699eac0e64ea823c9f89e2a6a2345899",
+    "source_snapshot_clean": true,
+    "script_sha256": "ec96a9b9e6bbee48c7a687ea263dcb9fdd4933bacc055343db6d2b08fcce3380",
+    "preregistration_sha256": "52ba150391cdb8cd7227bc4422d48ce257c5bd413c2eec18a0f4ec18ccb5dd48",
+    "stage0_manifest_sha256": "439766e8b4aea9095de9f38aead9738a247e81b5d0daa7a14c1b79a61075c70e",
+    "c4_manifest_sha256": "53fd73de1d84bc55533a1b4b4f616fdd327c368921405402a54ebaa8ebe7db1c",
+    "checkpoints": {
+      "searle": [
+        {
+          "seed": 42,
+          "variant": "before",
+          "c4_path": "R3/C4/data/searle_42_before.npz",
+          "c4_sha256": "ff430ee9ea369cdde916c08a97c31bdc3a6c6b58b641b4892e506df8eed6f7e4",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_42_before.npz",
+          "source_sha256": "833399c8a654aa4a73a96cdef90dca916ebc39e21ec219a28ac19082a5054f74",
+          "edges": 2657586
+        },
+        {
+          "seed": 42,
+          "variant": "after",
+          "c4_path": "R3/C4/data/searle_42_after.npz",
+          "c4_sha256": "f11d8d90354e17a08f60c526654273a68b6191896ba404ee96594e331061f29b",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_42_after.npz",
+          "source_sha256": "eb2f540fb7b3b0fd3446c30bf2cf869cf000f85bbf359bafee54d104e711e135",
+          "edges": 2884864
+        },
+        {
+          "seed": 43,
+          "variant": "before",
+          "c4_path": "R3/C4/data/searle_43_before.npz",
+          "c4_sha256": "98c681629baac94fabaef0319a83f922c932fec027a4e25e7a4c14b2ca993096",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_43_before.npz",
+          "source_sha256": "8c8a35ef54d8f29b50eec9d62e75b04bf0f9ed9f8e3ad9bebd10bab603da9a76",
+          "edges": 2650795
+        },
+        {
+          "seed": 43,
+          "variant": "after",
+          "c4_path": "R3/C4/data/searle_43_after.npz",
+          "c4_sha256": "a132d553b825a0d5a01748108f6527289ed75d783baaa6e6995bcba21b61516b",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_43_after.npz",
+          "source_sha256": "271046f2c5df7c6dd0fa74d242e8bc98cd9edaeedee22119ab85e6e96d67b713",
+          "edges": 2886469
+        },
+        {
+          "seed": 44,
+          "variant": "before",
+          "c4_path": "R3/C4/data/searle_44_before.npz",
+          "c4_sha256": "ae3f5dd0ff0a743eb1b1b6b15c71e96549b275f85c27a2676074756ab747b8a0",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_44_before.npz",
+          "source_sha256": "c57ff040ebe5e4d21baef65f24c245b862a8d8bf5ce88c1df751efc40ee2a8c1",
+          "edges": 2658870
+        },
+        {
+          "seed": 44,
+          "variant": "after",
+          "c4_path": "R3/C4/data/searle_44_after.npz",
+          "c4_sha256": "f7393f32c7119e9761e82afbc73a5d5d94ef75600ec9b6de67348597146d07ce",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_44_after.npz",
+          "source_sha256": "f154367aa39a5fa7b4b1812a99fe4c720ce8ec02a6928736da569021136f7d1e",
+          "edges": 2878875
+        },
+        {
+          "seed": 45,
+          "variant": "before",
+          "c4_path": "R3/C4/data/searle_45_before.npz",
+          "c4_sha256": "0372ddf62318306013be392f0f3711682afbbfbd86fcf700017944416a9c01bb",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_45_before.npz",
+          "source_sha256": "4496bac1aca250a00a6bb229d8d855409ba91490c35a708d32cf9c8a1ef24f39",
+          "edges": 2657716
+        },
+        {
+          "seed": 45,
+          "variant": "after",
+          "c4_path": "R3/C4/data/searle_45_after.npz",
+          "c4_sha256": "e2b8da96e6b052bf2b464037d978043a950bc28e3e385057ca471a4c7cd4eb7b",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_45_after.npz",
+          "source_sha256": "e49f6237237f2e6fda09fdfe96a901753dd9cab8d65cba1a9f6e1f1e5b293963",
+          "edges": 2886800
+        },
+        {
+          "seed": 46,
+          "variant": "before",
+          "c4_path": "R3/C4/data/searle_46_before.npz",
+          "c4_sha256": "38ba6db1cfdb2fbd1d50544fa47190e70574e1524cad8521afaff2ea4da81fe9",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_46_before.npz",
+          "source_sha256": "af67b7d79ddd8630765d30a220442f6e5baf23db3c81e55520f7c10eac8f1497",
+          "edges": 2654614
+        },
+        {
+          "seed": 46,
+          "variant": "after",
+          "c4_path": "R3/C4/data/searle_46_after.npz",
+          "c4_sha256": "e05dac0832eebd2c9a3cf45da352590d7a7137d7684f396a1c4c1702f5152714",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_searle_46_after.npz",
+          "source_sha256": "0ab82501e52f8aa9b0db1911203f41ad14bd01e0dd7c5d4526635864d3ddc2bb",
+          "edges": 2878717
+        }
+      ],
+      "pic2word": [
+        {
+          "seed": 42,
+          "variant": "before",
+          "c4_path": "R3/C4/data/pic2word_42_before.npz",
+          "c4_sha256": "1553b6b7c8f0bc84f9f89f547f13c4df8c6523227ab2888f3e89f46efe15cc0f",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_42_before.npz",
+          "source_sha256": "0c593ef1aaf14cbd154dde162c1edad1d5b17953bc97237dcc05d0f5a197f712",
+          "edges": 2259515
+        },
+        {
+          "seed": 42,
+          "variant": "after",
+          "c4_path": "R3/C4/data/pic2word_42_after.npz",
+          "c4_sha256": "0ffe55c5043b409322956ea28cda7f9a810e3942ac9e38a106315f0762351f21",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_42_after.npz",
+          "source_sha256": "78b5be14fa33d1ed093cc0cbb2b818074293a63f4a35992e06c9673022cd7c8f",
+          "edges": 3124455
+        },
+        {
+          "seed": 43,
+          "variant": "before",
+          "c4_path": "R3/C4/data/pic2word_43_before.npz",
+          "c4_sha256": "3686e72d9651480f56b0744e54315311d1063fedb7a9f2fc4bbc880a9a1662ea",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_43_before.npz",
+          "source_sha256": "eaff12fd72763a4aba3b4cba17ca51d9cf6d9123dbed41519dcaf10f052d86a8",
+          "edges": 2256136
+        },
+        {
+          "seed": 43,
+          "variant": "after",
+          "c4_path": "R3/C4/data/pic2word_43_after.npz",
+          "c4_sha256": "709206afb91aca219b6ba44b417eecc5a648dcec2facadd56b3842a246c3d0e4",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_43_after.npz",
+          "source_sha256": "d818eba9e77a7edee2d25cc691c7cd86c31cdc1a8a74a1f756d8207468cc5150",
+          "edges": 3119347
+        },
+        {
+          "seed": 44,
+          "variant": "before",
+          "c4_path": "R3/C4/data/pic2word_44_before.npz",
+          "c4_sha256": "9899a1c631761dbebc45a14c38434e4ed88772e6b7e86a9f158cb42fec6f1724",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_44_before.npz",
+          "source_sha256": "0bac1ba3f40edb6e4cdcf2707cd813e70770c469b2af47c5c8aa707f0d30d076",
+          "edges": 2263095
+        },
+        {
+          "seed": 44,
+          "variant": "after",
+          "c4_path": "R3/C4/data/pic2word_44_after.npz",
+          "c4_sha256": "5121124006f845ac383091a1f95132cda07e230ba3bcf85a40246eb81416c526",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_44_after.npz",
+          "source_sha256": "a2043516e1c2e2caffe76e47db1fd14aa3856682febdf01b9db82d6bb16d4eb6",
+          "edges": 3111514
+        },
+        {
+          "seed": 45,
+          "variant": "before",
+          "c4_path": "R3/C4/data/pic2word_45_before.npz",
+          "c4_sha256": "8afefdb766981b74abb9bc4e45e868ee8d05644c72e36cb9a8194d620a23692d",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_45_before.npz",
+          "source_sha256": "de40c85d3c26237b1986da63e95dbeba67a449e86c5f941ba9fceabef0eec344",
+          "edges": 2257785
+        },
+        {
+          "seed": 45,
+          "variant": "after",
+          "c4_path": "R3/C4/data/pic2word_45_after.npz",
+          "c4_sha256": "adb02c3ee984c4794232d05a106c6775cbb1c8b814be6c66ad38c72a77fbd803",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_45_after.npz",
+          "source_sha256": "51661985a5aff8890ff05cb0b871efe3d95db6ea54ecf0c4ca56b72557b96a80",
+          "edges": 3120316
+        },
+        {
+          "seed": 46,
+          "variant": "before",
+          "c4_path": "R3/C4/data/pic2word_46_before.npz",
+          "c4_sha256": "426dad203997e05a12e9c64f34f6ee80cbe97f259c5d2ee4ac2858f20486c461",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_46_before.npz",
+          "source_sha256": "c300df73e781b8c6ac262c91a0d1ec5ab78df87c054f9083d4335b64abefd90d",
+          "edges": 2265528
+        },
+        {
+          "seed": 46,
+          "variant": "after",
+          "c4_path": "R3/C4/data/pic2word_46_after.npz",
+          "c4_sha256": "e94b573a92dc53d99949b655f84793ce4b929cab6337a051418ac9d678a5b8dd",
+          "source_path": "Phase_2_Q1_Journal/R2_Audit/module_a1_revision/data/reference_pic2word_46_after.npz",
+          "source_sha256": "d19c9c5c974437f2f64da6f04a27336837fc720d0807226c58bc864b12024b0e",
+          "edges": 3116499
+        }
+      ]
+    },
+    "gallery": {
+      "searle": {
+        "path": "data/searle_centrality.npz",
+        "sha256": "2f0b59b13b8c603fc25f3069d45552fc72136c53a0afda64ef7ed7210b3670e5",
+        "gallery_sha256": "c17a50ed309f3a993bf76cde27d802d307384572ae40032a59f273a32fcad903",
+        "mean_norm": 0.684069235312046,
+        "a_mean": 0.6840692353120458,
+        "a_std": 0.06335943560796313,
+        "a_quantiles": [
+          0.22070844876179105,
+          0.565799089382335,
+          0.6485368411222876,
+          0.6936714369376922,
+          0.7291220461150767,
+          0.7698609960565856,
+          0.8704672495235279
+        ],
+        "norm_max_error": 3.5762786865234375e-07,
+        "mean_identity_error": 2.220446049250313e-16,
+        "squared_norm_identity_error": 5.856749097365999e-07
+      },
+      "pic2word": {
+        "path": "data/pic2word_centrality.npz",
+        "sha256": "1ef503155a5729773f30f07db6bc094375bd504309f39c4c9c0d5f947ad33ed8",
+        "gallery_sha256": "5e8baaf2a25faf890db36add46d3ea807234d01c37c9a026e26ddff8082cbe89",
+        "mean_norm": 0.7033528399588977,
+        "a_mean": 0.7033528399588977,
+        "a_std": 0.06676799243885038,
+        "a_quantiles": [
+          0.1845001204669961,
+          0.5794849724330398,
+          0.6678923914948549,
+          0.7139450582387109,
+          0.7508134639535544,
+          0.7911457242438474,
+          0.8594127481838234
+        ],
+        "norm_max_error": 2.384185791015625e-07,
+        "mean_identity_error": 0.0,
+        "squared_norm_identity_error": 4.10640380144045e-07
+      }
+    },
+    "n": 123403,
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "bootstrap_replicates": 2000,
+    "bootstrap_rng_seed": 42,
+    "bootstrap": "gallery rows paired across variants and seeds; exact Spearman midrank for ties; percentile 95%, conditional on fixed graph/gallery",
+    "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "numpy": "2.4.2",
+    "scipy": "1.15.1",
+    "faiss": "1.15.1",
+    "limitations": "R4 hypothesis uses R3 results; graph nodes dependent; 5 seeds; no p-values or simultaneous CI; R3 data and environment external to source commit"
+  },
+  "results": {
+    "searle": {
+      "original": {
+        "rho_mean": 0.34076162645726316,
+        "rho_median": 0.3406551967918841,
+        "rho_min": 0.3349573173871004,
+        "rho_max": 0.345510720763889,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      },
+      "centered": {
+        "rho_mean": -0.21601889482951284,
+        "rho_median": -0.21598621708495658,
+        "rho_min": -0.2217746775930328,
+        "rho_max": -0.2104601451556404,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      },
+      "delta": {
+        "rho_mean": -0.5504123710292795,
+        "rho_median": -0.5516178210762279,
+        "rho_min": -0.5530397949651782,
+        "rho_max": -0.5453840344278553,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      }
+    },
+    "pic2word": {
+      "original": {
+        "rho_mean": 0.43112949155636393,
+        "rho_median": 0.43141124023958577,
+        "rho_min": 0.4288589583249618,
+        "rho_max": 0.43249164522910866,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      },
+      "centered": {
+        "rho_mean": -0.2580847099846551,
+        "rho_median": -0.2575810854232852,
+        "rho_min": -0.26353832780649455,
+        "rho_max": -0.2555920153894692,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      },
+      "delta": {
+        "rho_mean": -0.6184534867124875,
+        "rho_median": -0.6175927680199227,
+        "rho_min": -0.6247213357414961,
+        "rho_max": -0.6143925795583732,
+        "seeds_expected_sign_ci": 5,
+        "seeds_opposite_sign_ci": 0,
+        "status": "ủng hộ trên 5 seed"
+      }
+    }
+  },
+  "seed_results": [
+    {
+      "model": "searle",
+      "seed": 42,
+      "variant": "original",
+      "rho": 0.345510720763889,
+      "ci_lower": 0.34073506478467175,
+      "ci_upper": 0.3506515688983945,
+      "n": 123403,
+      "degree_unique_values": 124,
+      "degree_rows_in_ties": 123391,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        12.0,
+        19.0,
+        28.0,
+        47.0,
+        176.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 42,
+      "variant": "centered",
+      "rho": -0.21545373870391735,
+      "ci_lower": -0.22103744163727823,
+      "ci_upper": -0.2099507831476109,
+      "n": 123403,
+      "degree_unique_values": 128,
+      "degree_rows_in_ties": 123391,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        13.0,
+        20.0,
+        30.0,
+        51.0,
+        217.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 42,
+      "variant": "delta",
+      "rho": -0.5530397949651782,
+      "ci_lower": -0.5573601718070869,
+      "ci_upper": -0.5490137383157462,
+      "n": 123403,
+      "degree_unique_values": 183,
+      "degree_rows_in_ties": 123380,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -103.0,
+        -19.0,
+        -6.0,
+        1.0,
+        9.0,
+        25.0,
+        194.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 43,
+      "variant": "original",
+      "rho": 0.33931045068360954,
+      "ci_lower": 0.33412346503759166,
+      "ci_upper": 0.344233146982566,
+      "n": 123403,
+      "degree_unique_values": 126,
+      "degree_rows_in_ties": 123391,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        12.0,
+        18.0,
+        28.0,
+        47.0,
+        153.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 43,
+      "variant": "centered",
+      "rho": -0.2104601451556404,
+      "ci_lower": -0.21594518118606792,
+      "ci_upper": -0.20515050905074683,
+      "n": 123403,
+      "degree_unique_values": 130,
+      "degree_rows_in_ties": 123387,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        13.0,
+        20.0,
+        30.0,
+        51.0,
+        190.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 43,
+      "variant": "delta",
+      "rho": -0.5453840344278553,
+      "ci_lower": -0.5498360445635652,
+      "ci_upper": -0.5411399213677616,
+      "n": 123403,
+      "degree_unique_values": 184,
+      "degree_rows_in_ties": 123385,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -107.0,
+        -19.0,
+        -6.0,
+        1.0,
+        9.0,
+        25.0,
+        158.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 44,
+      "variant": "original",
+      "rho": 0.34337444665983297,
+      "ci_lower": 0.3383016413227828,
+      "ci_upper": 0.3483864448569831,
+      "n": 123403,
+      "degree_unique_values": 125,
+      "degree_rows_in_ties": 123392,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        12.0,
+        19.0,
+        28.0,
+        47.0,
+        149.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 44,
+      "variant": "centered",
+      "rho": -0.21641969561001714,
+      "ci_lower": -0.22207423237508359,
+      "ci_upper": -0.21081871995695708,
+      "n": 123403,
+      "degree_unique_values": 129,
+      "degree_rows_in_ties": 123387,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        13.0,
+        20.0,
+        30.0,
+        51.0,
+        207.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 44,
+      "variant": "delta",
+      "rho": -0.5526814973438785,
+      "ci_lower": -0.5570462259470187,
+      "ci_upper": -0.5486459725628169,
+      "n": 123403,
+      "degree_unique_values": 182,
+      "degree_rows_in_ties": 123383,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -113.0,
+        -19.0,
+        -6.0,
+        1.0,
+        9.0,
+        25.0,
+        177.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 45,
+      "variant": "original",
+      "rho": 0.3406551967918841,
+      "ci_lower": 0.33554444391609645,
+      "ci_upper": 0.3455865572423284,
+      "n": 123403,
+      "degree_unique_values": 125,
+      "degree_rows_in_ties": 123395,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        12.0,
+        19.0,
+        28.0,
+        47.0,
+        142.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 45,
+      "variant": "centered",
+      "rho": -0.21598621708495658,
+      "ci_lower": -0.2216203298607106,
+      "ci_upper": -0.21055571796299602,
+      "n": 123403,
+      "degree_unique_values": 131,
+      "degree_rows_in_ties": 123389,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        13.0,
+        20.0,
+        30.0,
+        51.0,
+        159.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 45,
+      "variant": "delta",
+      "rho": -0.5493387073332581,
+      "ci_lower": -0.553545458357966,
+      "ci_upper": -0.5452394302292619,
+      "n": 123403,
+      "degree_unique_values": 188,
+      "degree_rows_in_ties": 123379,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -99.0,
+        -19.0,
+        -6.0,
+        1.0,
+        9.0,
+        25.0,
+        135.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 46,
+      "variant": "original",
+      "rho": 0.3349573173871004,
+      "ci_lower": 0.32996553073227947,
+      "ci_upper": 0.340045604487069,
+      "n": 123403,
+      "degree_unique_values": 122,
+      "degree_rows_in_ties": 123393,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        12.0,
+        19.0,
+        28.0,
+        47.0,
+        150.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 46,
+      "variant": "centered",
+      "rho": -0.2217746775930328,
+      "ci_lower": -0.22700186541343215,
+      "ci_upper": -0.21631126809371262,
+      "n": 123403,
+      "degree_unique_values": 127,
+      "degree_rows_in_ties": 123394,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        6.0,
+        13.0,
+        20.0,
+        30.0,
+        51.0,
+        157.0
+      ]
+    },
+    {
+      "model": "searle",
+      "seed": 46,
+      "variant": "delta",
+      "rho": -0.5516178210762279,
+      "ci_lower": -0.556137441899647,
+      "ci_upper": -0.5474886845864241,
+      "n": 123403,
+      "degree_unique_values": 185,
+      "degree_rows_in_ties": 123379,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -101.0,
+        -19.0,
+        -6.0,
+        1.0,
+        9.0,
+        25.0,
+        136.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 42,
+      "variant": "original",
+      "rho": 0.43049899168145367,
+      "ci_lower": 0.4257685889196677,
+      "ci_upper": 0.4349985924898217,
+      "n": 123403,
+      "degree_unique_values": 120,
+      "degree_rows_in_ties": 123394,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        4.0,
+        9.0,
+        15.0,
+        24.0,
+        43.0,
+        145.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 42,
+      "variant": "centered",
+      "rho": -0.2556818477442482,
+      "ci_lower": -0.2610741530985192,
+      "ci_upper": -0.250314343140055,
+      "n": 123403,
+      "degree_unique_values": 125,
+      "degree_rows_in_ties": 123391,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        1.0,
+        8.0,
+        15.0,
+        22.0,
+        32.0,
+        53.0,
+        149.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 42,
+      "variant": "delta",
+      "rho": -0.6143925795583732,
+      "ci_lower": -0.6180826046234034,
+      "ci_upper": -0.6105201109452227,
+      "n": 123403,
+      "degree_unique_values": 190,
+      "degree_rows_in_ties": 123376,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -95.0,
+        -14.0,
+        -2.0,
+        6.0,
+        14.0,
+        32.0,
+        148.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 43,
+      "variant": "original",
+      "rho": 0.4288589583249618,
+      "ci_lower": 0.4243023491906164,
+      "ci_upper": 0.4334452800806797,
+      "n": 123403,
+      "degree_unique_values": 119,
+      "degree_rows_in_ties": 123395,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        4.0,
+        9.0,
+        15.0,
+        24.0,
+        43.0,
+        153.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 43,
+      "variant": "centered",
+      "rho": -0.2555920153894692,
+      "ci_lower": -0.26072475345232554,
+      "ci_upper": -0.250133381862774,
+      "n": 123403,
+      "degree_unique_values": 127,
+      "degree_rows_in_ties": 123391,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        8.0,
+        15.0,
+        22.0,
+        32.0,
+        53.0,
+        164.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 43,
+      "variant": "delta",
+      "rho": -0.6164617384711375,
+      "ci_lower": -0.6201015199644652,
+      "ci_upper": -0.6127149226059704,
+      "n": 123403,
+      "degree_unique_values": 190,
+      "degree_rows_in_ties": 123385,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -109.0,
+        -14.0,
+        -2.0,
+        6.0,
+        14.0,
+        32.0,
+        136.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 44,
+      "variant": "original",
+      "rho": 0.43249164522910866,
+      "ci_lower": 0.4275662659806679,
+      "ci_upper": 0.4370572225674368,
+      "n": 123403,
+      "degree_unique_values": 124,
+      "degree_rows_in_ties": 123388,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        4.0,
+        9.0,
+        15.0,
+        24.0,
+        43.0,
+        169.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 44,
+      "variant": "centered",
+      "rho": -0.2575810854232852,
+      "ci_lower": -0.26324819377617986,
+      "ci_upper": -0.2523416196579793,
+      "n": 123403,
+      "degree_unique_values": 128,
+      "degree_rows_in_ties": 123390,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        1.0,
+        8.0,
+        15.0,
+        22.0,
+        32.0,
+        53.0,
+        142.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 44,
+      "variant": "delta",
+      "rho": -0.6190990117715077,
+      "ci_lower": -0.6227400066435822,
+      "ci_upper": -0.6153330910085706,
+      "n": 123403,
+      "degree_unique_values": 193,
+      "degree_rows_in_ties": 123381,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -106.0,
+        -14.0,
+        -2.0,
+        6.0,
+        14.0,
+        32.0,
+        125.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 45,
+      "variant": "original",
+      "rho": 0.43141124023958577,
+      "ci_lower": 0.4266583230327248,
+      "ci_upper": 0.43643053029400203,
+      "n": 123403,
+      "degree_unique_values": 124,
+      "degree_rows_in_ties": 123392,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        4.0,
+        9.0,
+        15.0,
+        24.0,
+        43.0,
+        135.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 45,
+      "variant": "centered",
+      "rho": -0.2580302735597782,
+      "ci_lower": -0.2632468691041457,
+      "ci_upper": -0.25257419796577263,
+      "n": 123403,
+      "degree_unique_values": 127,
+      "degree_rows_in_ties": 123390,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        1.0,
+        8.0,
+        15.0,
+        22.0,
+        32.0,
+        53.0,
+        150.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 45,
+      "variant": "delta",
+      "rho": -0.6175927680199227,
+      "ci_lower": -0.6212231923966881,
+      "ci_upper": -0.6139545273201049,
+      "n": 123403,
+      "degree_unique_values": 195,
+      "degree_rows_in_ties": 123381,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -96.0,
+        -14.0,
+        -2.0,
+        6.0,
+        14.0,
+        32.0,
+        150.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 46,
+      "variant": "original",
+      "rho": 0.43238662230670966,
+      "ci_lower": 0.4276411008762799,
+      "ci_upper": 0.4371856603669848,
+      "n": 123403,
+      "degree_unique_values": 128,
+      "degree_rows_in_ties": 123389,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        0.0,
+        4.0,
+        9.0,
+        15.0,
+        24.0,
+        43.0,
+        180.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 46,
+      "variant": "centered",
+      "rho": -0.26353832780649455,
+      "ci_lower": -0.26861717319341766,
+      "ci_upper": -0.2582800667864585,
+      "n": 123403,
+      "degree_unique_values": 124,
+      "degree_rows_in_ties": 123394,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        1.0,
+        8.0,
+        15.0,
+        22.0,
+        32.0,
+        53.0,
+        147.0
+      ]
+    },
+    {
+      "model": "pic2word",
+      "seed": 46,
+      "variant": "delta",
+      "rho": -0.6247213357414961,
+      "ci_lower": -0.6281403100871771,
+      "ci_upper": -0.6209929325377987,
+      "n": 123403,
+      "degree_unique_values": 187,
+      "degree_rows_in_ties": 123388,
+      "a_unique_values": 123384,
+      "degree_quantiles": [
+        -119.0,
+        -14.0,
+        -2.0,
+        6.0,
+        14.0,
+        32.0,
+        138.0
+      ]
+    }
+  ]
+}

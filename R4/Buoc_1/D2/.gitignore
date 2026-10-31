@@ -1,0 +1,4 @@
+data/
+source_snapshot/
+*.log
+__pycache__/

@@ -1,0 +1,75 @@
+{
+  "module": "R4_D2",
+  "timestamp_utc": "2026-10-31T07:04:50.092374+00:00",
+  "source_snapshot_commit": "1b0886b774ed1d1ba22333d37aac2df5e3fe12d5",
+  "source_snapshot_clean": true,
+  "script_sha256": "1ace8274f2b9a22644a80828cbf32280c15ef8c03558fce0b18b0fc92928357d",
+  "preregistration_sha256": "ef774f218379349e636311c83f891323c6a5cf87860e5459611b0ca5a957cf3f",
+  "d1_manifest_sha256": "e756c5adf3e7495ef189fa24543ce34b115da4e41b841da616750c80dc6b6258",
+  "c4_manifest_sha256": "53fd73de1d84bc55533a1b4b4f616fdd327c368921405402a54ebaa8ebe7db1c",
+  "c4_acquisition_script_sha256": "f02238aa15251664bcf429acc04980bebe4e2928fdd1593e361266cbd11db48c",
+  "inputs": {
+    "searle": {
+      "gallery_sha256": "c17a50ed309f3a993bf76cde27d802d307384572ae40032a59f273a32fcad903",
+      "centrality_sha256": "2f0b59b13b8c603fc25f3069d45552fc72136c53a0afda64ef7ed7210b3670e5",
+      "norm_identity_error": 5.856749097365999e-07,
+      "n10": [
+        {
+          "variant": "before",
+          "n10_sha256": "acef0a04c94e5cd3507f437a669dd6a234fca61f66eaa17b1f32125f244ae756",
+          "progress_sha256": "ce88a42de428ea2726ca2e0bf52cc083f09b6f0ebc403185491c69d6302ee69e",
+          "stats_sha256": "a8fbf72ba112f1942f59b1a1989ddede3d62620152bf3fc20dd9b5d6ad8bd405",
+          "sample_queries": 128,
+          "sample_rng": 42,
+          "sample_counts_within_total": true
+        },
+        {
+          "variant": "after",
+          "n10_sha256": "7dc0a640f564907592a094341afcf045afb096d6fcdec8ba2951595b08805a85",
+          "progress_sha256": "fd865e3820c16304136363c4f333b028b3276ab3bb7c6969035273407559113f",
+          "stats_sha256": "ea621b9c059cf4439c4679f8de3c7364bbea812a161a7796e4c79d7e7332eb4d",
+          "sample_queries": 128,
+          "sample_rng": 42,
+          "sample_counts_within_total": true
+        }
+      ],
+      "historical_n10_hash": "C4 manifest did not separately pin N10 payload; current checksum and recorded signature/progress/stats were checked"
+    },
+    "pic2word": {
+      "gallery_sha256": "5e8baaf2a25faf890db36add46d3ea807234d01c37c9a026e26ddff8082cbe89",
+      "centrality_sha256": "1ef503155a5729773f30f07db6bc094375bd504309f39c4c9c0d5f947ad33ed8",
+      "norm_identity_error": 4.10640380144045e-07,
+      "n10": [
+        {
+          "variant": "before",
+          "n10_sha256": "d3e93ea17bba874d4e6fbf2521f307882c5dfdaefe5243ed7a655d2de24cfb27",
+          "progress_sha256": "ff36db0511927220105ea47c34263c4b0aa4dd293e2011d4d3411116d48f47a9",
+          "stats_sha256": "20dd9b01147c7c9bf7da91c5648413583c4f8c495f3969581f6e4a4fcff839f9",
+          "sample_queries": 128,
+          "sample_rng": 42,
+          "sample_counts_within_total": true
+        },
+        {
+          "variant": "after",
+          "n10_sha256": "4e9a9a7a62a36a63faaf587bfb302af1a3db75a8c9bc79d0459d397fb2d37d59",
+          "progress_sha256": "3c07ff4b1be07ddce278c42458bf2a121103712775e9a794c4e33cc9fd856524",
+          "stats_sha256": "b0597fbc17a469869afe2337a17f682558c73890481b9241232df846fae45a02",
+          "sample_queries": 128,
+          "sample_rng": 42,
+          "sample_counts_within_total": true
+        }
+      ],
+      "historical_n10_hash": "C4 manifest did not separately pin N10 payload; current checksum and recorded signature/progress/stats were checked"
+    }
+  },
+  "bootstrap_replicates": 2000,
+  "rng_seed": 42,
+  "bootstrap": "gallery rows, exact Spearman midrank with ties; CI percentile 95% conditional on observed gallery",
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "faiss_threads": 8,
+  "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "faiss": "1.15.1",
+  "numpy": "2.4.2",
+  "scipy": "1.15.1",
+  "limitations": "R4 hypothesis formulated after R3; no historical independently pinned N10 payload hash; N10s dependent on same gallery; bootstrap images not independent; CIs not simultaneous"
+}
